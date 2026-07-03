@@ -2,11 +2,11 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "ignorePatterns": [
     "dist/**",
-    "docs/**",
-    "playground/**",
+    "apps/docs/**",
+    "apps/playground/**",
     "src-old/**",
     "demo/**",
-    "tests/**",
+    "packages/consent/tests/**",
     "coverage/**",
     "node_modules/**"
   ],
@@ -35,7 +35,7 @@
   },
   "overrides": [
     {
-      "files": ["tests/**/*.ts", "tests/**/*.tsx"],
+      "files": ["packages/consent/tests/**/*.ts", "packages/consent/tests/**/*.tsx"],
       "plugins": ["vitest"]
     }
   ]

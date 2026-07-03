@@ -28,4 +28,7 @@ src/scss/core/_dynamic-reset.scss
 
 coverage
 src_tmp
-playground/src/translations/translations.js
+apps/playground/src/translations/translations.js
+
+# pnpm leftovers
+pnpm-lock.yaml

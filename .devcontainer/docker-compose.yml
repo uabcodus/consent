@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    volumes:
+      - ../..:/workspaces:cached
+        # map local opencode config directory to the container's config directory
+      - ~/.config/opencode:/home/vscode/.config/opencode:consistent
+        # map local opencode data directory to the container's data directory
+      - ~/.local/share/opencode:/home/vscode/.local/share/opencode:consistent
+
+    command: sleep infinity
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"

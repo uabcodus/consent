@@ -1,4 +1,5 @@
-name: Label issues and pull requests
+name: Triage
+
 on:
   issues:
     types:

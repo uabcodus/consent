@@ -75,6 +75,6 @@
   "nano-staged": {
     "src/**/*.{ts,tsx}": "bun run lint",
     "tsdown.config.ts": "bun run lint",
-    "*": "bun run format -- --no-error-on-unmatched-pattern"
+    "*": "bun run format"
   }
 }

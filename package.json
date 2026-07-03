@@ -1,0 +1,66 @@
+{
+    "name": "vanilla-cookieconsent",
+    "version": "3.1.0",
+    "description": "🍪 Simple cross-browser cookie-consent plugin written in vanilla js.",
+    "main": "dist/cookieconsent.umd.js",
+    "module": "dist/cookieconsent.esm.js",
+    "files": [
+        "dist",
+        "types"
+    ],
+    "types": "types/index.d.ts",
+    "scripts": {
+        "dev": "rollup --config ./rollup-full.config.mjs --watch",
+        "build": "pnpm rollup:full & pnpm rollup:core; wait",
+        "rollup:full": "rollup --config ./rollup-full.config.mjs",
+        "rollup:core": "rollup --config ./rollup-core.config.mjs",
+        "docs:dev": "vitepress dev docs",
+        "docs:build": "vitepress build docs",
+        "docs:serve": "vitepress serve docs",
+        "test": "jest --runInBand --coverage --silent ./tests"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/orestbida/cookieconsent"
+    },
+    "keywords": [
+        "cookie",
+        "consent",
+        "gdpr",
+        "banner",
+        "vanilla"
+    ],
+    "bugs": {
+        "url": "https://github.com/orestbida/cookieconsent/issues"
+    },
+    "homepage": "https://cookieconsent.orestbida.com",
+    "author": "Orest Bida",
+    "license": "MIT",
+    "devDependencies": {
+        "@babel/core": "^7.29.0",
+        "@eslint/js": "^9.0.0",
+        "@babel/preset-env": "^7.29.2",
+        "@rollup/plugin-eslint": "^9.2.0",
+        "@rollup/plugin-terser": "^1.0.0",
+        "@types/jest": "^30.0.0",
+        "babel-jest": "^30.3.0",
+        "cssnano": "^7.1.7",
+        "eslint": "^9.19.0",
+        "fast-glob": "^3.3.3",
+        "globals": "^16.0.0",
+        "jest": "^30.3.0",
+        "jest-environment-jsdom": "^30.3.0",
+        "postcss": "^8.5.10",
+        "postcss-combine-duplicated-selectors": "^10.0.3",
+        "rollup": "^4.60.2",
+        "sass": "^1.99.0",
+        "sitemap": "^9.0.1",
+        "vitepress": "1.6.4"
+    },
+    "jest": {
+        "testEnvironment": "jsdom",
+        "transform": {
+            "\\.[jt]sx?$": "babel-jest"
+        }
+    }
+}

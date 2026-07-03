@@ -21,7 +21,7 @@ const consent = createConsent({
   categories: {
     necessary: { readOnly: true },
     analytics: {},
-  },
+  } as const,
 });
 ```
 
@@ -49,7 +49,7 @@ createConsent({
   categories: {
     necessary: { readOnly: true },
     analytics: {},
-  },
+  } as const,
 });
 
 // v2 — added marketing category, bumped revision
@@ -59,7 +59,7 @@ createConsent({
     necessary: { readOnly: true },
     analytics: {},
     marketing: {}, // New category
-  },
+  } as const,
 });
 ```
 

@@ -20,7 +20,7 @@ const consent = createConsent({
   // Optionally add your own categories on top
   categories: {
     marketing: {},
-  },
+  } as const,
 });
 
 // Sync consent state to gtag automatically
@@ -103,7 +103,7 @@ const consent = createConsent({
     necessary: { readOnly: true },
     analytics: {},
     ads: {},
-  },
+  } as const,
   callbacks: {
     onConsent: ({ cookie }) => {
       const granted = (cat: string) => (cookie.categories.includes(cat) ? "granted" : "denied");

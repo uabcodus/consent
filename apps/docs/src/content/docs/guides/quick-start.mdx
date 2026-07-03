@@ -24,7 +24,7 @@ const consent = createConsent({
       },
     },
     marketing: {},
-  },
+  } as const,
 });
 
 // Check if consent was already given on a previous visit

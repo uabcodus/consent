@@ -21,7 +21,6 @@ export default defineConfig({
         },
         {
           label: "Core Concepts",
-          collapsed: true,
           items: [
             { label: "How It Works", slug: "guides/how-it-works" },
             { label: "React Integration", slug: "guides/react" },
@@ -31,7 +30,6 @@ export default defineConfig({
         },
         {
           label: "Advanced",
-          collapsed: true,
           items: [
             { label: "Cookie & Storage", slug: "guides/cookie-storage" },
             { label: "Revision Management", slug: "guides/revision-management" },
@@ -41,7 +39,6 @@ export default defineConfig({
         },
         {
           label: "UI Components",
-          collapsed: true,
           items: [{ label: "Registry Components", slug: "guides/ui-components" }],
         },
         {
@@ -53,7 +50,6 @@ export default defineConfig({
           items: [{ autogenerate: { directory: "reference" } }],
         },
       ],
-      customCss: ["./src/styles/global.css"],
     }),
     react(),
   ],

@@ -21,7 +21,7 @@ const consent = createConsent({
   categories: {
     necessary: { readOnly: true },
     analytics: {},
-  },
+  } as const,
   callbacks: {
     onFirstConsent: ({ cookie }) => {
       // First time consent — great for logging to your backend

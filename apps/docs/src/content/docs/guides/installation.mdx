@@ -42,23 +42,14 @@ const consent = createConsent({
   categories: {
     analytics: {},
     marketing: {},
-  },
+  } as const,
 });
 
 // consent.accept() is typed: "analytics" | "marketing" | "all" | "necessary"
 consent.accept("analytics");
 ```
 
-For even stronger inference, use `as const` on your categories object:
-
-```ts
-const consent = createConsent({
-  categories: {
-    analytics: {},
-    marketing: {},
-  } as const,
-});
-```
+`as const` is the recommended pattern — it ensures TypeScript infers your category names as literal string unions, giving you autocomplete and type-safety on every call.
 
 ## Next steps
 

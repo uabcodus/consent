@@ -97,7 +97,7 @@ const consent = createConsent({
         cookies: [{ name: "_ga" }, { name: "_gid" }, { name: "my_tracker" }],
       },
     },
-  },
+  } as const,
   // Add callbacks
   callbacks: {
     onFirstConsent: ({ cookie }) => {
@@ -150,7 +150,7 @@ const consent = createConsent({
   // Per-project overrides
   categories: {
     marketing: {},
-  },
+  } as const,
 });
 ```
 

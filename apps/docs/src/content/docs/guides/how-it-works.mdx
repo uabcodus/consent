@@ -19,7 +19,7 @@ createConsent({
     analytics: { enabled: true }, // Pre-accepted in opt-out mode
     marketing: {}, // Also pre-accepted (anything not readOnly, enabled defaults to false)
     necessary: { readOnly: true }, // Always accepted, cannot be toggled
-  },
+  } as const,
 });
 ```
 
@@ -45,7 +45,7 @@ createConsent({
       },
     },
     marketing: {},
-  },
+  } as const,
 });
 ```
 

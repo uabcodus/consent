@@ -29,7 +29,7 @@ const consent = createConsent({
     necessary: { readOnly: true },
     analytics: {},
     marketing: {},
-  },
+  } as const,
 });
 
 consent.accept("all"); // fully type-safe

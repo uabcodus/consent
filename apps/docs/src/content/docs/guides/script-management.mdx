@@ -19,7 +19,7 @@ const consent = createConsent({
     necessary: { readOnly: true },
     analytics: {},
     marketing: {},
-  },
+  } as const,
 });
 ```
 
@@ -159,7 +159,7 @@ const consent = createConsent({
         },
       },
     },
-  },
+  } as const,
 });
 ```
 

@@ -24,7 +24,7 @@ const consent = createConsent({
   categories: {
     necessary: { readOnly: true },
     analytics: {},
-  },
+  } as const,
 });
 ```
 

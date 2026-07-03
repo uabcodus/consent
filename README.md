@@ -2,11 +2,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-A **lightweight**, **headless** & **gdpr compliant** cookie consent plugin written in Typescript.
+A **lightweight**, **headless** & **GDPR compliant** cookie consent plugin written in Typescript.
 
 ## Credits
 
-This project is a fork of [cookieconsent](https://github.com/orestbida/cookieconsent) by [Orest Bida](https://github.com/orestbida). All credit for the original work goes to him.
+This project is originally a fork of [cookieconsent](https://github.com/orestbida/cookieconsent) by [Orest Bida](https://github.com/orestbida). All credit for the original work goes to him.
 
 ## Demo
 

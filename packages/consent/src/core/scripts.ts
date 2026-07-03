@@ -1,0 +1,160 @@
+import type { ServiceConfig } from "./types";
+
+export interface ScriptInfo {
+  _script: HTMLScriptElement;
+  _categoryName: string;
+  _serviceName: string;
+  _executed: boolean;
+  _runOnDisable: boolean;
+}
+
+const SCRIPT_TAG_SELECTOR = "data-category";
+
+export function retrieveScriptElements(
+  allCategoryNames: Array<string>,
+  existingServices: Record<string, Record<string, ServiceConfig>>,
+): Array<ScriptInfo> {
+  if (typeof document === "undefined") return [];
+
+  const scripts = document.querySelectorAll<HTMLScriptElement>(`script[${SCRIPT_TAG_SELECTOR}]`);
+
+  const scriptInfos: Array<ScriptInfo> = [];
+
+  for (const scriptTag of scripts) {
+    let categoryName = scriptTag.getAttribute(SCRIPT_TAG_SELECTOR) ?? "";
+    let serviceName = scriptTag.dataset.service ?? "";
+    let runOnDisable = false;
+
+    if (categoryName.startsWith("!")) {
+      categoryName = categoryName.slice(1);
+      runOnDisable = true;
+    }
+    if (serviceName.startsWith("!")) {
+      serviceName = serviceName.slice(1);
+      runOnDisable = true;
+    }
+
+    if (!allCategoryNames.includes(categoryName)) continue;
+
+    scriptInfos.push({
+      _script: scriptTag,
+      _executed: false,
+      _runOnDisable: runOnDisable,
+      _categoryName: categoryName,
+      _serviceName: serviceName,
+    });
+
+    if (serviceName) {
+      const services = existingServices[categoryName];
+      if (services && !services[serviceName]) {
+        services[serviceName] = {};
+      }
+    }
+  }
+
+  return scriptInfos;
+}
+
+export function manageExistingScripts(
+  allScriptTags: Array<ScriptInfo>,
+  acceptedCategories: Array<string>,
+  acceptedServices: Record<string, Array<string>>,
+  lastChangedCategoryNames: Array<string>,
+  lastChangedServices: Record<string, Array<string>>,
+): void {
+  if (typeof document === "undefined") return;
+
+  const loadScriptsRecursive = (_scripts: Array<ScriptInfo>, index: number) => {
+    if (index >= allScriptTags.length) return;
+
+    const info = allScriptTags[index]!;
+    if (info._executed) {
+      loadScriptsRecursive(allScriptTags, index + 1);
+      return;
+    }
+
+    const currScript = info._script;
+    const { _categoryName: cat, _serviceName: svc } = info;
+
+    const catAccepted = acceptedCategories.includes(cat);
+    const svcAccepted = svc ? (acceptedServices[cat] ?? []).includes(svc) : false;
+
+    const catJustEnabled = !svc && !info._runOnDisable && catAccepted;
+    const svcJustEnabled = svc && !info._runOnDisable && svcAccepted;
+    const catJustDisabled =
+      !svc && info._runOnDisable && !catAccepted && lastChangedCategoryNames.includes(cat);
+    const svcJustDisabled =
+      svc && info._runOnDisable && !svcAccepted && (lastChangedServices[cat] ?? []).includes(svc);
+
+    const shouldRun = catJustEnabled || svcJustEnabled || catJustDisabled || svcJustDisabled;
+
+    if (!shouldRun) {
+      loadScriptsRecursive(allScriptTags, index + 1);
+      return;
+    }
+
+    info._executed = true;
+
+    const dataType = currScript.getAttribute("type");
+    if (dataType) currScript.removeAttribute("type");
+
+    currScript.removeAttribute(SCRIPT_TAG_SELECTOR);
+
+    let src = currScript.getAttribute("src");
+    if (src) currScript.removeAttribute("src");
+
+    const freshScript = document.createElement("script");
+    freshScript.textContent = currScript.innerHTML;
+
+    for (const { name, value } of currScript.attributes) {
+      freshScript.setAttribute(name, value);
+    }
+
+    if (dataType) freshScript.type = dataType;
+    if (src) freshScript.src = src;
+
+    const externalScript =
+      !!src && (!dataType || dataType === "text/javascript" || dataType === "module");
+
+    if (externalScript) {
+      freshScript.addEventListener("load", () => {
+        loadScriptsRecursive(allScriptTags, index + 1);
+      });
+      freshScript.addEventListener("error", () => {
+        loadScriptsRecursive(allScriptTags, index + 1);
+      });
+    }
+
+    currScript.replaceWith(freshScript);
+
+    if (externalScript) return;
+    loadScriptsRecursive(allScriptTags, index + 1);
+  };
+
+  loadScriptsRecursive(allScriptTags, 0);
+}
+
+export function runServiceCallbacks(
+  allCategoryNames: Array<string>,
+  definedServices: Record<string, Record<string, ServiceConfig>>,
+  acceptedServices: Record<string, Array<string>>,
+  lastChangedServices: Record<string, Array<string>>,
+): void {
+  for (const cat of allCategoryNames) {
+    const svcs = lastChangedServices[cat] ?? acceptedServices[cat] ?? [];
+    for (const svc of svcs) {
+      const service = definedServices[cat]?.[svc];
+      if (!service) continue;
+
+      const isAccepted = (acceptedServices[cat] ?? []).includes(svc);
+
+      if (!service._enabled && isAccepted) {
+        service._enabled = true;
+        if (typeof service.onAccept === "function") service.onAccept();
+      } else if (service._enabled && !isAccepted) {
+        service._enabled = false;
+        if (typeof service.onReject === "function") service.onReject();
+      }
+    }
+  }
+}

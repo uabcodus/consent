@@ -1,0 +1,140 @@
+---
+title: Google Consent Mode
+description: Integrate consent with Google Consent Mode v2 using the built-in preset.
+---
+
+## Overview
+
+Google Consent Mode v2 requires you to communicate consent state to Google's gtag. The library
+ships with a preset and sync helper that do the heavy lifting.
+
+## Quick setup
+
+### 1. Install and create consent with the preset
+
+```ts
+import { createConsent, googleConsentMode, syncGtagConsent } from "@uabcodus/consent/core";
+
+const consent = createConsent({
+  preset: googleConsentMode,
+  // Optionally add your own categories on top
+  categories: {
+    marketing: {},
+  },
+});
+
+// Sync consent state to gtag automatically
+syncGtagConsent(consent);
+```
+
+### 2. Load Google Tag Manager
+
+In your HTML, load GTM with default denied consent:
+
+```html
+<script>
+  // Default deny all
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("consent", "default", {
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+    analytics_storage: "denied",
+    functionality_storage: "denied",
+    personalization_storage: "denied",
+    security_storage: "granted", // Necessary — always granted
+  });
+</script>
+
+<script src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXXXXXXX" async></script>
+```
+
+### 3. Show a banner and accept
+
+```ts
+// When the user clicks "Accept All"
+consent.accept("all");
+// gtag("consent", "update", { ... }) is called automatically
+```
+
+That's it. `syncGtagConsent` subscribes to consent changes and calls `gtag("consent", "update", ...)`
+with the correct `granted` / `denied` values for every service.
+
+## How the mapping works
+
+The preset maps consent categories to Google Consent Mode service names:
+
+| Consent category | GCM services                                       | Required?              |
+| ---------------- | -------------------------------------------------- | ---------------------- |
+| `necessary`      | `security_storage`                                 | Yes (`readOnly: true`) |
+| `analytics`      | `analytics_storage`                                | No                     |
+| `advertisement`  | `ad_storage`, `ad_user_data`, `ad_personalization` | No                     |
+| `functionality`  | `functionality_storage`, `personalization_storage` | Yes (`readOnly: true`) |
+
+When `analytics` is accepted, `syncGtagConsent` calls:
+
+```ts
+gtag("consent", "update", {
+  analytics_storage: "granted",
+});
+```
+
+When `advertisement` is rejected:
+
+```ts
+gtag("consent", "update", {
+  ad_storage: "denied",
+  ad_user_data: "denied",
+  ad_personalization: "denied",
+});
+```
+
+## Manual sync
+
+If you prefer not to use the preset or want custom logic, you can sync gtag manually using
+callbacks:
+
+```ts
+const consent = createConsent({
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+    ads: {},
+  },
+  callbacks: {
+    onConsent: ({ cookie }) => {
+      const granted = (cat: string) => (cookie.categories.includes(cat) ? "granted" : "denied");
+      gtag("consent", "update", {
+        analytics_storage: granted("analytics"),
+        ad_storage: granted("ads"),
+        ad_user_data: granted("ads"),
+        ad_personalization: granted("ads"),
+      });
+    },
+    onChange: ({ cookie }) => {
+      // Same logic — keep gtag in sync on every change
+    },
+  },
+});
+```
+
+## Testing
+
+To verify your setup:
+
+1. Open Chrome DevTools → Application → Cookies
+2. Accept consent and check that `cc_cookie` is set with the correct categories
+3. Open DevTools Console and run `gtag("get", "G-XXXXXXXXXX", "consent", (c) => console.log(c))`
+4. Reject a category in your preferences panel and confirm the corresponding consent type is
+   updated to `denied`
+
+If you're using Google Tag Manager, check the Tag Assistant for consent state events.
+
+## Next steps
+
+- [Presets →](/guides/presets/) — create your own reusable presets
+- [Managing Scripts →](/guides/script-management/) — block scripts until consent
+- [Callbacks & Events →](/guides/callbacks-events/) — understand the consent lifecycle

@@ -1,0 +1,83 @@
+---
+title: Revision Management
+description: Force users to re-consent when your cookie policy changes.
+---
+
+## The problem
+
+You launch your site with cookie consent. Users accept. Everything is fine.
+
+Then your privacy policy changes. You add a new tracking category. Existing users already have a
+valid consent cookie — they'll never see the new category.
+
+## The solution
+
+Bump the `revision` number. When the saved revision doesn't match the current config revision,
+consent is treated as invalid and users are re-prompted.
+
+```ts
+const consent = createConsent({
+  revision: 1, // Bump this when your policy changes
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+  },
+});
+```
+
+On the next page load, the library compares `cookie.revision !== config.revision` and invalidates
+the old consent. The user sees the banner again.
+
+## How it works
+
+When `revision` is `0` (the default), revision checking is **disabled** — the `revision` field is
+ignored in the cookie, and consent never expires due to a version bump.
+
+When `revision` is greater than `0`:
+
+1. On page load, the library reads the saved cookie
+2. If `cookie.revision !== config.revision`, consent is marked as invalid
+3. The banner re-appears, and the user must re-consent
+4. When they do, the new revision number is saved
+
+## Version history example
+
+```ts
+// v1 — initial launch
+createConsent({
+  revision: 1,
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+  },
+});
+
+// v2 — added marketing category, bumped revision
+createConsent({
+  revision: 2,
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+    marketing: {}, // New category
+  },
+});
+```
+
+Users who accepted v1 will be re-prompted because their stored revision (`1`) doesn't match the
+current revision (`2`).
+
+## Best practices
+
+- **Always bump revision when you add or remove categories.** If you just rename a category or
+  change its `autoClear` config, existing accepted categories still map correctly.
+- **Start at 1, not 0.** `revision: 0` disables revision checking entirely. If you plan to use
+  this feature, start at `1` from day one.
+- **Don't bump unnecessarily.** Each bump forces every user through the consent flow again.
+  Reserve it for meaningful policy changes.
+- **Test it.** Bump the revision in dev and verify that the banner re-appears and the new revision
+  is saved after the user accepts.
+
+## Related
+
+- [Google Consent Mode →](/guides/google-consent-mode/) — built-in preset for GCM v2
+- [Presets →](/guides/presets/) — share config across projects with revision numbers baked in

@@ -126,6 +126,7 @@ export interface ConsentInstance<TCategories extends Record<string, CategoryConf
 }
 
 export interface ConsentConfig<TCategories extends Record<string, CategoryConfig>> {
+  preset?: Partial<ConsentConfig<Record<string, CategoryConfig>>>;
   mode?: ConsentMode;
   revision?: number;
   hideFromBots?: boolean;

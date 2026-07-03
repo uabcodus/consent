@@ -1,0 +1,170 @@
+---
+title: Registry Components
+description: Ready-to-use UI components for consent banners and preferences panels.
+---
+
+## What are registry components?
+
+The library includes [shadcn/ui](https://ui.shadcn.com)-style components that you **copy** into
+your project — you own the code, you control the markup, you style it however you want.
+
+They use `@uabcodus/consent/react` under the hood and come styled with the same Tailwind CSS
+tokens as the rest of your shadcn/ui setup.
+
+## Available components
+
+| Component            | File   | What it does                                                                                     |
+| -------------------- | ------ | ------------------------------------------------------------------------------------------------ |
+| `consent-banner.tsx` | Banner | Fixed-position card at the bottom of the page with Accept All, Necessary Only, and Close buttons |
+| `consent-panel.tsx`  | Panel  | Dialog/modal with per-category toggle switches, service sub-toggles, and cookie details          |
+| `consent-table.tsx`  | Table  | Read-only table for displaying cookie definitions                                                |
+| `consent-toggle.tsx` | Toggle | Accessible labelled switch for consent toggles                                                   |
+
+You can find the source in `packages/consent/registry/default/`.
+
+## Using the components
+
+### Install via CLI
+
+If your project is set up with the shadcn CLI, you can install components directly:
+
+```sh
+npx shadcn@latest add https://path-to-registry/consent-banner.json
+```
+
+### Manual copy
+
+Alternatively, just copy the `.tsx` files from `packages/consent/registry/default/` into your
+project's components directory.
+
+The components depend on these shadcn/ui primitives (make sure they're installed):
+
+- `button`
+- `card`
+- `dialog`
+- `label`
+- `switch`
+- `separator`
+- `table`
+
+### Banner
+
+```tsx
+import { ConsentBanner } from "@/components/consent-banner";
+
+function App() {
+  return (
+    <ConsentProvider
+      options={{
+        categories: {
+          /* ... */
+        },
+      }}
+    >
+      <ConsentBanner />
+    </ConsentProvider>
+  );
+}
+```
+
+The banner appears as a fixed-position card at the bottom of the screen. It's automatically hidden
+when:
+
+- Consent is already valid
+- Consent was skipped (bot detected)
+- The user closes it
+
+It has three actions: **Accept All**, **Necessary Only**, and a preferences button that opens the panel.
+
+### Panel
+
+```tsx
+import { ConsentPanel } from "@/components/consent-panel";
+
+function App() {
+  return (
+    <ConsentProvider
+      options={{
+        categories: {
+          /* ... */
+        },
+      }}
+    >
+      <ConsentPanel />
+    </ConsentProvider>
+  );
+}
+```
+
+The panel is a dialog modal with:
+
+- Per-category toggle switches (readOnly categories show as disabled)
+- Per-service sub-toggles within each category (if services are defined)
+- Cookie detail tables (if `cookies` are defined on services)
+- Save Preferences button that batch-applies changes
+
+Service toggles apply immediately. Category toggles are batched — they're only committed when
+the user clicks Save.
+
+### Table
+
+```tsx
+import { ConsentTable } from "@/components/consent-table";
+
+const cookies = [
+  { name: "_ga", path: "/", domain: ".example.com", description: "Google Analytics" },
+  { name: "_gid", path: "/", domain: ".example.com", description: "GA session" },
+];
+
+<ConsentTable cookies={cookies} />;
+```
+
+A simple read-only table for displaying cookie definitions. Use it in your cookie policy page or
+preferences panel.
+
+### Toggle
+
+```tsx
+import { ConsentToggle } from "@/components/consent-toggle";
+
+<ConsentToggle
+  id="analytics-toggle"
+  label="Analytics"
+  description="Help us understand how you use the site."
+  checked={isAccepted}
+  disabled={isReadOnly}
+  onCheckedChange={(checked) => {
+    checked ? consent.accept("analytics") : consent.reject("analytics");
+  }}
+/>;
+```
+
+A labelled switch component following shadcn/ui conventions. Fully accessible — works with
+keyboard, screen readers, and touch.
+
+## Styling
+
+The components use the same CSS variables as the rest of your shadcn/ui app. Customize them through
+your `global.css` theme:
+
+```css
+:root {
+  --primary: 220 80% 50%;
+  /* etc. */
+}
+```
+
+Everything inherits — buttons, toggles, cards, and dialogs will match your app's look and feel
+automatically.
+
+## Customizing behavior
+
+Since you own the code, you can modify anything. Want to change the banner position? Edit the
+`fixed` class. Want to add a "Learn More" link? Add it to the banner JSX. The components are
+thin wrappers around `useConsent()` — they're designed to be hacked on.
+
+## Next steps
+
+- [React Integration →](/guides/react/) — understand the React bindings
+- [Quick Start →](/guides/quick-start/) — build your own components from scratch
+- [Playground →](/playground/) — see the components live

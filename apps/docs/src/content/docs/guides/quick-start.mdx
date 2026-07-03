@@ -1,0 +1,109 @@
+---
+title: Quick Start
+description: Your first consent instance in under 5 minutes.
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+## Core (vanilla JS)
+
+```ts
+import { createConsent } from "@uabcodus/consent/core";
+
+const consent = createConsent({
+  categories: {
+    necessary: {
+      readOnly: true, // Always accepted — user can't toggle it off
+    },
+    analytics: {
+      services: {
+        googleAnalytics: {
+          onAccept: () => console.log("GA enabled"),
+          onReject: () => console.log("GA disabled"),
+        },
+      },
+    },
+    marketing: {},
+  },
+});
+
+// Check if consent was already given on a previous visit
+if (consent.state.valid) {
+  console.log("Consent already given");
+}
+
+// Accept everything
+consent.accept("all");
+
+// Or accept selectively
+consent.accept(["analytics"]);
+consent.reject("marketing");
+
+// Check what's accepted
+consent.acceptedCategory("analytics"); // true
+consent.acceptedCategory("marketing"); // false
+```
+
+Stick that inside a click handler on your cookie banner and you're done.
+
+## React
+
+Wrap your app with `ConsentProvider` and use the `useConsent` hook wherever you need consent state:
+
+```tsx
+import { ConsentProvider, useConsent } from "@uabcodus/consent/react";
+
+function App() {
+  return (
+    <ConsentProvider
+      options={{
+        categories: {
+          necessary: { readOnly: true },
+          analytics: {},
+          marketing: {},
+        },
+      }}
+    >
+      <ConsentBanner />
+    </ConsentProvider>
+  );
+}
+
+function ConsentBanner() {
+  const consent = useConsent();
+
+  // Your component re-renders automatically when consent state changes
+  if (consent.state.valid) return null;
+
+  return (
+    <div>
+      <p>We use cookies for analytics and marketing.</p>
+      <button onClick={() => consent.accept("all")}>Accept All</button>
+      <button onClick={() => consent.accept("necessary")}>Necessary Only</button>
+    </div>
+  );
+}
+```
+
+The `useConsent` hook auto-subscribes to state changes — your component re-renders whenever consent is accepted, rejected, or modified.
+
+## Read the state
+
+The `consent.state` object gives you everything you need to know:
+
+```ts
+consent.state.valid; // boolean — is consent given?
+consent.state.skipped; // boolean — was consent skipped (bot)?
+consent.state.mode; // "opt-in" | "opt-out"
+consent.state.acceptType; // "all" | "necessary" | "custom"
+consent.state.categories; // { [name]: { accepted: boolean; readOnly: boolean } }
+consent.state.services; // { [category]: { [service]: boolean } }
+consent.state.cookie; // CookieValue | null
+```
+
+## Next steps
+
+- [How It Works →](/guides/how-it-works/) — deep dive into categories, services, and consent modes
+- [React Integration →](/guides/react/) — patterns and best practices for React apps
+- [Managing Scripts →](/guides/script-management/) — block scripts until consent is given
+- [Playground →](/playground/) — try it live with live state inspection

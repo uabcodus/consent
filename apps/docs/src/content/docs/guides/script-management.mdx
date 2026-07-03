@@ -1,0 +1,169 @@
+---
+title: Managing Scripts
+description: Block scripts with data-category until the user gives consent.
+---
+
+## How it works
+
+When `manageScripts` is enabled, the library scans the DOM for `<script>` tags with a `data-category`
+attribute and controls their execution based on consent state.
+
+Scripts are blocked by default and executed only when the corresponding category is accepted.
+
+## Enabling script management
+
+```ts
+const consent = createConsent({
+  manageScripts: true, // Opt-in — defaults to false
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+    marketing: {},
+  },
+});
+```
+
+## Marking up scripts
+
+### Category-level
+
+Add `data-category` to any `<script>` tag. Change the `type` to `"text/plain"` so the browser
+doesn't execute it automatically:
+
+```html
+<!-- This script won't run until "analytics" is accepted -->
+<script type="text/plain" data-category="analytics">
+  gtag("js", new Date());
+  gtag("config", "G-XXXXXXXXXX");
+</script>
+```
+
+When `analytics` is accepted, the library clones the script into a new element (without the
+`type="text/plain"` and `data-category` attributes) so the browser executes it.
+
+### Service-level
+
+Add `data-service` for finer-grained control within a category:
+
+```html
+<script type="text/plain" data-category="marketing" data-service="facebookPixel">
+  !function(f,b,e,v,n,t,s){ /* ... */ }
+</script>
+```
+
+This script runs only when the `facebookPixel` service inside `marketing` is accepted.
+
+### External scripts
+
+Works the same way with `src` attributes:
+
+```html
+<script
+  type="text/plain"
+  data-category="analytics"
+  data-service="googleAnalytics"
+  src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+></script>
+```
+
+External scripts are loaded sequentially — each one waits for the previous to finish loading
+before the next is created.
+
+### Run on reject
+
+Prefix the category name with `!` to execute a script when a category is **rejected** instead:
+
+```html
+<!-- This script runs when "marketing" is rejected — useful for cleanup -->
+<script type="text/plain" data-category="!marketing">
+  document.cookie.split(";").forEach((c) => {
+    document.cookie = c.trim() + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+  });
+</script>
+```
+
+## Service callbacks
+
+Scripts declared via `data-category` are one approach, but if you need more control, register
+service callbacks on the category config instead:
+
+```ts
+categories: {
+  analytics: {
+    services: {
+      googleAnalytics: {
+        onAccept: () => {
+          // Inject the GA script programmatically
+          consent.loadScript("https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX");
+        },
+        onReject: () => {
+          // Clean up tracking
+        },
+      },
+    },
+  },
+},
+```
+
+## `loadScript`
+
+If you prefer to load scripts programmatically outside of the `data-category` system, use the
+`loadScript` method:
+
+```ts
+const success = await consent.loadScript(
+  "https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX",
+  { async: "", id: "ga-script" },
+);
+```
+
+Returns a promise that resolves to `true` on success, `false` on failure. Won't load duplicate
+scripts (checked by `src`).
+
+## Common setup
+
+Here's a typical setup combining `data-category` scripts with service callbacks:
+
+```html
+<script
+  type="text/plain"
+  data-category="analytics"
+  data-service="ga4"
+  src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+></script>
+<script
+  type="text/plain"
+  data-category="marketing"
+  data-service="fbPixel"
+  src="https://connect.facebook.net/en_US/fbevents.js"
+></script>
+```
+
+```ts
+const consent = createConsent({
+  manageScripts: true,
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {
+      services: {
+        ga4: {
+          onAccept: () => gtag("consent", "update", { analytics_storage: "granted" }),
+          onReject: () => gtag("consent", "update", { analytics_storage: "denied" }),
+        },
+      },
+    },
+    marketing: {
+      services: {
+        fbPixel: {
+          onAccept: () => fbq?.("consent", "grant"),
+        },
+      },
+    },
+  },
+});
+```
+
+## Next steps
+
+- [Callbacks & Events →](/guides/callbacks-events/) — hook into consent changes
+- [Google Consent Mode →](/guides/google-consent-mode/) — built-in GCM v2 support

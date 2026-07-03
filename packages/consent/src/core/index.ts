@@ -1,6 +1,7 @@
 export { createConsent } from "./consent";
 export { parseConsentCookie } from "./cookies";
 export { isBot } from "./config";
+export { googleConsentMode, syncGtagConsent } from "./presets";
 export type {
   ConsentConfig,
   ConsentInstance,

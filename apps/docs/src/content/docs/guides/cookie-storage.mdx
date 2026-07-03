@@ -1,0 +1,153 @@
+---
+title: Cookie & Storage
+description: Configure how consent is persisted — cookies, localStorage, and custom domains.
+---
+
+## Default behavior
+
+By default, the library stores consent in a cookie named `cc_cookie` with these settings:
+
+```ts
+{
+  name: "cc_cookie",
+  expiresAfterDays: 182,    // ~6 months
+  domain: "",               // Auto: location.hostname
+  path: "/",
+  secure: true,
+  sameSite: "Lax",
+}
+```
+
+## Customizing the cookie
+
+Override any of these in your config:
+
+```ts
+const consent = createConsent({
+  cookie: {
+    name: "my-consent-cookie",
+    expiresAfterDays: 365,
+    domain: ".example.com", // Share across subdomains
+    path: "/",
+    secure: true,
+    sameSite: "Strict",
+  },
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+  },
+});
+```
+
+### Dynamic expiration
+
+`expiresAfterDays` can be a function. For example, set longer expiration when the user accepts
+all categories:
+
+```ts
+cookie: {
+  expiresAfterDays: (acceptType) => {
+    if (acceptType === "all") return 365;
+    if (acceptType === "necessary") return 90;
+    return 182;
+  },
+},
+```
+
+## Using localStorage
+
+Switch from cookies to `localStorage` by setting `useLocalStorage: true`:
+
+```ts
+const consent = createConsent({
+  cookie: {
+    useLocalStorage: true,
+    name: "cc_cookie", // Used as the localStorage key
+  },
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+  },
+});
+```
+
+When using localStorage, the library also stores an `expirationTime` and checks it on page load.
+Expired consent is treated as invalid, same as with cookies.
+
+## Reading cookie data
+
+Use `getCookie()` or `getCookie(field)` to read consent data:
+
+```ts
+const cookie = consent.getCookie();
+// { categories: [...], services: {...}, consentId: "...", ... }
+
+const consentId = consent.getCookie("consentId");
+// "a1b2c3d4-..."
+
+const timestamp = consent.getCookie("consentTimestamp");
+// "2025-01-01T00:00:00.000Z"
+```
+
+## Storing custom data
+
+Need to store additional data alongside consent? Use `setCookieData()`:
+
+```ts
+// Replace the entire data field
+consent.setCookieData({ value: { userId: "123" }, mode: "set" });
+
+// Merge into existing data (shallow merge for objects)
+consent.setCookieData({ value: { theme: "dark" }, mode: "update" });
+```
+
+The data is accessible later:
+
+```ts
+const data = consent.getCookie("data");
+// { userId: "123", theme: "dark" }
+```
+
+Returns `true` if anything actually changed (so you can avoid unnecessary writes).
+
+## Erasing cookies
+
+Manually erase cookies by name, RegExp, or array of both:
+
+```ts
+// Single cookie
+consent.eraseCookies("_ga");
+
+// Regex — erase all GA cookies
+consent.eraseCookies(/^_ga/);
+
+// Array
+consent.eraseCookies(["_ga", "_gid", /^_gat/]);
+
+// Custom path and domain
+consent.eraseCookies("_ga", "/subdir", ".example.com");
+```
+
+This is handled automatically for rejected categories when `autoClearCookies` is enabled (default:
+`true`). But you can call it manually too — useful for cleaning up cookies from a previous consent
+plugin.
+
+## Subdomain cookies
+
+To share consent across subdomains, set the `domain` to the root domain with a leading dot:
+
+```ts
+cookie: {
+  domain: ".example.com",
+}
+```
+
+This makes the cookie available on `www.example.com`, `app.example.com`, `blog.example.com`, etc.
+
+For `localhost` development, leave `domain` empty (default) — most browsers ignore domain on
+`localhost`.
+
+## Next steps
+
+- [Revision Management →](/guides/revision-management/) — force re-consent on policy changes
+- [API Reference →](/reference/core/) — full list of cookie-related methods

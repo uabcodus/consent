@@ -1,0 +1,243 @@
+---
+title: Types
+description: TypeScript type reference for @uabcodus/consent.
+---
+
+All types are exported from `@uabcodus/consent/core`.
+
+## Configuration types
+
+### `ConsentConfig<TCategories>`
+
+The main configuration object passed to `createConsent()`.
+
+```ts
+interface ConsentConfig<TCategories extends Record<string, CategoryConfig>> {
+  preset?: Partial<ConsentConfig<Record<string, CategoryConfig>>>;
+  mode?: ConsentMode;
+  revision?: number;
+  hideFromBots?: boolean;
+  manageScripts?: boolean;
+  autoClearCookies?: boolean;
+  categories: TCategories;
+  cookie?: Partial<CookieConfig>;
+  initialCookie?: CookieValue | string | null;
+  callbacks?: ConsentCallbacks;
+}
+```
+
+### `ConsentMode`
+
+```ts
+type ConsentMode = "opt-in" | "opt-out";
+```
+
+### `CategoryConfig`
+
+```ts
+interface CategoryConfig {
+  enabled?: boolean;
+  readOnly?: boolean;
+  autoClear?: {
+    reloadPage?: boolean;
+    cookies?: CookieItem[];
+  };
+  services?: Record<string, ServiceConfig>;
+}
+```
+
+### `ServiceConfig`
+
+```ts
+interface ServiceConfig {
+  onAccept?: () => void;
+  onReject?: () => void;
+  cookies?: CookieItem[];
+}
+```
+
+### `CookieConfig`
+
+```ts
+interface CookieConfig {
+  name: string;
+  expiresAfterDays: number | ((acceptType: AcceptType) => number);
+  domain: string;
+  path: string;
+  secure: boolean;
+  sameSite: "Lax" | "Strict" | "None";
+  useLocalStorage?: boolean;
+}
+```
+
+### `CookieItem`
+
+```ts
+interface CookieItem {
+  name: string | RegExp;
+  path?: string;
+  domain?: string;
+}
+```
+
+---
+
+## State types
+
+### `ConsentState`
+
+```ts
+interface ConsentState {
+  valid: boolean;
+  skipped: boolean;
+  categories: Record<string, { accepted: boolean; readOnly: boolean }>;
+  services: Record<string, Record<string, boolean>>;
+  cookie: CookieValue | null;
+  mode: ConsentMode;
+  acceptType: AcceptType;
+}
+```
+
+### `AcceptType`
+
+```ts
+type AcceptType = "all" | "custom" | "necessary";
+```
+
+### `CookieValue`
+
+```ts
+interface CookieValue {
+  categories: string[];
+  services: Record<string, string[]>;
+  revision: number;
+  data: unknown;
+  consentId: string;
+  consentTimestamp: string;
+  lastConsentTimestamp?: string;
+  expirationTime?: number;
+  languageCode?: string;
+}
+```
+
+---
+
+## Callback types
+
+### `ConsentCallbacks`
+
+```ts
+interface ConsentCallbacks {
+  onFirstConsent?: (payload: { cookie: CookieValue }) => void;
+  onConsent?: (payload: { cookie: CookieValue }) => void;
+  onChange?: (payload: CookieChange) => void;
+}
+```
+
+### `CookieChange`
+
+```ts
+interface CookieChange {
+  cookie: CookieValue;
+  changedCategories: string[];
+  changedServices: Record<string, string[]>;
+}
+```
+
+---
+
+## Instance type
+
+### `ConsentInstance<TCategories>`
+
+The main API object returned by `createConsent()`.
+
+```ts
+interface ConsentInstance<TCategories extends Record<string, CategoryConfig>> {
+  readonly state: Readonly<ConsentState>;
+
+  accept: (categories: CategoryAcceptArg<TCategories>, excludedCategories?: string[]) => void;
+  reject: (categories: CategoryAcceptArg<TCategories>) => void;
+  acceptedCategory: (category: CategoryNames<TCategories>) => boolean;
+
+  acceptService: (
+    service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
+    category: CategoryNames<TCategories>,
+  ) => void;
+  rejectService: (
+    service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
+    category: CategoryNames<TCategories>,
+  ) => void;
+  acceptedService: (
+    service: ServiceNames<TCategories, CategoryNames<TCategories>>,
+    category: CategoryNames<TCategories>,
+  ) => boolean;
+
+  eraseCookies: (
+    cookies: string | RegExp | Array<string | RegExp>,
+    path?: string,
+    domain?: string,
+  ) => void;
+  getCookie: (field?: string) => unknown;
+  setCookieData: (props: { value: unknown; mode: "set" | "update" }) => boolean;
+  getConfig: <K extends string>(field?: K) => unknown;
+  validConsent: () => boolean;
+  loadScript: (src: string, attrs?: Record<string, string>) => Promise<boolean>;
+  reset: (deleteCookie?: boolean) => void;
+
+  subscribe: (listener: (state: Readonly<ConsentState>) => void) => () => void;
+  on: (event: string, listener: (...args: unknown[]) => void) => () => void;
+  off: (event: string, listener: (...args: unknown[]) => void) => void;
+  destroy: () => void;
+}
+```
+
+---
+
+## Generic helpers
+
+These are utility types that help with type inference. You typically don't need to import them
+directly — they power the generic type parameter on `ConsentInstance`.
+
+### `CategoryNames<TCategories>`
+
+```ts
+type CategoryNames<TCategories> = keyof TCategories & string;
+```
+
+Extracts category name strings from your config.
+
+### `CategoryAcceptArg<TCategories>`
+
+```ts
+type CategoryAcceptArg<TCategories> =
+  | "all"
+  | "necessary"
+  | CategoryNames<TCategories>
+  | Array<CategoryNames<TCategories>>;
+```
+
+The union of all valid arguments to `accept()` and `reject()`.
+
+### `ServiceNames<TCategories, TCategory>`
+
+```ts
+type ServiceNames<TCategories, TCategory> = TCategory extends keyof TCategories
+  ? TCategories[TCategory] extends { services: infer S }
+    ? keyof S & string
+    : never
+  : never;
+```
+
+Extracts service name strings from a category's `services` config.
+
+### `ServiceAcceptArg<TCategories, TCategory>`
+
+```ts
+type ServiceAcceptArg<TCategories, TCategory> =
+  | "all"
+  | ServiceNames<TCategories, TCategory>
+  | Array<ServiceNames<TCategories, TCategory>>;
+```
+
+The union of all valid arguments to `acceptService()` and `rejectService()`.

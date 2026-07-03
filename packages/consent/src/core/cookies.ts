@@ -135,7 +135,7 @@ export function eraseCookiesHelper(cookieNames: Array<string>, domain: string, p
       domainStr = "; domain=" + prefixed;
     }
     document.cookie =
-      cookie + "=" + "; path=" + path + domainStr + "; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+      cookie + "=; path=" + path + domainStr + "; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
   };
 
   for (const cookieName of cookieNames) {

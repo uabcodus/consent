@@ -1,0 +1,119 @@
+---
+title: React API
+description: Reference for ConsentProvider and useConsent.
+---
+
+## `ConsentProvider`
+
+```ts
+function ConsentProvider<TCategories>(props: {
+  options: ConsentConfig<TCategories>;
+  children: React.ReactNode;
+}): React.ReactElement;
+```
+
+Creates a `ConsentInstance` and provides it through React context. The instance is created once
+via `useRef` — it's stable across re-renders.
+
+```tsx
+import { ConsentProvider } from "@uabcodus/consent/react";
+
+function App() {
+  return (
+    <ConsentProvider
+      options={{
+        categories: {
+          necessary: { readOnly: true },
+          analytics: {},
+          marketing: {},
+        },
+      }}
+    >
+      <YourApp />
+    </ConsentProvider>
+  );
+}
+```
+
+### Props
+
+| Prop       | Type                         | Description                                           |
+| ---------- | ---------------------------- | ----------------------------------------------------- |
+| `options`  | `ConsentConfig<TCategories>` | The consent configuration. Same as `createConsent()`. |
+| `children` | `React.ReactNode`            | Your app content.                                     |
+
+### Behavior
+
+- The instance persists across re-renders (same reference).
+- The instance is initialized on first render — if you're server-rendering, make sure this
+  component only renders on the client (`"use client"` directive or `client:only` in Astro).
+- For SSR hydration, pass `initialCookie` in `options`.
+
+---
+
+## `useConsent()`
+
+```ts
+function useConsent(): ConsentInstance<Record<string, CategoryConfig>>;
+```
+
+Returns the consent instance from the nearest `ConsentProvider`. Automatically subscribes to
+state changes — your component re-renders whenever consent state updates.
+
+```tsx
+import { useConsent } from "@uabcodus/consent/react";
+
+function ConsentBanner() {
+  const consent = useConsent();
+
+  if (consent.state.valid) return null;
+
+  return <button onClick={() => consent.accept("all")}>Accept All</button>;
+}
+```
+
+### Behavior
+
+- Throws if called outside a `ConsentProvider`.
+- Subscribes to the store on mount, unsubscribes on unmount.
+- Returns the same `ConsentInstance` object every render (stable reference).
+- The `state` getter always returns the latest snapshot.
+
+### TypeScript
+
+Pass your config's type to `ConsentProvider` for inferred types in `useConsent`:
+
+```tsx
+const config = {
+  categories: {
+    analytics: {},
+    marketing: {},
+  } as const,
+};
+
+function App() {
+  return (
+    <ConsentProvider options={config}>
+      <ConsentBanner />
+    </ConsentProvider>
+  );
+}
+
+function ConsentBanner() {
+  const consent = useConsent();
+  consent.accept("analytics"); // Fully typed
+}
+```
+
+---
+
+## `ConsentProviderProps`
+
+```ts
+interface ConsentProviderProps<TCategories> {
+  options: ConsentConfig<TCategories>;
+  children: React.ReactNode;
+}
+```
+
+Props type for `ConsentProvider`. Exported for convenience.

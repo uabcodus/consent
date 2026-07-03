@@ -28,7 +28,7 @@ import {
   runServiceCallbacks,
   type ScriptInfo,
 } from "./scripts";
-import { uuidv4, deepCopy, arrayDiff, unique, resolveAcceptType } from "./utils";
+import { uuidv4, deepCopy, arrayDiff, unique, resolveAcceptType, mergeConfigs } from "./utils";
 
 type Events = Record<string, Set<(...args: Array<unknown>) => void>>;
 
@@ -102,9 +102,10 @@ interface InternalState {
 export function createConsent<TCategories extends Record<string, CategoryConfig>>(
   userConfig: ConsentConfig<TCategories>,
 ): ConsentInstance<TCategories> {
-  const config = resolveConfig(userConfig);
+  const merged = mergeConfigs(userConfig);
+  const config = resolveConfig(merged);
 
-  const initialCookie = parseInitialCookie(userConfig.initialCookie);
+  const initialCookie = parseInitialCookie(merged.initialCookie);
   const cookieValue = initialCookie ?? getPluginCookie(config.cookie);
 
   const categories = cookieValue?.categories;
@@ -206,7 +207,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
     lastChangedServices: {},
     lastEnabledServices: {},
     revisionValid: true,
-    callbacks: userConfig.callbacks ?? {},
+    callbacks: merged.callbacks ?? {},
     events: {},
   };
 
@@ -273,6 +274,10 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
   function persistAndSync() {
     if (!internal.consentTimestamp) internal.consentTimestamp = new Date();
     if (!internal.consentId) internal.consentId = uuidv4();
+
+    for (const cat of internal.categoryNames) {
+      internal.acceptedServices[cat] = unique(internal.enabledServices[cat] ?? []);
+    }
 
     internal.cookieContent = {
       categories: deepCopy(internal.acceptedCategories),

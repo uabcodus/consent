@@ -1,0 +1,145 @@
+---
+title: Callbacks & Events
+description: Hook into the consent lifecycle with callbacks, subscriptions, and events.
+---
+
+The library gives you three ways to react to consent changes: config callbacks, store subscriptions,
+and a custom event emitter. Choose the one that fits your use case.
+
+## Config callbacks
+
+Pass callbacks in your `createConsent` config. They're set once and persist for the lifetime of
+the instance.
+
+### `onFirstConsent`
+
+Fires once — the very first time a user gives consent. Never fires again, even on page reloads
+where consent is restored from a cookie.
+
+```ts
+const consent = createConsent({
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+  },
+  callbacks: {
+    onFirstConsent: ({ cookie }) => {
+      // First time consent — great for logging to your backend
+      fetch("/api/consent", {
+        method: "POST",
+        body: JSON.stringify(cookie),
+      });
+    },
+  },
+});
+```
+
+### `onConsent`
+
+Fires when consent is given for the first time _and_ on every subsequent page load where consent
+is restored from a cookie.
+
+```ts
+callbacks: {
+  onConsent: ({ cookie }) => {
+    // Fires on page load if consent is already valid
+    // Also fires right after onFirstConsent
+    initializeAnalytics(cookie.categories);
+  },
+},
+```
+
+Use this to boot up your tracking scripts on page load when consent is already valid.
+
+### `onChange`
+
+Fires whenever categories or services change — accepting, rejecting, toggling individual services.
+
+```ts
+callbacks: {
+  onChange: ({ cookie, changedCategories, changedServices }) => {
+    console.log("Categories changed:", changedCategories);
+    console.log("Services changed:", changedServices);
+
+    // Sync with your analytics
+    if (changedCategories.includes("analytics")) {
+      updateGtagConsent(cookie);
+    }
+  },
+},
+```
+
+## Store subscriptions
+
+`consent.subscribe()` lets you add reactive listeners that fire on every state change. Use this
+for syncing UI state or logging.
+
+```ts
+const unsubscribe = consent.subscribe((state) => {
+  console.log("New state:", state);
+});
+
+// Later, when you're done:
+unsubscribe();
+```
+
+Returns an unsubscribe function. The listener receives the full read-only `ConsentState` snapshot.
+
+In React, `useConsent` handles this subscription for you — it triggers a re-render on every state
+change automatically.
+
+## Event emitter
+
+`consent.on()` and `consent.off()` give you a lightweight pub/sub system. Built-in events mirror
+the config callbacks:
+
+| Event            | Payload                   | When                                  |
+| ---------------- | ------------------------- | ------------------------------------- |
+| `"firstConsent"` | `{ cookie: CookieValue }` | First consent action                  |
+| `"consent"`      | `{ cookie: CookieValue }` | Consent given or restored from cookie |
+| `"change"`       | `{ cookie: CookieValue }` | Categories or services changed        |
+
+```ts
+consent.on("change", ({ cookie }) => {
+  document.documentElement.setAttribute("data-consent", cookie.categories.join(","));
+});
+```
+
+You can emit and listen for custom events too:
+
+```ts
+consent.on("track", (eventName, data) => {
+  analytics.track(eventName, data);
+});
+
+// Somewhere else:
+consent.on("track", "page_view", { path: "/home" });
+```
+
+`on()` returns an unsubscribe function. `off()` removes a specific listener:
+
+```ts
+const listener = ({ cookie }) => {
+  /* ... */
+};
+
+consent.on("change", listener);
+consent.off("change", listener);
+```
+
+## Which one should I use?
+
+| Use case                      | Best choice                                       |
+| ----------------------------- | ------------------------------------------------- |
+| Boot up tracking on page load | `onConsent` config callback                       |
+| Log consent to backend (once) | `onFirstConsent` config callback                  |
+| Sync UI state continuously    | `subscribe` (or `useConsent` in React)            |
+| Run side effects on changes   | `onChange` config callback or `on("change", ...)` |
+| Custom event bus              | `on` / `off`                                      |
+
+You can mix and match freely — they all coexist on the same instance.
+
+## Next steps
+
+- [Cookie & Storage →](/guides/cookie-storage/) — configure cookies, use localStorage
+- [Revision Management →](/guides/revision-management/) — force re-consent on policy changes

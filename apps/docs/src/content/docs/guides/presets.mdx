@@ -1,0 +1,160 @@
+---
+title: Presets
+description: Reuse and share consent configurations with presets.
+---
+
+## What's a preset?
+
+A preset is a partial `ConsentConfig` that you merge into your main config. The library ships with
+a `googleConsentMode` preset, and you can create your own.
+
+Presets use the `preset` option:
+
+```ts
+import { createConsent, googleConsentMode } from "@uabcodus/consent/core";
+
+const consent = createConsent({
+  preset: googleConsentMode,
+  // Your config overrides and extends the preset
+});
+```
+
+## Built-in: `googleConsentMode`
+
+The `googleConsentMode` preset configures categories and services aligned with Google Consent Mode v2:
+
+```ts
+import { googleConsentMode } from "@uabcodus/consent/core";
+
+// The preset defines:
+// {
+//   categories: {
+//     necessary: {
+//       readOnly: true,
+//       services: { security_storage: {} }
+//     },
+//     analytics: {
+//       services: { analytics_storage: {} },
+//       autoClear: {
+//         cookies: [{ name: /^_ga/ }, { name: "_gid" }]
+//       }
+//     },
+//     advertisement: {
+//       services: { ad_storage: {}, ad_user_data: {}, ad_personalization: {} }
+//     },
+//     functionality: {
+//       readOnly: true,
+//       services: { functionality_storage: {}, personalization_storage: {} }
+//     },
+//   },
+// }
+```
+
+Use it with `syncGtagConsent` for a complete setup:
+
+```ts
+import { createConsent, googleConsentMode, syncGtagConsent } from "@uabcodus/consent/core";
+
+const consent = createConsent({
+  preset: googleConsentMode,
+});
+
+syncGtagConsent(consent); // Keeps gtag in sync automatically
+```
+
+See [Google Consent Mode →](/guides/google-consent-mode/) for the full walkthrough.
+
+## How merging works
+
+When you use a preset, the library deep-merges the preset into your config:
+
+| Field                         | Merge behavior                                                         |
+| ----------------------------- | ---------------------------------------------------------------------- |
+| Top-level options             | Your value overrides the preset's value                                |
+| `categories`                  | Keys are unioned. For keys in both, `CategoryConfig` is shallow-merged |
+| `services` within a category  | Both preset and user services appear together                          |
+| `autoClear` within a category | Your value wins if provided                                            |
+| `cookie`                      | Shallow merge — you override the preset                                |
+| `callbacks`                   | Your callback wins if both define the same one                         |
+
+This means you can override just what you need:
+
+```ts
+const consent = createConsent({
+  preset: googleConsentMode,
+  // Add your own categories alongside the preset's
+  categories: {
+    marketing: {
+      services: {
+        facebookPixel: {
+          onAccept: () => fbq?.("consent", "grant"),
+        },
+      },
+    },
+    // Override a preset category
+    analytics: {
+      autoClear: {
+        cookies: [{ name: "_ga" }, { name: "_gid" }, { name: "my_tracker" }],
+      },
+    },
+  },
+  // Add callbacks
+  callbacks: {
+    onFirstConsent: ({ cookie }) => {
+      fetch("/api/consent", { method: "POST", body: JSON.stringify(cookie) });
+    },
+  },
+});
+```
+
+The resulting config will have all four categories: `necessary`, `analytics`, `advertisement`,
+`functionality` (from the preset) plus `marketing` (from your config).
+
+## Creating your own preset
+
+A preset is just a `ConsentConfig` object. Create one and share it across projects:
+
+```ts
+// presets/company-preset.ts
+import type { ConsentConfig } from "@uabcodus/consent/core";
+
+export const companyPreset: ConsentConfig<
+  Record<string, import("@uabcodus/consent/core").CategoryConfig>
+> = {
+  revision: 1,
+  mode: "opt-in",
+  cookie: {
+    name: "company_consent",
+    domain: ".mycompany.com",
+  },
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {
+      services: {
+        googleAnalytics: {},
+        plausible: {},
+      },
+    },
+  },
+};
+```
+
+Then use it:
+
+```ts
+import { createConsent } from "@uabcodus/consent/core";
+import { companyPreset } from "./presets/company-preset";
+
+const consent = createConsent({
+  preset: companyPreset,
+  // Per-project overrides
+  categories: {
+    marketing: {},
+  },
+});
+```
+
+## Next steps
+
+- [Google Consent Mode →](/guides/google-consent-mode/) — full guide for the built-in preset
+- [API Reference →](/reference/core/) — all config options

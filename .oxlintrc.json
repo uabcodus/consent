@@ -2,12 +2,9 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "ignorePatterns": [
     "dist/**",
-    "apps/docs/**",
-    "apps/playground/**",
-    "src-old/**",
-    "demo/**",
+    "old/**",
+    "packages/consent/registry/**",
     "packages/consent/tests/**",
-    "coverage/**",
     "node_modules/**"
   ],
   "plugins": ["typescript", "react", "unicorn", "import", "oxc"],
@@ -22,15 +19,17 @@
     "typescript/array-type": ["error", { "default": "generic" }],
     "typescript/consistent-generic-constructors": "error",
     "import/no-default-export": "off",
-    "unicorn/filename-case": "off"
+    "unicorn/filename-case": "off",
+    "react/react-in-jsx-scope": "off",
+    "eslint/no-underscore-dangle": "off"
   },
   "env": {
     "browser": true,
     "es2022": true
   },
   "settings": {
-    "jsx": {
-      "runtime": "automatic"
+    "react": {
+      "jsxRuntime": "automatic"
     }
   },
   "overrides": [

@@ -49,3 +49,70 @@ export function safeRun<T>(fn: () => T, fallback?: T): T | false | undefined {
     return fallback ?? false;
   }
 }
+
+import type { CategoryConfig, ConsentConfig, CookieConfig, ConsentCallbacks } from "./types";
+
+export function mergeConfigs<TCategories extends Record<string, CategoryConfig>>(
+  userConfig: ConsentConfig<TCategories>,
+): ConsentConfig<TCategories> {
+  const preset = userConfig.preset;
+  if (!preset) return userConfig;
+
+  return {
+    ...preset,
+    ...userConfig,
+    categories: mergeCategories(preset.categories, userConfig.categories) as TCategories,
+    cookie: mergeCookies(preset.cookie, userConfig.cookie),
+    callbacks: mergeCallbacks(preset.callbacks, userConfig.callbacks),
+    preset: undefined,
+  };
+}
+
+function mergeCategories(
+  presetCategories: Record<string, CategoryConfig> | undefined,
+  userCategories: Record<string, CategoryConfig>,
+): Record<string, CategoryConfig> {
+  if (!presetCategories) return { ...userCategories };
+
+  const merged: Record<string, CategoryConfig> = {};
+  const allKeys = new Set([...Object.keys(presetCategories), ...Object.keys(userCategories)]);
+
+  for (const key of allKeys) {
+    const presetCat = presetCategories[key];
+    const userCat = userCategories[key];
+
+    if (presetCat && userCat) {
+      merged[key] = {
+        ...presetCat,
+        ...userCat,
+        services: {
+          ...presetCat.services,
+          ...userCat.services,
+        },
+        autoClear: userCat.autoClear ?? presetCat.autoClear,
+      };
+    } else {
+      merged[key] = userCat ?? presetCat!;
+    }
+  }
+
+  return merged;
+}
+
+function mergeCookies(
+  presetCookie: Partial<CookieConfig> | undefined,
+  userCookie: Partial<CookieConfig> | undefined,
+): Partial<CookieConfig> | undefined {
+  if (!presetCookie) return userCookie;
+  if (!userCookie) return presetCookie;
+  return { ...presetCookie, ...userCookie };
+}
+
+function mergeCallbacks(
+  presetCallbacks: ConsentCallbacks | undefined,
+  userCallbacks: ConsentCallbacks | undefined,
+): ConsentCallbacks | undefined {
+  if (!presetCallbacks) return userCallbacks;
+  if (!userCallbacks) return presetCallbacks;
+  return { ...presetCallbacks, ...userCallbacks };
+}

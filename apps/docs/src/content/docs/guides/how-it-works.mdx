@@ -1,0 +1,151 @@
+---
+title: How It Works
+description: Consent modes, categories, services, and the consent lifecycle.
+---
+
+## Consent modes
+
+The library supports two modes. Choose the one that matches your legal requirements:
+
+| Mode               | Behavior                                                                                                  |
+| ------------------ | --------------------------------------------------------------------------------------------------------- |
+| `opt-in` (default) | Nothing is accepted until the user explicitly gives consent. Only `readOnly` categories are pre-accepted. |
+| `opt-out`          | All categories with `enabled: true` are accepted by default. The user must actively opt out.              |
+
+```ts
+createConsent({
+  mode: "opt-out", // User must actively opt out
+  categories: {
+    analytics: { enabled: true }, // Pre-accepted in opt-out mode
+    marketing: {}, // Also pre-accepted (anything not readOnly, enabled defaults to false)
+    necessary: { readOnly: true }, // Always accepted, cannot be toggled
+  },
+});
+```
+
+In `opt-in` mode, `enabled` has no effect — nothing is accepted until the user says yes.
+
+## Categories
+
+Categories group related tracking purposes. Each category can be independently accepted or rejected.
+
+```ts
+createConsent({
+  categories: {
+    necessary: {
+      readOnly: true, // Always accepted, user can never toggle this off
+    },
+    analytics: {
+      autoClear: {
+        // Automatically erase cookies when category is rejected
+        cookies: [
+          { name: "_ga", path: "/" },
+          { name: /^_ga_/ }, // Supports RegExp too
+        ],
+      },
+    },
+    marketing: {},
+  },
+});
+```
+
+### Category options
+
+| Option      | Type                            | Default | Description                                                                                                                    |
+| ----------- | ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `readOnly`  | `boolean`                       | `false` | If `true`, the category is always accepted and the user can't toggle it off.                                                   |
+| `enabled`   | `boolean`                       | `false` | If `true`, the category is accepted by default. Only relevant in `opt-out` mode.                                               |
+| `autoClear` | `{ reloadPage?, cookies? }`     | —       | When the category is rejected, automatically erase matching cookies. Set `reloadPage: true` to reload the page after clearing. |
+| `services`  | `Record<string, ServiceConfig>` | —       | Per-service sub-toggles with `onAccept`/`onReject` callbacks.                                                                  |
+
+## Services
+
+Services live inside categories and give you per-vendor control. A category like "analytics" might contain `googleAnalytics` and `plausible` services, each toggleable independently.
+
+```ts
+analytics: {
+  services: {
+    googleAnalytics: {
+      cookies: [{ name: "_ga" }, { name: "_gid" }],
+      onAccept: () => gtag("consent", "update", { analytics_storage: "granted" }),
+      onReject: () => gtag("consent", "update", { analytics_storage: "denied" }),
+    },
+    plausible: {
+      onAccept: () => loadPlausibleScript(),
+    },
+  },
+},
+```
+
+Services inherit their parent category's state by default. When you call `consent.accept("analytics")`, all services inside `analytics` are accepted and their `onAccept` callbacks fire.
+
+You can also toggle services individually:
+
+```ts
+consent.acceptService("googleAnalytics", "analytics");
+consent.rejectService("plausible", "analytics");
+```
+
+### Service options
+
+| Option     | Type           | Description                                                                       |
+| ---------- | -------------- | --------------------------------------------------------------------------------- |
+| `onAccept` | `() => void`   | Called when the service is first enabled or transitions from disabled to enabled. |
+| `onReject` | `() => void`   | Called when the service transitions from enabled to disabled.                     |
+| `cookies`  | `CookieItem[]` | Cookies associated with this service (for auto-clear and display).                |
+
+## The consent lifecycle
+
+Here's what happens when you call `createConsent()`:
+
+```
+createConsent()
+  │
+  ├── Bot detected?
+  │     └── state.skipped = true, consent is bypassed
+  │
+  ├── Valid cookie exists? (correct revision, not expired, has consentId)
+  │     └── state.valid = true, restore accepted categories from cookie, fire onConsent
+  │
+  ├── Opt-out mode?
+  │     └── Pre-accept categories where enabled: true
+  │
+  └── Opt-in mode?
+        └── Only readOnly categories are pre-accepted, wait for user action
+```
+
+When the user accepts:
+
+1. Accepted categories and services are computed
+2. A `consentId` (UUID) and timestamps are generated (first time)
+3. The cookie is written
+4. Rejected category cookies are auto-cleared
+5. Service `onAccept`/`onReject` callbacks fire
+6. Managed scripts (`data-category`) are loaded or blocked
+7. Event listeners are notified
+8. The reactive store updates
+
+All of this happens from a single `consent.accept()` call.
+
+## The cookie
+
+Consent is persisted to a cookie (or localStorage). The stored JSON looks like this:
+
+```json
+{
+  "categories": ["necessary", "analytics"],
+  "services": { "analytics": ["googleAnalytics"] },
+  "revision": 0,
+  "data": {},
+  "consentId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "consentTimestamp": "2025-01-01T00:00:00.000Z",
+  "lastConsentTimestamp": "2025-01-01T00:00:00.000Z",
+  "languageCode": "en"
+}
+```
+
+## Next steps
+
+- [Callbacks & Events →](/guides/callbacks-events/) — hook into the consent lifecycle
+- [Managing Scripts →](/guides/script-management/) — block scripts until consent
+- [React Integration →](/guides/react/) — use consent in React components

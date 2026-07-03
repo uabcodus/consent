@@ -1,0 +1,137 @@
+<div id="vanilla-demo">
+  <div id="vanilla-banner" class="fixed bottom-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-[420px] -translate-x-1/2 rounded-xl bg-white p-4 shadow-lg ring-1 ring-black/10" style="display:none">
+    <h3 class="mb-2 text-base font-medium">Cookie Consent</h3>
+    <p class="mb-4 text-sm text-gray-500">We use cookies to improve your browsing experience, serve personalized content, and analyze our traffic.</p>
+    <div class="flex flex-wrap gap-2">
+      <button id="vanilla-accept-all" class="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-2.5 text-sm font-medium text-white transition-all hover:bg-blue-600/80">Accept All</button>
+      <button id="vanilla-accept-necessary" class="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50">Necessary Only</button>
+      <button id="vanilla-open-preferences" class="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50">Preferences</button>
+    </div>
+  </div>
+
+  <div id="vanilla-preferences-overlay" class="fixed inset-0 z-50 bg-black/10" style="display:none"></div>
+  <div id="vanilla-preferences" class="fixed top-1/2 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-4 shadow-lg ring-1 ring-black/10" style="display:none">
+    <h3 class="mb-4 text-base font-medium">Cookie Preferences</h3>
+    <div id="vanilla-categories" class="flex flex-col gap-3"></div>
+    <div class="mt-4 flex flex-wrap justify-end gap-2">
+      <button id="vanilla-save-preferences" class="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50">Save Preferences</button>
+      <button id="vanilla-preferences-accept-all" class="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-2.5 text-sm font-medium text-white transition-all hover:bg-blue-600/80">Accept All</button>
+    </div>
+  </div>
+
+  <div id="vanilla-state" class="mx-auto max-w-xl p-4">
+    <h3 class="mb-2 text-sm font-medium">Consent State</h3>
+    <pre id="vanilla-state-display" class="rounded-lg bg-gray-100 p-3 text-xs text-gray-700 overflow-x-auto"></pre>
+  </div>
+</div>
+
+<script>
+  // @ts-nocheck
+  import { createConsent } from "@uabcodus/consent/core";
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const $$ = (sel: string) =>
+    document.querySelectorAll(sel) as NodeListOf<HTMLInputElement>;
+
+  const consent = createConsent({
+    cookie: { name: "cc_cookie_vanilla" },
+    categories: {
+      analytics: {
+        services: {
+          "Google Analytics": { cookies: [{ name: /_ga/ }, { name: "_gid" }] },
+        },
+      },
+      marketing: {
+        services: {
+          "Facebook Pixel": { cookies: [{ name: "_fbp" }] },
+        },
+      },
+      necessary: { readOnly: true },
+    },
+    callbacks: {
+      onFirstConsent: () => {
+        updateUI();
+      },
+      onChange: () => {
+        updateUI();
+      },
+    },
+  });
+
+  function updateUI() {
+    const state = consent.state;
+    const valid = state.valid;
+
+    $("vanilla-banner").style.display = valid ? "none" : "";
+    $("vanilla-preferences").style.display = "none";
+    $("vanilla-preferences-overlay").style.display = "none";
+    $("vanilla-state-display").textContent = JSON.stringify(
+      {
+        valid: state.valid,
+        acceptType: state.acceptType,
+        categories: Object.fromEntries(
+          Object.entries(state.categories).map(([k, v]) => [
+            k,
+            { accepted: v.accepted, readOnly: v.readOnly },
+          ]),
+        ),
+        services: state.services,
+      },
+      null,
+      2,
+    );
+  }
+
+  function buildPreferences() {
+    const container = $("vanilla-categories");
+    container.innerHTML = "";
+    for (const [name, info] of Object.entries(consent.state.categories)) {
+      const row = document.createElement("div");
+      row.className = "flex items-center justify-between";
+      const checked = consent.acceptedCategory(name) ? "checked" : "";
+      const disabled = info.readOnly ? "disabled" : "";
+      const opacity = disabled ? "opacity-50 cursor-default" : "";
+      row.innerHTML = `
+        <span class="text-sm capitalize ${disabled ? 'opacity-50' : ''}">${name}</span>
+        <label class="relative inline-flex cursor-pointer items-center ${opacity}">
+          <input type="checkbox" class="peer sr-only" ${checked} ${disabled} data-category="${name}">
+          <div class="h-[18px] w-[32px] rounded-full bg-gray-200 transition-all peer-checked:bg-blue-600 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"></div>
+          <div class="absolute left-0.5 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-[calc(100%-2px)]"></div>
+        </label>
+      `;
+      container.appendChild(row);
+    }
+  }
+
+  $("vanilla-accept-all").addEventListener("click", () => consent.accept("all"));
+  $("vanilla-accept-necessary").addEventListener("click", () => consent.accept("necessary"));
+  $("vanilla-open-preferences").addEventListener("click", () => {
+    buildPreferences();
+    $("vanilla-preferences").style.display = "";
+    $("vanilla-preferences-overlay").style.display = "";
+  });
+  $("vanilla-preferences-accept-all").addEventListener("click", () => consent.accept("all"));
+  $("vanilla-preferences-overlay").addEventListener("click", () => {
+    $("vanilla-preferences").style.display = "none";
+    $("vanilla-preferences-overlay").style.display = "none";
+  });
+  $("vanilla-save-preferences").addEventListener("click", () => {
+    const checkboxes = $$("#vanilla-categories input[type=checkbox]");
+    for (const cb of checkboxes) {
+      const name = cb.dataset.category;
+      if (name) {
+        if (cb.checked) consent.accept(name as never);
+        else consent.reject(name as never);
+      }
+    }
+  });
+
+  consent.subscribe(updateUI);
+  updateUI();
+</script>
+
+<style>
+  #vanilla-demo :global(*) {
+    box-sizing: border-box;
+  }
+</style>

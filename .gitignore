@@ -28,6 +28,10 @@ src/scss/core/_dynamic-reset.scss
 
 coverage
 src_tmp
+
+# docs - generated registry copies
+apps/docs/public/registry.json
+apps/docs/public/registry/
 apps/playground/src/translations/translations.js
 
 # pnpm leftovers

@@ -1,0 +1,72 @@
+---
+title: "Composable and Type-safe consent library"
+description: Headless, composable consent management for the modern web.
+template: splash
+hero:
+  tagline: Headless consent management that works with any framework.
+  actions:
+    - text: Get Started
+      link: /guides/installation/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/uabcodus/consent
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+`@uabcodus/consent` is a **headless, framework-agnostic** consent management library. It handles all
+the tricky parts — cookie storage, script blocking, consent state, callbacks, revision management —
+and stays out of your way when it comes to UI.
+
+```ts
+import { createConsent } from "@uabcodus/consent/core";
+
+const consent = createConsent({
+  // configure what you need!
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+    marketing: {},
+  },
+});
+
+consent.accept("all"); // fully type-safe
+consent.acceptedCategory("analytics"); // true
+```
+
+## Why headless?
+
+<CardGrid stagger>
+  <Card title="Framework agnostic" icon="code">
+    A tiny vanilla JS core that works everywhere. React bindings included — bring your own
+    components, or use ours.
+  </Card>
+  <Card title="Type-safe" icon="seti">
+    Full TypeScript support with generics that infer your category and service names. Autocomplete
+    all the way.
+  </Card>
+  <Card title="Composable" icon="add-document">
+    Every piece is optional. Use presets, mix in your own config, subscribe to state changes, hook
+    into events.
+  </Card>
+  <Card title="Production ready" icon="star">
+    Handles bots, SSR hydration, script blocking, auto-clear, revision re-consent, localStorage
+    fallback, and Google Consent Mode v2.
+  </Card>
+</CardGrid>
+
+## What you get
+
+- **Opt-in and opt-out modes** — pick the strategy that fits your legal requirements
+- **Category & service toggles** — granular control with per-service callbacks
+- **Script management** — block `<script>` tags by `data-category` until consent is given
+- **Auto cookie clearing** — erase cookies from rejected categories automatically
+- **Revision management** — force re-consent when your policies change
+- **Google Consent Mode v2** — built-in preset with `syncGtagConsent`
+- **React bindings** — `ConsentProvider` + `useConsent` hook with automatic re-renders
+- **shadcn/ui components** — ready-to-use Banner, Panel, and Toggle components you own
+- **Cookie or localStorage** — your choice
+
+Ready to give it a spin? [Jump to the quick start →](/guides/quick-start/)

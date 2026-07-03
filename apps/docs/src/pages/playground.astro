@@ -1,0 +1,97 @@
+---
+import VanillaDemo from "../components/playground/VanillaDemo.astro";
+import ReactDemo from "../components/playground/ReactDemo";
+import ShadcnDemo from "../components/playground/ShadcnDemo";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Playground | @uabcodus/consent</title>
+    <link rel="icon" href="/favicon.svg" />
+  </head>
+  <body class="min-h-screen bg-background font-sans text-foreground antialiased">
+    <header class="border-b">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+        <a href="/" class="text-sm font-medium hover:underline">← Back to Docs</a>
+        <span class="text-sm text-muted-foreground">@uabcodus/consent Playground</span>
+      </div>
+    </header>
+
+    <div class="mx-auto max-w-5xl px-4 py-6">
+      <nav class="mb-6 flex gap-2" role="tablist">
+        <button
+          class="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/80 tab-btn"
+          data-tab="vanilla"
+          role="tab"
+          aria-selected="true"
+        >
+          Vanilla
+        </button>
+        <button
+          class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium transition-all hover:bg-muted tab-btn"
+          data-tab="react"
+          role="tab"
+          aria-selected="false"
+        >
+          React
+        </button>
+        <button
+          class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium transition-all hover:bg-muted tab-btn"
+          data-tab="shadcn"
+          role="tab"
+          aria-selected="false"
+        >
+          React + ShadCN
+        </button>
+      </nav>
+
+      <div id="tab-vanilla" class="tab-panel">
+        <VanillaDemo />
+      </div>
+      <div id="tab-react" class="tab-panel hidden">
+        <ReactDemo client:load />
+      </div>
+      <div id="tab-shadcn" class="tab-panel hidden">
+        <ShadcnDemo client:load />
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  const buttons = document.querySelectorAll(".tab-btn");
+  const panels = document.querySelectorAll(".tab-panel");
+
+  for (const btn of buttons) {
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
+      if (!tab) return;
+
+      for (const b of buttons) {
+        b.setAttribute("aria-selected", "false");
+        b.className =
+          "inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium transition-all hover:bg-muted tab-btn";
+      }
+      btn.setAttribute("aria-selected", "true");
+      btn.className =
+        "inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/80 tab-btn";
+
+      for (const p of panels) {
+        p.classList.add("hidden");
+      }
+      const target = document.getElementById(`tab-${tab}`);
+      if (target) target.classList.remove("hidden");
+    });
+  }
+</script>
+
+<style is:global>
+  @import "../styles/shadcn.css";
+
+  html {
+    font-family: "Inter Variable", sans-serif;
+  }
+</style>

@@ -1,0 +1,408 @@
+---
+title: Core API
+description: Complete reference for the @uabcodus/consent/core module.
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+## Exports
+
+### `createConsent()`
+
+```ts
+function createConsent<TCategories extends Record<string, CategoryConfig>>(
+  userConfig: ConsentConfig<TCategories>,
+): ConsentInstance<TCategories>;
+```
+
+Creates a new consent instance. This is the main entry point — everything starts here.
+
+```ts
+import { createConsent } from "@uabcodus/consent/core";
+
+const consent = createConsent({
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+  },
+});
+```
+
+### `parseConsentCookie()`
+
+```ts
+function parseConsentCookie(cookieString: string | undefined | null): CookieValue | null;
+```
+
+Decodes and validates a consent cookie string. Returns `null` if the cookie is missing, malformed,
+or missing a valid `consentId`. Useful for SSR hydration.
+
+```ts
+import { parseConsentCookie } from "@uabcodus/consent/core";
+
+const cookie = parseConsentCookie(cookies().get("cc_cookie"));
+// CookieValue | null
+```
+
+### `isBot()`
+
+```ts
+function isBot(): boolean;
+```
+
+Returns `true` if the current user agent matches known bot/crawler patterns. Checks
+`navigator.userAgent` against a regex and `navigator.webdriver`.
+
+### `googleConsentMode`
+
+```ts
+const googleConsentMode: ConsentConfig<Record<string, CategoryConfig>>;
+```
+
+A preset for Google Consent Mode v2. See the [presets guide](/guides/presets/) for usage.
+
+### `syncGtagConsent()`
+
+```ts
+function syncGtagConsent(consent: ConsentInstance<Record<string, CategoryConfig>>): () => void;
+```
+
+Subscribes to consent changes and syncs them to `window.gtag("consent", "update", ...)`.
+Returns an unsubscribe function. See [Google Consent Mode](/guides/google-consent-mode/).
+
+---
+
+## `ConsentConfig`
+
+The configuration object passed to `createConsent()`.
+
+| Option             | Type                             | Default        | Description                                                 |
+| ------------------ | -------------------------------- | -------------- | ----------------------------------------------------------- |
+| `preset`           | `Partial<ConsentConfig>`         | —              | Base config to merge into. See [Presets](/guides/presets/). |
+| `mode`             | `"opt-in" \| "opt-out"`          | `"opt-in"`     | Consent strategy.                                           |
+| `revision`         | `number`                         | `0`            | Policy revision. Set `> 0` to enable revision checking.     |
+| `hideFromBots`     | `boolean`                        | `true`         | Skip consent for bots/crawlers.                             |
+| `manageScripts`    | `boolean`                        | `false`        | Intercept `<script data-category="...">` elements.          |
+| `autoClearCookies` | `boolean`                        | `true`         | Auto-erase cookies for rejected categories.                 |
+| `categories`       | `Record<string, CategoryConfig>` | **(required)** | Category definitions.                                       |
+| `cookie`           | `Partial<CookieConfig>`          | —              | Cookie storage settings.                                    |
+| `initialCookie`    | `CookieValue \| string \| null`  | —              | Pre-seed consent (for SSR hydration).                       |
+| `callbacks`        | `ConsentCallbacks`               | —              | Lifecycle callbacks.                                        |
+
+---
+
+## `ConsentInstance`
+
+Returned by `createConsent()`. The main API object you interact with.
+
+### `.state`
+
+```ts
+readonly state: ConsentState
+```
+
+The current consent state. Readonly snapshot — use the methods below to modify consent.
+
+```ts
+consent.state.valid; // boolean
+consent.state.skipped; // boolean — true if consent was skipped (bot)
+consent.state.mode; // "opt-in" | "opt-out"
+consent.state.acceptType; // "all" | "necessary" | "custom"
+consent.state.categories; // { [name]: { accepted: boolean; readOnly: boolean } }
+consent.state.services; // { [category]: { [service]: boolean } }
+consent.state.cookie; // CookieValue | null
+```
+
+### `.accept()`
+
+```ts
+accept(
+  categories: CategoryAcceptArg<TCategories>,
+  excludedCategories?: string[]
+): void
+```
+
+Accept categories. Accepts `"all"`, `"necessary"`, a single category name string, or an array
+of category names.
+
+```ts
+consent.accept("all"); // Accept everything
+consent.accept("necessary"); // Accept only readOnly categories
+consent.accept("analytics"); // Accept a single category
+consent.accept(["analytics", "marketing"]); // Accept multiple
+consent.accept("all", ["marketing"]); // Accept all except marketing
+```
+
+### `.reject()`
+
+```ts
+reject(categories: CategoryAcceptArg<TCategories>): void
+```
+
+Reject categories. ReadOnly categories are protected — rejecting them has no effect.
+
+```ts
+consent.reject("marketing");
+consent.reject(["analytics", "marketing"]);
+consent.reject("all"); // Rejects everything except readOnly categories
+```
+
+### `.acceptedCategory()`
+
+```ts
+acceptedCategory(category: CategoryNames<TCategories>): boolean
+```
+
+Returns `true` if a category is currently accepted.
+
+```ts
+consent.acceptedCategory("analytics"); // true | false
+```
+
+### `.acceptService()`
+
+```ts
+acceptService(
+  service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
+  category: CategoryNames<TCategories>
+): void
+```
+
+Accept a service within a category. Accepting at least one service automatically accepts the
+parent category.
+
+```ts
+consent.acceptService("googleAnalytics", "analytics");
+consent.acceptService("all", "analytics"); // All services in analytics
+consent.acceptService(["ga4", "plausible"], "analytics");
+```
+
+### `.rejectService()`
+
+```ts
+rejectService(
+  service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
+  category: CategoryNames<TCategories>
+): void
+```
+
+Reject a service within a category. Rejecting all services in a category automatically rejects
+the category.
+
+```ts
+consent.rejectService("facebookPixel", "marketing");
+```
+
+### `.acceptedService()`
+
+```ts
+acceptedService(
+  service: ServiceNames<TCategories, CategoryNames<TCategories>>,
+  category: CategoryNames<TCategories>
+): boolean
+```
+
+Returns `true` if a service within a category is accepted.
+
+```ts
+consent.acceptedService("googleAnalytics", "analytics"); // true | false
+```
+
+### `.eraseCookies()`
+
+```ts
+eraseCookies(
+  cookies: string | RegExp | Array<string | RegExp>,
+  path?: string,
+  domain?: string
+): void
+```
+
+Erase cookies matching names or patterns. Path and domain default to your cookie config.
+
+```ts
+consent.eraseCookies("_ga");
+consent.eraseCookies(/^_ga/);
+consent.eraseCookies(["_ga", "_gid", /^_gat/]);
+consent.eraseCookies("_ga", "/subdir", ".example.com");
+```
+
+### `.getCookie()`
+
+```ts
+getCookie(field?: string): unknown
+```
+
+Read the current consent cookie value. Pass a `field` to get a specific field.
+
+```ts
+consent.getCookie(); // Full CookieValue
+consent.getCookie("categories"); // string[]
+consent.getCookie("consentId"); // string
+consent.getCookie("data"); // unknown
+```
+
+### `.setCookieData()`
+
+```ts
+setCookieData(props: { value: unknown; mode: "set" | "update" }): boolean
+```
+
+Store custom data in the consent cookie. Returns `true` if data actually changed.
+
+```ts
+// Replace
+consent.setCookieData({ value: { userId: "123" }, mode: "set" });
+
+// Merge (shallow for objects)
+consent.setCookieData({ value: { theme: "dark" }, mode: "update" });
+```
+
+### `.getConfig()`
+
+```ts
+getConfig<K extends string>(field?: K): unknown
+```
+
+Read the resolved config (with defaults applied).
+
+```ts
+consent.getConfig(); // Full ConsentConfigResolved
+consent.getConfig("mode"); // "opt-in" | "opt-out"
+consent.getConfig("categoryNames"); // string[]
+```
+
+### `.validConsent()`
+
+```ts
+validConsent(): boolean
+```
+
+Returns `true` if consent is currently valid.
+
+```ts
+consent.validConsent(); // true | false
+```
+
+### `.loadScript()`
+
+```ts
+loadScript(
+  src: string,
+  attrs?: Record<string, string>
+): Promise<boolean>
+```
+
+Dynamically load an external script. Returns a promise that resolves to `true` on success,
+`false` on failure. Won't load duplicate scripts (checked by `src`).
+
+```ts
+await consent.loadScript("https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX");
+await consent.loadScript("https://example.com/script.js", { async: "", id: "my-script" });
+```
+
+### `.reset()`
+
+```ts
+reset(deleteCookie?: boolean): void
+```
+
+Reset the consent instance to its initial state. If `deleteCookie` is `true`, the consent cookie
+is also removed.
+
+```ts
+consent.reset(); // Reset state only
+consent.reset(true); // Reset state and delete the cookie
+```
+
+### `.subscribe()`
+
+```ts
+subscribe(
+  listener: (state: Readonly<ConsentState>) => void
+): () => void
+```
+
+Subscribe to state changes. Returns an unsubscribe function.
+
+```ts
+const unsub = consent.subscribe((state) => {
+  console.log("Consent state changed:", state);
+});
+
+// Later
+unsub();
+```
+
+### `.on()`
+
+```ts
+on(
+  event: string,
+  listener: (...args: unknown[]) => void
+): () => void
+```
+
+Listen for events. Returns an unsubscribe function.
+
+```ts
+const unsub = consent.on("change", ({ cookie }) => {
+  console.log("Changed:", cookie);
+});
+```
+
+### `.off()`
+
+```ts
+off(
+  event: string,
+  listener: (...args: unknown[]) => void
+): void
+```
+
+Remove an event listener.
+
+```ts
+const listener = (data) => {
+  /* ... */
+};
+consent.on("change", listener);
+consent.off("change", listener);
+```
+
+### `.destroy()`
+
+```ts
+destroy(): void
+```
+
+Destroy the consent instance. Clears all subscriptions and event listeners. The instance should
+not be used after calling `destroy()`.
+
+---
+
+## `ConsentState`
+
+The read-only state exposed by `consent.state`.
+
+| Field        | Type                                                       | Description                                 |
+| ------------ | ---------------------------------------------------------- | ------------------------------------------- |
+| `valid`      | `boolean`                                                  | Whether consent has been given.             |
+| `skipped`    | `boolean`                                                  | Whether consent was skipped (bot detected). |
+| `categories` | `Record<string, { accepted: boolean; readOnly: boolean }>` | Per-category acceptance state.              |
+| `services`   | `Record<string, Record<string, boolean>>`                  | Per-service acceptance state.               |
+| `cookie`     | `CookieValue \| null`                                      | The current consent cookie data.            |
+| `mode`       | `"opt-in" \| "opt-out"`                                    | The configured consent mode.                |
+| `acceptType` | `"all" \| "necessary" \| "custom"`                         | The type of the current acceptance.         |
+
+---
+
+## Events
+
+| Event            | Payload                   | When                                  |
+| ---------------- | ------------------------- | ------------------------------------- |
+| `"firstConsent"` | `{ cookie: CookieValue }` | First consent action (once per user)  |
+| `"consent"`      | `{ cookie: CookieValue }` | Consent given or restored from cookie |
+| `"change"`       | `{ cookie: CookieValue }` | Categories or services changed        |
+
+These match the config `callbacks.onFirstConsent`, `callbacks.onConsent`, and `callbacks.onChange`.

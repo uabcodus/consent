@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+dist
 dist-ssr
 *.local
 
@@ -26,7 +27,5 @@ src/scss/core/_dynamic-reset.scss
 *.sw?
 
 coverage
-docs/.vitepress
-
 src_tmp
 playground/src/translations/translations.js

@@ -1,0 +1,125 @@
+:root {
+  --vp-code-font-size: 0.875rem;
+}
+
+html,
+pre,
+.VPSidebar {
+  scrollbar-width: thin;
+}
+
+/* START: Algolia Search */
+
+.dark .algolia-search-box *,
+.dark .DocSearch-Container * {
+  font-family: inherit !important;
+}
+
+.DocSearch-Commands li::before {
+  display: none;
+}
+
+.dark .DocSearch {
+  --docsearch-spacing: 16px !important;
+  --docsearch-modal-background: #1d2227 !important;
+  --docsearch-modal-shadow: 0 2px 15px black !important;
+  --docsearch-searchbox-focus-background: #2c3238 !important;
+  --docsearch-searchbox-shadow: 0 0 0 2px var(--c-brand) !important;
+  --docsearch-searchbox-height: 3.2em !important;
+
+  --docsearch-hit-color: #e7eaef !important;
+  --docsearch-hit-background: #2c3238 !important;
+  --docsearch-hit-shadow: 0 1px 3px 0 #14171b !important;
+
+  --docsearch-footer-background: #14181b !important;
+  --docsearch-footer-shadow: 0 -1px 0 0 #0f1214 !important;
+  --docsearch-container-background: rgba(0, 0, 0, 0.73) !important;
+}
+
+.DocSearch-Dropdown {
+  margin-top: 10px !important;
+}
+
+.DocSearch-Button:active,
+.DocSearch-Button:hover {
+  box-shadow: none !important;
+}
+
+.DocSearch-Input {
+  font-size: 0.95em !important;
+  margin-bottom: -1px !important;
+  padding-left: 12px !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+}
+
+.DocSearch-Help {
+  font-size: 1em !important;
+}
+
+.dark .DocSearch-Label {
+  font-size: 0.8em !important;
+}
+
+.DocSearch-Form {
+  border: none !important;
+  border-radius: 8px !important;
+}
+
+.DocSearch-LoadingIndicator svg,
+.DocSearch-MagnifierLabel svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.DocSearch-Footer {
+  border-top: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.required {
+  position: relative;
+  background-color: rgba(164, 128, 119, 0.15);
+  display: inline-block;
+  margin-left: 0.2em;
+  border-radius: 5px;
+  padding: 0em 0.5em;
+  font-size: 0.55em;
+  color: #f07661;
+  font-weight: 400;
+  top: -0.25em;
+  letter-spacing: 0.2px;
+  height: 1.8em;
+  line-height: 1.8em;
+}
+
+span.required::after {
+  content: attr(data-label);
+}
+
+a.outline-link[href="#language"]::after,
+a.outline-link[href="#categories"]::after {
+  content: "required";
+  position: relative;
+  background-color: rgba(164, 126, 119, 0.15);
+  display: inline-block;
+  margin-left: 5px;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 0.9em;
+  color: #eb664f;
+  height: 1.5em;
+  line-height: 1.7em;
+}
+
+.vp-doc li > p:first-child {
+  margin: 0;
+}
+
+.vp-doc a {
+  position: relative;
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease !important;
+}

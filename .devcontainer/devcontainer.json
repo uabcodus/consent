@@ -1,15 +1,15 @@
 {
-	"name": "uabcodus/consent",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
-	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	"features": {
-		"ghcr.io/devcontainers/features/node:2": {},
-		"ghcr.io/uabcodus/devcontainer-features/bun:1": {},
-		"ghcr.io/uabcodus/devcontainer-features/opencode-cli:1": {}
-	},
-	"remoteUser": "vscode",
-	"initializeCommand": "mkdir -p ~/.config/opencode ~/.local/share/opencode",
-	"postCreateCommand": "bun install"
+  "name": "uabcodus/consent",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/devcontainers/features/node:2": {},
+    "ghcr.io/uabcodus/devcontainer-features/bun:1": {},
+    "ghcr.io/uabcodus/devcontainer-features/opencode-cli:1": {}
+  },
+  "remoteUser": "vscode",
+  "initializeCommand": "mkdir -p ~/.config/opencode ~/.local/share/opencode",
+  "postCreateCommand": "bun install"
 }

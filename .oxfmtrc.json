@@ -1,0 +1,12 @@
+{
+  "indentWidth": 2,
+  "indentStyle": "tab",
+  "lineWidth": 80,
+  "semicolons": "always",
+  "quotes": "double",
+  "quoteProps": "as-needed",
+  "trailingCommas": "none",
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "jsxQuoteStyle": "double"
+}

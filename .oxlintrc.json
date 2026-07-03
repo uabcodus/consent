@@ -1,0 +1,42 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": [
+    "dist/**",
+    "docs/**",
+    "playground/**",
+    "src-old/**",
+    "demo/**",
+    "tests/**",
+    "coverage/**",
+    "node_modules/**"
+  ],
+  "plugins": ["typescript", "react", "unicorn", "import", "oxc"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "warn"
+  },
+  "rules": {
+    "typescript/no-namespace": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/array-type": ["error", { "default": "generic" }],
+    "typescript/consistent-generic-constructors": "error",
+    "import/no-default-export": "off",
+    "unicorn/filename-case": "off"
+  },
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "settings": {
+    "jsx": {
+      "runtime": "automatic"
+    }
+  },
+  "overrides": [
+    {
+      "files": ["tests/**/*.ts", "tests/**/*.tsx"],
+      "plugins": ["vitest"]
+    }
+  ]
+}

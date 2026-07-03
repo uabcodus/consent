@@ -6,12 +6,12 @@ body:
   - type: textarea
     attributes:
       label: What is the improvement/update you wish to see?
-      description: 'Example: I would like to know how to enable dark mode.'
+      description: "Example: I would like to know how to enable dark mode."
     validations:
       required: true
   - type: input
     attributes:
       label: Link the related docs page, if it exists.
-      description: 'Example: https://cookieconsent.orestbida.com/advanced/ui-customization'
+      description: "Example: https://cookieconsent.orestbida.com/advanced/ui-customization"
     validations:
       required: false

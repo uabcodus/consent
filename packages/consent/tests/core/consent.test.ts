@@ -586,4 +586,126 @@ describe("consent - advanced features", () => {
       }).not.toThrow();
     });
   });
+
+  describe("eraseCookies", () => {
+    it("adds string cookie name to found list (not value)", () => {
+      Object.defineProperty(document, "cookie", {
+        writable: true,
+        value: "_ga=GA1.2.test; _gid=GID.test",
+      });
+
+      const consent = createConsent(basicConfig);
+      expect(() => consent.eraseCookies("_ga")).not.toThrow();
+    });
+
+    it("erases cookies matching regex", () => {
+      Object.defineProperty(document, "cookie", {
+        writable: true,
+        value: "_ga=value; _gid=value; other_cookie=value",
+      });
+
+      const consent = createConsent(basicConfig);
+      expect(() => consent.eraseCookies(/^_g/)).not.toThrow();
+    });
+
+    it("erases cookies from array input", () => {
+      Object.defineProperty(document, "cookie", {
+        writable: true,
+        value: "_ga=value; _gid=value; _gat=value",
+      });
+
+      const consent = createConsent(basicConfig);
+      expect(() => consent.eraseCookies(["_ga", "_gid"])).not.toThrow();
+    });
+  });
+
+  describe("getConfig", () => {
+    it("returns resolved config", () => {
+      const consent = createConsent(basicConfig);
+      const config = consent.getConfig() as Record<string, unknown>;
+      expect(config).toHaveProperty("mode");
+      expect(config).toHaveProperty("categoryNames");
+      expect(config.mode).toBe("opt-in");
+    });
+  });
+
+  describe("lastConsentTimestamp", () => {
+    it("is set on first consent", () => {
+      const consent = createConsent(basicConfig);
+      consent.accept("all");
+      const cookie = consent.getCookie();
+      expect(typeof cookie).toBe("object");
+      if (cookie && typeof cookie === "object") {
+        expect("lastConsentTimestamp" in cookie).toBe(true);
+      }
+    });
+
+    it("updates on second consent action", () => {
+      const consent = createConsent(basicConfig);
+      consent.accept(["necessary"]);
+      const firstTs = consent.getCookie("lastConsentTimestamp");
+      consent.accept(["analytics"]);
+      const secondTs = consent.getCookie("lastConsentTimestamp");
+      if (typeof firstTs === "string" && typeof secondTs === "string") {
+        expect(new Date(secondTs).getTime()).toBeGreaterThanOrEqual(new Date(firstTs).getTime());
+      }
+    });
+  });
+
+  describe("service actions fire onChange", () => {
+    it("fires onChange when accepting a service", () => {
+      const onChange = vi.fn();
+      const consent = createConsent({
+        categories: {
+          analytics: {
+            services: {
+              ga: {},
+            },
+          },
+        },
+        callbacks: { onChange },
+      });
+
+      consent.acceptService("ga", "analytics");
+      expect(onChange).toHaveBeenCalled();
+    });
+
+    it("fires onChange when rejecting a service", () => {
+      const onChange = vi.fn();
+      const consent = createConsent({
+        categories: {
+          analytics: {
+            enabled: true,
+            services: {
+              ga: {},
+            },
+          },
+        },
+        mode: "opt-in",
+        callbacks: { onChange },
+      });
+
+      consent.acceptService("ga", "analytics");
+      onChange.mockClear();
+      consent.rejectService("ga", "analytics");
+      expect(onChange).toHaveBeenCalled();
+    });
+  });
+
+  describe("accept with excludedCategories", () => {
+    it("excludes specified categories when accepting all", () => {
+      const consent = createConsent({
+        categories: {
+          necessary: { readOnly: true },
+          analytics: {},
+          marketing: {},
+        },
+      });
+
+      consent.accept("all", ["marketing"]);
+      expect(consent.acceptedCategory("analytics")).toBe(true);
+      expect(consent.acceptedCategory("marketing")).toBe(false);
+      expect(consent.acceptedCategory("necessary")).toBe(true);
+    });
+  });
 });

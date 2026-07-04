@@ -41,11 +41,11 @@ function useConsentContext(): ConsentInstance<Record<string, CategoryConfig>> {
 
 export function useConsent(): ConsentInstance<Record<string, CategoryConfig>> {
   const consent = useConsentContext();
-  const [, forceRender] = useState({});
+  const [, forceRender] = useState(0);
 
   useEffect(() => {
     const unsub = consent.subscribe(() => {
-      forceRender({});
+      forceRender((n) => n + 1);
     });
     return unsub;
   }, [consent]);

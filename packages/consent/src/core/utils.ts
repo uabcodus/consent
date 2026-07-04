@@ -1,11 +1,27 @@
 import type { CategoryConfig, ConsentConfig, ConsentCallbacks } from "./types";
 
 export function deepCopy<T>(value: T): T {
-  return structuredClone(value);
+  try {
+    return structuredClone(value);
+  } catch {
+    try {
+      return JSON.parse(JSON.stringify(value)) as T;
+    } catch {
+      return value;
+    }
+  }
 }
 
 export function uuidv4(): string {
-  return crypto.randomUUID();
+  try {
+    return crypto.randomUUID();
+  } catch {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
 }
 
 export function arrayDiff<T>(a: Array<T> | undefined, b: Array<T> | undefined): Array<T> {

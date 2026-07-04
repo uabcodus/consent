@@ -3,7 +3,7 @@ export { parseConsentCookie } from "./cookies";
 export { isBot } from "./config";
 export { googleConsentMode, syncGtagConsent } from "./presets";
 export { cookieStorage, localStorageStorage } from "./storage";
-export type { StorageAdapter } from "./storage";
+export type { StorageAdapter } from "./types";
 export type {
   ConsentConfig,
   ConsentInstance,

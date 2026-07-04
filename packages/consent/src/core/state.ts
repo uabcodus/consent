@@ -24,7 +24,6 @@ export interface InternalState {
       {
         onAccept?: () => void;
         onReject?: () => void;
-        _enabled?: boolean;
         cookies?: Array<{ name: string | RegExp; path?: string; domain?: string }>;
       }
     >
@@ -168,7 +167,6 @@ export function createInitialInternalState(
         {
           onAccept?: () => void;
           onReject?: () => void;
-          _enabled?: boolean;
           cookies?: Array<{ name: string | RegExp; path?: string; domain?: string }>;
         }
       >

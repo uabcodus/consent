@@ -76,18 +76,19 @@ Returns an unsubscribe function. See [Google Consent Mode](/guides/google-consen
 
 The configuration object passed to `createConsent()`.
 
-| Option             | Type                             | Default        | Description                                                 |
-| ------------------ | -------------------------------- | -------------- | ----------------------------------------------------------- |
-| `preset`           | `Partial<ConsentConfig>`         | —              | Base config to merge into. See [Presets](/guides/presets/). |
-| `mode`             | `"opt-in" \| "opt-out"`          | `"opt-in"`     | Consent strategy.                                           |
-| `revision`         | `number`                         | `0`            | Policy revision. Set `> 0` to enable revision checking.     |
-| `hideFromBots`     | `boolean`                        | `true`         | Skip consent for bots/crawlers.                             |
-| `manageScripts`    | `boolean`                        | `false`        | Intercept `<script data-category="...">` elements.          |
-| `autoClearCookies` | `boolean`                        | `true`         | Auto-erase cookies for rejected categories.                 |
-| `categories`       | `Record<string, CategoryConfig>` | **(required)** | Category definitions.                                       |
-| `cookie`           | `Partial<CookieConfig>`          | —              | Cookie storage settings.                                    |
-| `initialCookie`    | `CookieValue \| string \| null`  | —              | Pre-seed consent (for SSR hydration).                       |
-| `callbacks`        | `ConsentCallbacks`               | —              | Lifecycle callbacks.                                        |
+| Option             | Type                             | Default          | Description                                                 |
+| ------------------ | -------------------------------- | ---------------- | ----------------------------------------------------------- |
+| `preset`           | `Partial<ConsentConfig>`         | —                | Base config to merge into. See [Presets](/guides/presets/). |
+| `mode`             | `"opt-in" \| "opt-out"`          | `"opt-in"`       | Consent strategy.                                           |
+| `revision`         | `number`                         | `0`              | Policy revision. Set `> 0` to enable revision checking.     |
+| `hideFromBots`     | `boolean`                        | `true`           | Skip consent for bots/crawlers.                             |
+| `manageScripts`    | `boolean`                        | `false`          | Intercept `<script data-category="...">` elements.          |
+| `scriptType`       | `string`                         | `"text/consent"` | Blocked script type for deferred execution.                 |
+| `autoClearCookies` | `boolean`                        | `true`           | Auto-erase cookies for rejected categories.                 |
+| `categories`       | `Record<string, CategoryConfig>` | **(required)**   | Category definitions.                                       |
+| `storage`          | `StorageAdapter`                 | —                | Storage adapter for persisting consent.                     |
+| `initialCookie`    | `CookieValue \| string \| null`  | —                | Pre-seed consent (for SSR hydration).                       |
+| `callbacks`        | `ConsentCallbacks`               | —                | Lifecycle callbacks.                                        |
 
 ---
 

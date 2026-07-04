@@ -70,12 +70,12 @@ export function manageExistingScripts(
 ): void {
   if (typeof document === "undefined") return;
 
-  const loadScriptsRecursive = (_scripts: Array<ScriptInfo>, index: number) => {
+  const loadScriptsRecursive = (index: number) => {
     if (index >= allScriptTags.length) return;
 
     const info = allScriptTags[index]!;
     if (info._executed) {
-      loadScriptsRecursive(allScriptTags, index + 1);
+      loadScriptsRecursive(index + 1);
       return;
     }
 
@@ -95,7 +95,7 @@ export function manageExistingScripts(
     const shouldRun = catJustEnabled || svcJustEnabled || catJustDisabled || svcJustDisabled;
 
     if (!shouldRun) {
-      loadScriptsRecursive(allScriptTags, index + 1);
+      loadScriptsRecursive(index + 1);
       return;
     }
 
@@ -124,20 +124,20 @@ export function manageExistingScripts(
 
     if (externalScript) {
       freshest.addEventListener("load", () => {
-        loadScriptsRecursive(allScriptTags, index + 1);
+        loadScriptsRecursive(index + 1);
       });
       freshest.addEventListener("error", () => {
-        loadScriptsRecursive(allScriptTags, index + 1);
+        loadScriptsRecursive(index + 1);
       });
     }
 
     currScript.replaceWith(freshest);
 
     if (externalScript) return;
-    loadScriptsRecursive(allScriptTags, index + 1);
+    loadScriptsRecursive(index + 1);
   };
 
-  loadScriptsRecursive(allScriptTags, 0);
+  loadScriptsRecursive(0);
 }
 
 export function runServiceCallbacks(
@@ -145,6 +145,7 @@ export function runServiceCallbacks(
   definedServices: Record<string, Record<string, ServiceConfig>>,
   acceptedServices: Record<string, Array<string>>,
   lastChangedServices: Record<string, Array<string>>,
+  prevEnabledServices?: Record<string, Array<string>>,
 ): void {
   for (const cat of allCategoryNames) {
     const svcs = lastChangedServices[cat] ?? acceptedServices[cat] ?? [];
@@ -152,13 +153,14 @@ export function runServiceCallbacks(
       const service = definedServices[cat]?.[svc];
       if (!service) continue;
 
-      const isAccepted = (acceptedServices[cat] ?? []).includes(svc);
+      const wasEnabled = prevEnabledServices
+        ? (prevEnabledServices[cat] ?? []).includes(svc)
+        : !!(acceptedServices[cat] ?? []).includes(svc);
+      const isEnabled = (acceptedServices[cat] ?? []).includes(svc);
 
-      if (!service._enabled && isAccepted) {
-        service._enabled = true;
+      if (!wasEnabled && isEnabled) {
         if (typeof service.onAccept === "function") service.onAccept();
-      } else if (service._enabled && !isAccepted) {
-        service._enabled = false;
+      } else if (wasEnabled && !isEnabled) {
         if (typeof service.onReject === "function") service.onReject();
       }
     }

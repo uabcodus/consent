@@ -1,10 +1,18 @@
-import type { CookieConfig, CookieValue } from "./types";
-import { getSingleCookie, parseCookie, setCookieValue, eraseCookiesHelper } from "./cookies";
+import type { CookieConfig, CookieValue, StorageAdapter } from "./types";
+import {
+  getSingleCookie,
+  parseCookie,
+  setCookieValue,
+  eraseCookiesHelper,
+  createEmptyCookieValue,
+} from "./cookies";
 
-export interface StorageAdapter {
-  get(): CookieValue;
-  set(value: CookieValue): void;
-  remove(): void;
+function safeDecodeForStorage(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
 }
 
 export function cookieStorage(config: CookieConfig): StorageAdapter {
@@ -14,9 +22,10 @@ export function cookieStorage(config: CookieConfig): StorageAdapter {
 
   return {
     get(): CookieValue {
-      if (typeof document === "undefined") return {} as CookieValue;
+      if (typeof document === "undefined") return createEmptyCookieValue();
       const value = getSingleCookie(name);
-      return parseCookie(decodeURIComponent(value));
+      if (!value) return createEmptyCookieValue();
+      return parseCookie(safeDecodeForStorage(value));
     },
 
     set(value: CookieValue): void {
@@ -34,12 +43,12 @@ export function localStorageStorage(name: string, expiresAfterMs?: number): Stor
 
   return {
     get(): CookieValue {
-      if (typeof localStorage === "undefined") return {} as CookieValue;
+      if (typeof localStorage === "undefined") return createEmptyCookieValue();
       try {
         const stored = localStorage.getItem(name);
-        return stored ? parseCookie(stored) : ({} as CookieValue);
+        return stored ? parseCookie(stored) : createEmptyCookieValue();
       } catch {
-        return {} as CookieValue;
+        return createEmptyCookieValue();
       }
     },
 

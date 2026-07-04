@@ -160,14 +160,21 @@ describe("runServiceCallbacks", () => {
 
     const definedServices = {
       analytics: {
-        ga: { onAccept, onReject, _enabled: false },
+        ga: { onAccept, onReject },
       },
     };
 
     const acceptedServices = { analytics: ["ga"] };
     const changedServices = { analytics: ["ga"] };
+    const prevEnabledServices = { analytics: [] };
 
-    runServiceCallbacks(["analytics"], definedServices, acceptedServices, changedServices);
+    runServiceCallbacks(
+      ["analytics"],
+      definedServices,
+      acceptedServices,
+      changedServices,
+      prevEnabledServices,
+    );
 
     expect(onAccept).toHaveBeenCalledTimes(1);
     expect(onReject).not.toHaveBeenCalled();
@@ -179,14 +186,21 @@ describe("runServiceCallbacks", () => {
 
     const definedServices = {
       analytics: {
-        ga: { onAccept, onReject, _enabled: true },
+        ga: { onAccept, onReject },
       },
     };
 
     const acceptedServices = { analytics: [] };
     const changedServices = { analytics: ["ga"] };
+    const prevEnabledServices = { analytics: ["ga"] };
 
-    runServiceCallbacks(["analytics"], definedServices, acceptedServices, changedServices);
+    runServiceCallbacks(
+      ["analytics"],
+      definedServices,
+      acceptedServices,
+      changedServices,
+      prevEnabledServices,
+    );
 
     expect(onReject).toHaveBeenCalledTimes(1);
     expect(onAccept).not.toHaveBeenCalled();
@@ -198,14 +212,21 @@ describe("runServiceCallbacks", () => {
 
     const definedServices = {
       analytics: {
-        ga: { onAccept, onReject, _enabled: false },
+        ga: { onAccept, onReject },
       },
     };
 
     const acceptedServices = { analytics: [] };
     const changedServices = { analytics: [] };
+    const prevEnabledServices = { analytics: [] };
 
-    runServiceCallbacks(["analytics"], definedServices, acceptedServices, changedServices);
+    runServiceCallbacks(
+      ["analytics"],
+      definedServices,
+      acceptedServices,
+      changedServices,
+      prevEnabledServices,
+    );
 
     expect(onAccept).not.toHaveBeenCalled();
     expect(onReject).not.toHaveBeenCalled();
@@ -215,9 +236,16 @@ describe("runServiceCallbacks", () => {
     const definedServices = { analytics: {} };
     const acceptedServices = { analytics: ["unknown"] };
     const changedServices = { analytics: ["unknown"] };
+    const prevEnabledServices = { analytics: [] };
 
     expect(() =>
-      runServiceCallbacks(["analytics"], definedServices, acceptedServices, changedServices),
+      runServiceCallbacks(
+        ["analytics"],
+        definedServices,
+        acceptedServices,
+        changedServices,
+        prevEnabledServices,
+      ),
     ).not.toThrow();
   });
 
@@ -226,14 +254,21 @@ describe("runServiceCallbacks", () => {
 
     const definedServices = {
       analytics: {
-        ga: { onAccept, _enabled: false },
+        ga: { onAccept },
       },
     };
 
     const acceptedServices = { analytics: ["ga"] };
     const changedServices = { analytics: ["ga"] };
+    const prevEnabledServices = { analytics: [] };
 
-    runServiceCallbacks(["analytics"], definedServices, acceptedServices, changedServices);
+    runServiceCallbacks(
+      ["analytics"],
+      definedServices,
+      acceptedServices,
+      changedServices,
+      prevEnabledServices,
+    );
 
     expect(onAccept).toHaveBeenCalledTimes(1);
   });

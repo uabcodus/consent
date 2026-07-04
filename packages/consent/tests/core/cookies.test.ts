@@ -12,6 +12,15 @@ import {
 } from "../../src/core/cookies";
 import type { CookieConfig, CookieValue } from "../../src/core/types";
 
+const EMPTY_COOKIE = {
+  categories: [],
+  services: {},
+  revision: 0,
+  data: null,
+  consentId: "",
+  consentTimestamp: "",
+};
+
 beforeEach(() => {
   Object.defineProperty(document, "cookie", {
     writable: true,
@@ -87,34 +96,34 @@ describe("parseCookie", () => {
     expect(result.categories).toEqual(["necessary"]);
   });
 
-  it("returns empty object for null input", () => {
+  it("returns empty cookie value for null input", () => {
     const result = parseCookie(null);
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 
-  it("returns empty object for undefined input", () => {
+  it("returns empty cookie value for undefined input", () => {
     const result = parseCookie(undefined);
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 
-  it("returns empty object for empty string", () => {
+  it("returns empty cookie value for empty string", () => {
     const result = parseCookie("");
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 
-  it("returns empty object for invalid JSON", () => {
+  it("returns empty cookie value for invalid JSON", () => {
     const result = parseCookie("not-json");
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 
-  it("returns empty object for non-object JSON (string)", () => {
+  it("returns empty cookie value for non-object JSON (string)", () => {
     const result = parseCookie('"just a string"');
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 
-  it("returns empty object for non-object JSON (number)", () => {
+  it("returns empty cookie value for non-object JSON (number)", () => {
     const result = parseCookie("42");
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 });
 
@@ -247,7 +256,7 @@ describe("getPluginCookie", () => {
       sameSite: "Lax",
     };
     const result = getPluginCookie(config);
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 });
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { createConsent } from "../../src/core/consent";
 import { localStorageStorage } from "../../src/core/storage";
 
@@ -290,6 +290,45 @@ describe("edge cases", () => {
       expect(() => {
         consent.off("nonexistent", listener);
       }).not.toThrow();
+    });
+  });
+
+  describe("bot detection", () => {
+    it("skips consent when bot is detected", () => {
+      vi.stubGlobal("navigator", {
+        userAgent: "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+      });
+
+      const consent = createConsent(basicConfig);
+      expect(consent.state.skipped).toBe(true);
+      expect(consent.state.valid).toBe(true);
+
+      vi.unstubAllGlobals();
+    });
+  });
+
+  describe("loadScript", () => {
+    it("resolves to false in SSR context", async () => {
+      const doc = global.document;
+      delete (global as Record<string, unknown>).document;
+
+      const consent = createConsent(basicConfig);
+      const result = await consent.loadScript("https://example.com/script.js");
+      expect(result).toBe(false);
+
+      global.document = doc as Document;
+    });
+
+    it("resolves when existing script is already present", async () => {
+      const existing = document.createElement("script");
+      existing.src = "https://example.com/existing.js";
+      document.head.appendChild(existing);
+
+      const consent = createConsent(basicConfig);
+      const result = await consent.loadScript("https://example.com/existing.js");
+      expect(result).toBe(true);
+
+      existing.remove();
     });
   });
 });

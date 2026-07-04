@@ -1,6 +1,10 @@
-import type { StorageAdapter } from "./storage";
-
 export type ConsentMode = "opt-in" | "opt-out";
+
+export interface StorageAdapter {
+  get(): CookieValue;
+  set(value: CookieValue): void;
+  remove(): void;
+}
 
 export interface CookieItem {
   name: string | RegExp;
@@ -12,7 +16,6 @@ export interface ServiceConfig {
   onAccept?: () => void;
   onReject?: () => void;
   cookies?: Array<CookieItem>;
-  _enabled?: boolean;
 }
 
 export interface CategoryConfig {

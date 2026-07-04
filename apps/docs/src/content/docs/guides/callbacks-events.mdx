@@ -105,15 +105,12 @@ consent.on("change", ({ cookie }) => {
 });
 ```
 
-You can emit and listen for custom events too:
+### Listening for built-in events
 
 ```ts
-consent.on("track", (eventName, data) => {
-  analytics.track(eventName, data);
+consent.on("change", ({ cookie }) => {
+  document.documentElement.setAttribute("data-consent", cookie.categories.join(","));
 });
-
-// Somewhere else:
-consent.on("track", "page_view", { path: "/home" });
 ```
 
 `on()` returns an unsubscribe function. `off()` removes a specific listener:

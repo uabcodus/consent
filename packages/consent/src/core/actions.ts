@@ -56,16 +56,16 @@ export function acceptCategories(
     !prevValid,
   );
 
-  const isFirstConsent = !prevValid;
-  internal.lastConsentTimestamp = internal.lastConsentTimestamp
-    ? new Date()
-    : internal.consentTimestamp;
-
   if (!internal.valid) {
     internal.valid = true;
     internal.consentId = internal.consentId || uuidv4();
     internal.consentTimestamp = internal.consentTimestamp || new Date();
   }
+
+  const isFirstConsent = !prevValid;
+  internal.lastConsentTimestamp = internal.lastConsentTimestamp
+    ? new Date()
+    : (internal.consentTimestamp ?? null);
 
   deps.persistAndSync();
 
@@ -142,6 +142,9 @@ export function acceptServiceAction(
 
   if (svcNames.length === 0) return;
 
+  const prevEnabledServices = deepCopy(internal.enabledServices);
+  const prevCategories = [...internal.acceptedCategories];
+
   if (typeof service === "string" && service === "all") {
     internal.enabledServices[catName] = [...svcNames];
   } else if (typeof service === "string") {
@@ -160,7 +163,15 @@ export function acceptServiceAction(
 
   internal.acceptedServices[catName] = unique(internal.enabledServices[catName]);
 
+  calculateLastChanged(internal, prevCategories, prevEnabledServices, internal.config.mode, false);
+
   deps.persistAndSync();
+
+  const changed =
+    internal.lastChangedCategoryNames.length > 0 ||
+    Object.values(internal.lastChangedServices).some((s) => s.length > 0);
+
+  if (changed) deps.fireCallbacks("change");
 }
 
 export function rejectServiceAction(
@@ -173,6 +184,9 @@ export function rejectServiceAction(
   if (!category || !internal.categoryNames.includes(category)) return;
 
   const catName = category;
+
+  const prevEnabledServices = deepCopy(internal.enabledServices);
+  const prevCategories = [...internal.acceptedCategories];
 
   if (typeof service === "string" && service === "all") {
     internal.enabledServices[catName] = [];
@@ -192,7 +206,15 @@ export function rejectServiceAction(
 
   internal.acceptedServices[catName] = unique(internal.enabledServices[catName]);
 
+  calculateLastChanged(internal, prevCategories, prevEnabledServices, internal.config.mode, false);
+
   deps.persistAndSync();
+
+  const changed =
+    internal.lastChangedCategoryNames.length > 0 ||
+    Object.values(internal.lastChangedServices).some((s) => s.length > 0);
+
+  if (changed) deps.fireCallbacks("change");
 }
 
 function calculateLastChanged(

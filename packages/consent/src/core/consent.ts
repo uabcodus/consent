@@ -11,7 +11,12 @@ import type {
 } from "./types";
 import { createStore } from "./store";
 import { resolveConfig } from "./config";
-import { getSingleCookie, getAllCookieNames, eraseCookiesHelper } from "./cookies";
+import {
+  findMatchingCookies,
+  getAllCookieNames,
+  eraseCookiesHelper,
+  isCookiePresent,
+} from "./cookies";
 import { retrieveScriptElements, manageExistingScripts } from "./scripts";
 import { deepCopy, mergeConfigs } from "./utils";
 import { createInitialInternalState, buildPublicState } from "./state";
@@ -41,6 +46,8 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
 
   const callbacks = merged.callbacks ?? {};
 
+  const store = createStore(buildPublicState(internal));
+
   if (!internal.skipped && internal.valid) {
     manageExistingScripts(
       internal.allScriptTags,
@@ -65,8 +72,6 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
     const cb = callbacks.onConsent;
     if (cb) cb({ cookie: internal.cookieContent! });
   }
-
-  const store = createStore(buildPublicState(internal));
 
   const doPersistAndSync = () => persistAndSync({ internal, store });
 
@@ -137,15 +142,13 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
 
       const match = (c: string | RegExp) => {
         if (typeof c === "string") {
-          const name = getSingleCookie(c);
-          if (name) found.push(name);
+          if (isCookiePresent(c)) {
+            found.push(c);
+          }
         } else {
-          for (const name of allCookies) {
-            try {
-              if (c.test(name)) found.push(name);
-            } catch {
-              /* noop */
-            }
+          const matched = findMatchingCookies(allCookies, c);
+          for (const name of matched) {
+            found.push(name);
           }
         }
       };
@@ -223,6 +226,8 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
 
     loadScript(src: string, attrs?: Record<string, string>): Promise<boolean> {
       return new Promise((resolve) => {
+        const timeoutMs = 30000;
+
         if (typeof document === "undefined") return resolve(false);
 
         const existing = document.querySelector(`script[src="${src}"]`);
@@ -235,11 +240,39 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
           }
         }
 
-        script.addEventListener("load", () => resolve(true));
-        script.addEventListener("error", () => {
+        let settled = false;
+
+        const cleanup = () => {
+          script.removeEventListener("load", onLoad);
+          script.removeEventListener("error", onError);
+          clearTimeout(timer);
+        };
+
+        const onLoad = () => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          resolve(true);
+        };
+
+        const onError = () => {
+          if (settled) return;
+          settled = true;
           script.remove();
+          cleanup();
           resolve(false);
-        });
+        };
+
+        const timer = setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          script.remove();
+          cleanup();
+          resolve(false);
+        }, timeoutMs);
+
+        script.addEventListener("load", onLoad);
+        script.addEventListener("error", onError);
         script.src = src;
         document.head.appendChild(script);
       });
@@ -287,6 +320,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
     destroy() {
       store.destroy();
       internal.events = {};
+      internal.allScriptTags = [];
     },
   };
 

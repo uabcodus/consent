@@ -21,12 +21,12 @@ export function persistAndSync({ internal, store }: PersistAndSyncParams): void 
   }
 
   internal.cookieContent = {
-    categories: deepCopy(internal.acceptedCategories),
+    categories: [...internal.acceptedCategories],
     revision: internal.config.revision,
     data: internal.cookieData,
     consentTimestamp: internal.consentTimestamp!.toISOString(),
     consentId: internal.consentId,
-    services: deepCopy(internal.acceptedServices),
+    services: { ...internal.acceptedServices },
   };
 
   if (internal.lastConsentTimestamp) {
@@ -37,7 +37,7 @@ export function persistAndSync({ internal, store }: PersistAndSyncParams): void 
 
   if (internal.config.autoClearCookies) {
     const defaultDomain = typeof location !== "undefined" ? location.hostname : "";
-    autoclearRejectedCookies(
+    const result = autoclearRejectedCookies(
       internal.categoryNames,
       internal.config.categories as Record<string, AutoClearCategoryConfig>,
       internal.acceptedCategories,
@@ -45,16 +45,22 @@ export function persistAndSync({ internal, store }: PersistAndSyncParams): void 
       defaultDomain,
       "/",
     );
+    if (result.reload) {
+      if (typeof location !== "undefined") {
+        location.reload();
+      }
+    }
   }
 
   runServiceCallbacks(
     internal.categoryNames,
     internal.definedServices as Record<
       string,
-      Record<string, { onAccept?: () => void; onReject?: () => void; _enabled?: boolean }>
+      Record<string, { onAccept?: () => void; onReject?: () => void }>
     >,
     internal.acceptedServices,
     internal.lastChangedServices,
+    internal.lastEnabledServices,
   );
 
   if (internal.config.manageScripts) {
@@ -78,12 +84,13 @@ export function fireCallbacks(
   events: Events,
 ): void {
   const cookie = internal.cookieContent!;
+  const payload = deepCopy({ cookie });
 
   if (event === "firstConsent") {
-    callbacks.onFirstConsent?.(deepCopy({ cookie }));
-    callbacks.onConsent?.(deepCopy({ cookie }));
+    callbacks.onFirstConsent?.(payload);
+    callbacks.onConsent?.(payload);
   } else if (event === "consent") {
-    callbacks.onConsent?.(deepCopy({ cookie }));
+    callbacks.onConsent?.(payload);
   } else if (event === "change") {
     callbacks.onChange?.(
       deepCopy({
@@ -94,7 +101,7 @@ export function fireCallbacks(
     );
   }
 
-  emit(events, event, deepCopy({ cookie }));
+  emit(events, event, payload);
 }
 
 export function emit(events: Events, event: string, ...args: Array<unknown>): void {

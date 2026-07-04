@@ -2,6 +2,15 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { cookieStorage, localStorageStorage } from "../../src/core/storage";
 import type { CookieValue } from "../../src/core/types";
 
+const EMPTY_COOKIE = {
+  categories: [],
+  services: {},
+  revision: 0,
+  data: null,
+  consentId: "",
+  consentTimestamp: "",
+};
+
 beforeEach(() => {
   Object.defineProperty(document, "cookie", {
     writable: true,
@@ -37,7 +46,7 @@ describe("cookieStorage", () => {
     });
 
     const result = storage.get();
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 
   it("writes and reads consent cookie", () => {
@@ -91,7 +100,7 @@ describe("cookieStorage", () => {
     storage.remove();
 
     const result = storage.get();
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 
   it("handles function-based expiration", () => {
@@ -124,7 +133,7 @@ describe("cookieStorage", () => {
     storage.remove();
 
     const result = storage.get();
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 });
 
@@ -132,7 +141,7 @@ describe("localStorageStorage", () => {
   it("returns empty object when localStorage is empty", () => {
     const storage = localStorageStorage("test_ls_consent");
     const result = storage.get();
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 
   it("writes and reads consent data", () => {
@@ -167,7 +176,7 @@ describe("localStorageStorage", () => {
     storage.remove();
 
     const result = storage.get();
-    expect(result).toEqual({});
+    expect(result).toEqual(EMPTY_COOKIE);
   });
 
   it("uses default 182-day expiration when not specified", () => {

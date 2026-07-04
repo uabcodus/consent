@@ -11,12 +11,24 @@ const defaultCookieConfig: CookieConfig = {
   sameSite: "Lax",
 };
 
+function safeDecodeURI(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function tryParseJson(value: string): unknown | null {
   try {
     return JSON.parse(value);
   } catch {
     return null;
   }
+}
+
+function escapeRegex(name: string): string {
+  return name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 export function resolveCookieConfig(userCookie?: Partial<CookieConfig>): CookieConfig {
@@ -29,7 +41,7 @@ export function resolveCookieConfig(userCookie?: Partial<CookieConfig>): CookieC
 
 export function getSingleCookie(name: string): string {
   if (typeof document === "undefined") return "";
-  const found = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+  const found = document.cookie.match("(^|;)\\s*" + escapeRegex(name) + "\\s*=\\s*([^;]+)");
   return found ? (found.pop() ?? "") : "";
 }
 
@@ -39,9 +51,10 @@ export function getAllCookieNames(regex?: RegExp): Array<string> {
   const names: Array<string> = [];
   for (const cookie of allCookies) {
     const name = cookie.split("=")[0];
+    if (!name) continue;
     if (regex) {
       try {
-        if (regex.test(name)) names.push(name);
+        if (safeRegexTest(regex, name)) names.push(name);
       } catch {
         /* noop */
       }
@@ -52,20 +65,23 @@ export function getAllCookieNames(regex?: RegExp): Array<string> {
   return names;
 }
 
-export function parseCookie(value: string | null | undefined): CookieValue {
-  if (!value) return {} as CookieValue;
+function parseCookieValue(value: string, requiresConsentId: boolean): CookieValue | null {
   const parsed = tryParseJson(value);
-  return (parsed && typeof parsed === "object" ? parsed : {}) as CookieValue;
+  if (!parsed || typeof parsed !== "object") return null;
+  if (requiresConsentId && !(parsed as Record<string, unknown>).consentId) return null;
+  return parsed as CookieValue;
+}
+
+export function parseCookie(value: string | null | undefined): CookieValue {
+  if (!value) return createEmptyCookieValue();
+  return parseCookieValue(value, false) ?? createEmptyCookieValue();
 }
 
 export function parseConsentCookie(cookieString: string | undefined | null): CookieValue | null {
   if (!cookieString) return null;
   try {
-    const decoded = decodeURIComponent(cookieString);
-    const parsed = JSON.parse(decoded);
-    if (!parsed || typeof parsed !== "object") return null;
-    if (!parsed.consentId) return null;
-    return parsed as CookieValue;
+    const decoded = safeDecodeURI(cookieString);
+    return parseCookieValue(decoded, true);
   } catch {
     return null;
   }
@@ -73,7 +89,7 @@ export function parseConsentCookie(cookieString: string | undefined | null): Coo
 
 export function getPluginCookie(config: CookieConfig): CookieValue {
   const value = getSingleCookie(config.name);
-  return parseCookie(decodeURIComponent(value));
+  return parseCookie(safeDecodeURI(value));
 }
 
 export function setCookieValue(cookieContent: CookieValue, config: CookieConfig): void {
@@ -151,7 +167,7 @@ export function autoclearRejectedCookies(
   categoryNames: Array<string>,
   categoryConfigs: Record<string, AutoClearCategoryConfig>,
   acceptedCategories: Array<string>,
-  _acceptedServices: Record<string, Array<string>>,
+  acceptedServices: Record<string, Array<string>>,
   defaultDomain: string,
   defaultPath: string,
 ): { reload: boolean } {
@@ -178,9 +194,40 @@ export function autoclearRejectedCookies(
   return { reload };
 }
 
-function findMatchingCookies(allCookies: Array<string>, name: string | RegExp): Array<string> {
+function safeRegexTest(regex: RegExp, str: string): boolean {
+  if (regex.global || regex.sticky) {
+    const clone = new RegExp(regex.source, regex.flags.replace(/[gy]/g, ""));
+    return clone.test(str);
+  }
+  return regex.test(str);
+}
+
+function createEmptyCookieValue(): CookieValue {
+  return {
+    categories: [],
+    services: {},
+    revision: 0,
+    data: null,
+    consentId: "",
+    consentTimestamp: "",
+  };
+}
+
+export { createEmptyCookieValue };
+
+export function findMatchingCookies(
+  allCookies: Array<string>,
+  name: string | RegExp,
+): Array<string> {
   if (name instanceof RegExp) {
-    return allCookies.filter((c) => name.test(c));
+    return allCookies.filter((c) => safeRegexTest(name, c));
   }
   return allCookies.includes(name) ? [name] : [];
+}
+
+export function isCookiePresent(name: string): boolean {
+  if (typeof document === "undefined") return false;
+  return (
+    document.cookie.indexOf(name + "=") !== -1 || document.cookie.indexOf(" " + name + "=") !== -1
+  );
 }

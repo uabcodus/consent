@@ -23,7 +23,7 @@ By default, the library stores consent in a cookie named `cc_cookie` with these 
 All cookie settings are configured through the `cookieStorage()` factory:
 
 ```ts
-import { createConsent, cookieStorage } from "@uabcodus/consent";
+import { createConsent, cookieStorage } from "@uabcodus/consent/core";
 
 const consent = createConsent({
   storage: cookieStorage({
@@ -61,7 +61,7 @@ storage: cookieStorage({
 Switch from cookies to `localStorage` by providing the `localStorageStorage()` adapter:
 
 ```ts
-import { createConsent, localStorageStorage } from "@uabcodus/consent";
+import { createConsent, localStorageStorage } from "@uabcodus/consent/core";
 
 const consent = createConsent({
   storage: localStorageStorage("cc_cookie"),

@@ -50,7 +50,7 @@ export function safeRun<T>(fn: () => T, fallback?: T): T | false | undefined {
   }
 }
 
-import type { CategoryConfig, ConsentConfig, CookieConfig, ConsentCallbacks } from "./types";
+import type { CategoryConfig, ConsentConfig, ConsentCallbacks } from "./types";
 
 export function mergeConfigs<TCategories extends Record<string, CategoryConfig>>(
   userConfig: ConsentConfig<TCategories>,
@@ -62,7 +62,6 @@ export function mergeConfigs<TCategories extends Record<string, CategoryConfig>>
     ...preset,
     ...userConfig,
     categories: mergeCategories(preset.categories, userConfig.categories) as TCategories,
-    cookie: mergeCookies(preset.cookie, userConfig.cookie),
     callbacks: mergeCallbacks(preset.callbacks, userConfig.callbacks),
     preset: undefined,
   };
@@ -97,15 +96,6 @@ function mergeCategories(
   }
 
   return merged;
-}
-
-function mergeCookies(
-  presetCookie: Partial<CookieConfig> | undefined,
-  userCookie: Partial<CookieConfig> | undefined,
-): Partial<CookieConfig> | undefined {
-  if (!presetCookie) return userCookie;
-  if (!userCookie) return presetCookie;
-  return { ...presetCookie, ...userCookie };
 }
 
 function mergeCallbacks(

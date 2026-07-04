@@ -146,7 +146,8 @@ export function autoclearRejectedCookies(
   categoryConfigs: Record<string, AutoClearCategoryConfig>,
   acceptedCategories: Array<string>,
   _acceptedServices: Record<string, Array<string>>,
-  cookieConfig: CookieConfig,
+  defaultDomain: string,
+  defaultPath: string,
 ): { reload: boolean } {
   const allCookies = getAllCookieNames();
   let reload = false;
@@ -161,11 +162,7 @@ export function autoclearRejectedCookies(
     if (cat.autoClear.cookies) {
       for (const item of cat.autoClear.cookies) {
         const found = findMatchingCookies(allCookies, item.name);
-        eraseCookiesHelper(
-          found,
-          item.domain ?? cookieConfig.domain,
-          item.path ?? cookieConfig.path,
-        );
+        eraseCookiesHelper(found, item.domain ?? defaultDomain, item.path ?? defaultPath);
       }
     }
 

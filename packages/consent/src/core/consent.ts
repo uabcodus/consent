@@ -295,12 +295,14 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
     config.storage.set(internal.cookieContent);
 
     if (config.autoClearCookies) {
+      const defaultDomain = typeof location !== "undefined" ? location.hostname : "";
       autoclearRejectedCookies(
         internal.categoryNames,
         config.categories as Record<string, AutoClearCategoryConfig>,
         internal.acceptedCategories,
         internal.acceptedServices,
-        config.cookie,
+        defaultDomain,
+        "/",
       );
     }
 
@@ -573,7 +575,8 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
         match(cookies);
       }
 
-      eraseCookiesHelper(found, domain ?? config.cookie.domain, path ?? config.cookie.path);
+      const defaultDomain = typeof location !== "undefined" ? location.hostname : "";
+      eraseCookiesHelper(found, domain ?? defaultDomain, path ?? "/");
     },
 
     getCookie(field?: string) {

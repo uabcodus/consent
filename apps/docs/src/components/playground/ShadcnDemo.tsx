@@ -192,7 +192,6 @@ export default function ShadcnDemo() {
   return (
     <ConsentProvider
       options={{
-        cookie: { name: "cc_cookie_shadcn" },
         categories: {
           necessary: { readOnly: true },
           analytics: {

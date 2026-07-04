@@ -164,7 +164,6 @@ export default function ReactDemo() {
   return (
     <ConsentProvider
       options={{
-        cookie: { name: "cc_cookie_react" },
         categories: {
           necessary: { readOnly: true },
           analytics: {

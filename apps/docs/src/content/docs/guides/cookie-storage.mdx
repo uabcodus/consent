@@ -20,18 +20,20 @@ By default, the library stores consent in a cookie named `cc_cookie` with these 
 
 ## Customizing the cookie
 
-Override any of these in your config:
+All cookie settings are configured through the `cookieStorage()` factory:
 
 ```ts
+import { createConsent, cookieStorage } from "@uabcodus/consent";
+
 const consent = createConsent({
-  cookie: {
+  storage: cookieStorage({
     name: "my-consent-cookie",
     expiresAfterDays: 365,
     domain: ".example.com", // Share across subdomains
     path: "/",
     secure: true,
     sameSite: "Strict",
-  },
+  }),
   categories: {
     necessary: { readOnly: true },
     analytics: {},
@@ -45,13 +47,13 @@ const consent = createConsent({
 all categories:
 
 ```ts
-cookie: {
+storage: cookieStorage({
   expiresAfterDays: (acceptType) => {
     if (acceptType === "all") return 365;
     if (acceptType === "necessary") return 90;
     return 182;
   },
-},
+}),
 ```
 
 ## Using localStorage
@@ -71,42 +73,6 @@ const consent = createConsent({
 ```
 
 The first argument is the localStorage key name. Optionally pass an expiry in milliseconds as the second argument (defaults to 182 days).
-
-### Using cookie storage explicitly
-
-The default storage is cookie-based, but you can also configure it explicitly:
-
-```ts
-import { createConsent, cookieStorage } from "@uabcodus/consent";
-
-const consent = createConsent({
-  storage: cookieStorage({
-    name: "my-consent-cookie",
-    expiresAfterDays: 365,
-    domain: ".example.com",
-    path: "/",
-    secure: true,
-    sameSite: "Strict",
-  }),
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {},
-  } as const,
-});
-```
-
-When no `storage` is specified, `cookieStorage()` is used with the options from the `cookie` config field.
-This means you can still use the shorthand `cookie` key for cookie-specific settings:
-
-```ts
-const consent = createConsent({
-  cookie: { name: "my-cookie", expiresAfterDays: 90 },
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {},
-  } as const,
-});
-```
 
 ### Custom storage adapters
 
@@ -188,9 +154,9 @@ plugin.
 To share consent across subdomains, set the `domain` to the root domain with a leading dot:
 
 ```ts
-cookie: {
+storage: cookieStorage({
   domain: ".example.com",
-}
+});
 ```
 
 This makes the cookie available on `www.example.com`, `app.example.com`, `blog.example.com`, etc.

@@ -135,7 +135,6 @@ export interface ConsentConfig<TCategories extends Record<string, CategoryConfig
   scriptType?: string;
   autoClearCookies?: boolean;
   categories: TCategories;
-  cookie?: Partial<CookieConfig>;
   storage?: StorageAdapter;
   initialCookie?: CookieValue | string | null;
   callbacks?: ConsentCallbacks;

@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { createConsent, googleConsentMode, syncGtagConsent } from "../../src/core/index";
+import {
+  createConsent,
+  googleConsentMode,
+  syncGtagConsent,
+  cookieStorage,
+} from "../../src/core/index";
 
 beforeEach(() => {
   Object.defineProperty(document, "cookie", {
@@ -112,7 +117,14 @@ describe("presets", () => {
     it("merges cookie config from preset and user", () => {
       const consent = createConsent({
         preset: googleConsentMode,
-        cookie: { name: "custom_consent", expiresAfterDays: 30 },
+        storage: cookieStorage({
+          name: "custom_consent",
+          expiresAfterDays: 30,
+          domain: "",
+          path: "/",
+          secure: true,
+          sameSite: "Lax",
+        }),
         categories: {
           necessary: { readOnly: true } as const,
           analytics: {} as const,

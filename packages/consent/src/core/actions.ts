@@ -10,7 +10,7 @@ export interface ActionDependencies {
 export function acceptCategories(
   acceptArg: string | Array<string>,
   excludedCategories: Array<string>,
-  deps: ActionDependencies,
+  deps: ActionDependencies
 ): void {
   const { internal } = deps;
   const prevValid = internal.valid;
@@ -45,7 +45,7 @@ export function acceptCategories(
   internal.acceptType = resolveAcceptType(
     internal.acceptedCategories,
     internal.categoryNames,
-    internal.readOnlyCategories,
+    internal.readOnlyCategories
   );
 
   calculateLastChanged(
@@ -53,7 +53,7 @@ export function acceptCategories(
     prevCategories,
     prevEnabledServices,
     internal.config.mode,
-    !prevValid,
+    !prevValid
   );
 
   if (!internal.valid) {
@@ -74,16 +74,12 @@ export function acceptCategories(
     return;
   }
 
-  const changed =
-    internal.lastChangedCategoryNames.length > 0 ||
-    Object.values(internal.lastChangedServices).some((s) => s.length > 0);
-
-  if (changed) deps.fireCallbacks("change");
+  fireChangeIfChanged(internal, deps);
 }
 
 export function rejectCategories(
   rejectArg: string | Array<string>,
-  deps: ActionDependencies,
+  deps: ActionDependencies
 ): void {
   const { internal } = deps;
   const prevCategories = [...internal.acceptedCategories];
@@ -114,24 +110,20 @@ export function rejectCategories(
   internal.acceptType = resolveAcceptType(
     internal.acceptedCategories,
     internal.categoryNames,
-    internal.readOnlyCategories,
+    internal.readOnlyCategories
   );
 
   calculateLastChanged(internal, prevCategories, prevEnabledServices, internal.config.mode, false);
 
   deps.persistAndSync();
 
-  const changed =
-    internal.lastChangedCategoryNames.length > 0 ||
-    Object.values(internal.lastChangedServices).some((s) => s.length > 0);
-
-  if (changed) deps.fireCallbacks("change");
+  fireChangeIfChanged(internal, deps);
 }
 
 export function acceptServiceAction(
   service: string | Array<string>,
   category: string,
-  deps: ActionDependencies,
+  deps: ActionDependencies
 ): void {
   const { internal } = deps;
 
@@ -167,17 +159,13 @@ export function acceptServiceAction(
 
   deps.persistAndSync();
 
-  const changed =
-    internal.lastChangedCategoryNames.length > 0 ||
-    Object.values(internal.lastChangedServices).some((s) => s.length > 0);
-
-  if (changed) deps.fireCallbacks("change");
+  fireChangeIfChanged(internal, deps);
 }
 
 export function rejectServiceAction(
   service: string | Array<string>,
   category: string,
-  deps: ActionDependencies,
+  deps: ActionDependencies
 ): void {
   const { internal } = deps;
 
@@ -192,11 +180,11 @@ export function rejectServiceAction(
     internal.enabledServices[catName] = [];
   } else if (typeof service === "string") {
     internal.enabledServices[catName] = (internal.enabledServices[catName] ?? []).filter(
-      (s) => s !== service,
+      (s) => s !== service
     );
   } else if (Array.isArray(service)) {
     internal.enabledServices[catName] = (internal.enabledServices[catName] ?? []).filter(
-      (s) => !service.includes(s),
+      (s) => !service.includes(s)
     );
   }
 
@@ -210,10 +198,13 @@ export function rejectServiceAction(
 
   deps.persistAndSync();
 
+  fireChangeIfChanged(internal, deps);
+}
+
+function fireChangeIfChanged(internal: InternalState, deps: ActionDependencies): void {
   const changed =
     internal.lastChangedCategoryNames.length > 0 ||
     Object.values(internal.lastChangedServices).some((s) => s.length > 0);
-
   if (changed) deps.fireCallbacks("change");
 }
 
@@ -222,17 +213,17 @@ function calculateLastChanged(
   prevAcceptedCategories: Array<string>,
   prevEnabledServices: Record<string, Array<string>>,
   mode: "opt-in" | "opt-out",
-  isFirstConsent: boolean,
+  isFirstConsent: boolean
 ): void {
   if (mode === "opt-out" && isFirstConsent) {
     internal.lastChangedCategoryNames = arrayDiff(
       internal.defaultEnabledCategories,
-      internal.acceptedCategories,
+      internal.acceptedCategories
     );
   } else {
     internal.lastChangedCategoryNames = arrayDiff(
       internal.acceptedCategories,
-      prevAcceptedCategories,
+      prevAcceptedCategories
     );
   }
 
@@ -240,7 +231,7 @@ function calculateLastChanged(
   for (const cat of internal.categoryNames) {
     internal.lastChangedServices[cat] = arrayDiff(
       internal.acceptedServices[cat],
-      prevEnabledServices[cat],
+      prevEnabledServices[cat]
     );
   }
 

@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { createConsent } from "../../src/core/consent";
 import { localStorageStorage } from "../../src/core/storage";
 
 function clearCookies() {
   Object.defineProperty(document, "cookie", {
     writable: true,
-    value: "",
+    value: ""
   });
 }
 
@@ -18,8 +19,8 @@ const basicConfig = {
   categories: {
     necessary: { readOnly: true } as const,
     analytics: {} as const,
-    marketing: {} as const,
-  },
+    marketing: {} as const
+  }
 };
 
 describe("edge cases", () => {
@@ -28,8 +29,8 @@ describe("edge cases", () => {
       const consent = createConsent({
         categories: {
           necessary: { readOnly: true } as const,
-          empty: {} as const,
-        },
+          empty: {} as const
+        }
       });
 
       expect(consent.state.categories.empty.accepted).toBe(false);
@@ -41,8 +42,8 @@ describe("edge cases", () => {
       const consent = createConsent({
         categories: {
           necessary: { readOnly: true } as const,
-          functional: { readOnly: true } as const,
-        },
+          functional: { readOnly: true } as const
+        }
       });
 
       expect(consent.state.acceptType).toBe("all");
@@ -123,7 +124,7 @@ describe("edge cases", () => {
       const storage = localStorageStorage("edge_test_consent");
       const consent = createConsent({
         ...basicConfig,
-        storage,
+        storage
       });
 
       consent.accept("all");
@@ -146,14 +147,14 @@ describe("edge cases", () => {
         data: null,
         consentId: "test-id",
         consentTimestamp: new Date().toISOString(),
-        lastConsentTimestamp: new Date().toISOString(),
+        lastConsentTimestamp: new Date().toISOString()
       };
 
       storage.set(savedValue as import("../../src/core/types").CookieValue);
 
       const consent = createConsent({
         ...basicConfig,
-        storage,
+        storage
       });
 
       expect(consent.state.valid).toBe(true);
@@ -169,10 +170,10 @@ describe("edge cases", () => {
         categories: {
           analytics: {
             services: {
-              ga: {} as const,
-            },
-          },
-        },
+              ga: {} as const
+            }
+          }
+        }
       });
 
       expect(consent.state.categories.analytics.accepted).toBe(false);
@@ -188,10 +189,10 @@ describe("edge cases", () => {
           analytics: {
             services: {
               ga: {} as const,
-              mixpanel: {} as const,
-            },
-          },
-        },
+              mixpanel: {} as const
+            }
+          }
+        }
       });
 
       consent.acceptService("all", "analytics");
@@ -207,10 +208,10 @@ describe("edge cases", () => {
           analytics: {
             services: {
               ga: {} as const,
-              mixpanel: {} as const,
-            },
-          },
-        },
+              mixpanel: {} as const
+            }
+          }
+        }
       });
 
       consent.acceptService("all", "analytics");
@@ -296,7 +297,7 @@ describe("edge cases", () => {
   describe("bot detection", () => {
     it("skips consent when bot is detected", () => {
       vi.stubGlobal("navigator", {
-        userAgent: "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        userAgent: "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
       });
 
       const consent = createConsent(basicConfig);

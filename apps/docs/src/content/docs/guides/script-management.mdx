@@ -18,8 +18,8 @@ const consent = createConsent({
   categories: {
     necessary: { readOnly: true },
     analytics: {},
-    marketing: {},
-  } as const,
+    marketing: {}
+  } as const
 });
 ```
 
@@ -49,7 +49,7 @@ const consent = createConsent({
   scriptType: "text/plain", // Use a different blocking type
   categories: {
     /* ... */
-  },
+  }
 });
 ```
 
@@ -125,7 +125,7 @@ If you prefer to load scripts programmatically outside of the `data-category` sy
 ```ts
 const success = await consent.loadScript(
   "https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX",
-  { async: "", id: "ga-script" },
+  { async: "", id: "ga-script" }
 );
 ```
 
@@ -159,19 +159,25 @@ const consent = createConsent({
     analytics: {
       services: {
         ga4: {
-          onAccept: () => gtag("consent", "update", { analytics_storage: "granted" }),
-          onReject: () => gtag("consent", "update", { analytics_storage: "denied" }),
-        },
-      },
+          onAccept: () =>
+            gtag("consent", "update", {
+              analytics_storage: "granted"
+            }),
+          onReject: () =>
+            gtag("consent", "update", {
+              analytics_storage: "denied"
+            })
+        }
+      }
     },
     marketing: {
       services: {
         fbPixel: {
-          onAccept: () => fbq?.("consent", "grant"),
-        },
-      },
-    },
-  } as const,
+          onAccept: () => fbq?.("consent", "grant")
+        }
+      }
+    }
+  } as const
 });
 ```
 

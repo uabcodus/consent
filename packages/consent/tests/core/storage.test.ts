@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
+
 import { cookieStorage, localStorageStorage } from "../../src/core/storage";
 import type { CookieValue } from "../../src/core/types";
 
@@ -8,13 +9,13 @@ const EMPTY_COOKIE = {
   revision: 0,
   data: null,
   consentId: "",
-  consentTimestamp: "",
+  consentTimestamp: ""
 };
 
 beforeEach(() => {
   Object.defineProperty(document, "cookie", {
     writable: true,
-    value: "",
+    value: ""
   });
 
   if (typeof localStorage !== "undefined") {
@@ -30,7 +31,7 @@ function makeCookieValue(overrides: Partial<CookieValue> = {}): CookieValue {
     data: null,
     consentId: "test-id",
     consentTimestamp: new Date().toISOString(),
-    ...overrides,
+    ...overrides
   };
 }
 
@@ -42,7 +43,7 @@ describe("cookieStorage", () => {
       domain: "",
       path: "/",
       secure: false,
-      sameSite: "Lax",
+      sameSite: "Lax"
     });
 
     const result = storage.get();
@@ -56,7 +57,7 @@ describe("cookieStorage", () => {
       domain: "",
       path: "/",
       secure: false,
-      sameSite: "Lax",
+      sameSite: "Lax"
     });
 
     const value = makeCookieValue();
@@ -74,7 +75,7 @@ describe("cookieStorage", () => {
       domain: "",
       path: "/",
       secure: true,
-      sameSite: "Lax",
+      sameSite: "Lax"
     });
 
     const value = makeCookieValue();
@@ -91,7 +92,7 @@ describe("cookieStorage", () => {
       domain: "localhost",
       path: "/",
       secure: false,
-      sameSite: "Lax",
+      sameSite: "Lax"
     });
 
     const value = makeCookieValue();
@@ -110,7 +111,7 @@ describe("cookieStorage", () => {
       domain: "",
       path: "/",
       secure: false,
-      sameSite: "Lax",
+      sameSite: "Lax"
     });
 
     const value = makeCookieValue();
@@ -125,7 +126,7 @@ describe("cookieStorage", () => {
       domain: "www.example.com",
       path: "/",
       secure: false,
-      sameSite: "Lax",
+      sameSite: "Lax"
     });
 
     const value = makeCookieValue();

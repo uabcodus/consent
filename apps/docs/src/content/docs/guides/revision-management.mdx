@@ -20,8 +20,8 @@ const consent = createConsent({
   revision: 1, // Bump this when your policy changes
   categories: {
     necessary: { readOnly: true },
-    analytics: {},
-  } as const,
+    analytics: {}
+  } as const
 });
 ```
 
@@ -48,8 +48,8 @@ createConsent({
   revision: 1,
   categories: {
     necessary: { readOnly: true },
-    analytics: {},
-  } as const,
+    analytics: {}
+  } as const
 });
 
 // v2 — added marketing category, bumped revision
@@ -58,8 +58,8 @@ createConsent({
   categories: {
     necessary: { readOnly: true },
     analytics: {},
-    marketing: {}, // New category
-  } as const,
+    marketing: {} // New category
+  } as const
 });
 ```
 

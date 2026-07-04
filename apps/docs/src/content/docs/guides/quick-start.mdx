@@ -13,18 +13,18 @@ import { createConsent } from "@uabcodus/consent/core";
 const consent = createConsent({
   categories: {
     necessary: {
-      readOnly: true, // Always accepted — user can't toggle it off
+      readOnly: true // Always accepted — user can't toggle it off
     },
     analytics: {
       services: {
         googleAnalytics: {
           onAccept: () => console.log("GA enabled"),
-          onReject: () => console.log("GA disabled"),
-        },
-      },
+          onReject: () => console.log("GA disabled")
+        }
+      }
     },
-    marketing: {},
-  } as const,
+    marketing: {}
+  } as const
 });
 
 // Check if consent was already given on a previous visit
@@ -60,8 +60,8 @@ function App() {
         categories: {
           necessary: { readOnly: true },
           analytics: {},
-          marketing: {},
-        },
+          marketing: {}
+        }
       }}
     >
       <ConsentBanner />

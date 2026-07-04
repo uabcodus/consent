@@ -3,40 +3,40 @@ import type {
   ConsentConfig,
   ConsentInstance,
   ConsentState,
-  ServiceConfig,
+  ServiceConfig
 } from "./types";
 
 export const googleConsentMode: ConsentConfig<Record<string, CategoryConfig>> = {
   categories: {
     necessary: {
       readOnly: true,
-      services: { security_storage: {} as ServiceConfig },
+      services: { security_storage: {} as ServiceConfig }
     },
     analytics: {
       services: { analytics_storage: {} as ServiceConfig },
       autoClear: {
-        cookies: [{ name: /^_ga/ }, { name: "_gid" }],
-      },
+        cookies: [{ name: /^_ga/ }, { name: "_gid" }]
+      }
     },
     advertisement: {
       services: {
         ad_storage: {} as ServiceConfig,
         ad_user_data: {} as ServiceConfig,
-        ad_personalization: {} as ServiceConfig,
-      },
+        ad_personalization: {} as ServiceConfig
+      }
     },
     functionality: {
       readOnly: true,
       services: {
         functionality_storage: {} as ServiceConfig,
-        personalization_storage: {} as ServiceConfig,
-      },
-    },
-  },
+        personalization_storage: {} as ServiceConfig
+      }
+    }
+  }
 };
 
 export function syncGtagConsent(
-  consent: ConsentInstance<Record<string, CategoryConfig>>,
+  consent: ConsentInstance<Record<string, CategoryConfig>>
 ): () => void {
   function handler() {
     updateGtagFromState(consent.state);

@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import {
   retrieveScriptElements,
   manageExistingScripts,
-  runServiceCallbacks,
+  runServiceCallbacks
 } from "../../src/core/scripts";
 import type { ServiceConfig } from "../../src/core/types";
 
@@ -87,7 +88,7 @@ describe("retrieveScriptElements", () => {
 
   it("adds undefined service to existingServices map", () => {
     const existingServices: Record<string, Record<string, ServiceConfig>> = {
-      analytics: {},
+      analytics: {}
     };
 
     document.documentElement.innerHTML = `
@@ -160,8 +161,8 @@ describe("runServiceCallbacks", () => {
 
     const definedServices = {
       analytics: {
-        ga: { onAccept, onReject },
-      },
+        ga: { onAccept, onReject }
+      }
     };
 
     const acceptedServices = { analytics: ["ga"] };
@@ -173,7 +174,7 @@ describe("runServiceCallbacks", () => {
       definedServices,
       acceptedServices,
       changedServices,
-      prevEnabledServices,
+      prevEnabledServices
     );
 
     expect(onAccept).toHaveBeenCalledTimes(1);
@@ -186,8 +187,8 @@ describe("runServiceCallbacks", () => {
 
     const definedServices = {
       analytics: {
-        ga: { onAccept, onReject },
-      },
+        ga: { onAccept, onReject }
+      }
     };
 
     const acceptedServices = { analytics: [] };
@@ -199,7 +200,7 @@ describe("runServiceCallbacks", () => {
       definedServices,
       acceptedServices,
       changedServices,
-      prevEnabledServices,
+      prevEnabledServices
     );
 
     expect(onReject).toHaveBeenCalledTimes(1);
@@ -212,8 +213,8 @@ describe("runServiceCallbacks", () => {
 
     const definedServices = {
       analytics: {
-        ga: { onAccept, onReject },
-      },
+        ga: { onAccept, onReject }
+      }
     };
 
     const acceptedServices = { analytics: [] };
@@ -225,7 +226,7 @@ describe("runServiceCallbacks", () => {
       definedServices,
       acceptedServices,
       changedServices,
-      prevEnabledServices,
+      prevEnabledServices
     );
 
     expect(onAccept).not.toHaveBeenCalled();
@@ -244,8 +245,8 @@ describe("runServiceCallbacks", () => {
         definedServices,
         acceptedServices,
         changedServices,
-        prevEnabledServices,
-      ),
+        prevEnabledServices
+      )
     ).not.toThrow();
   });
 
@@ -254,8 +255,8 @@ describe("runServiceCallbacks", () => {
 
     const definedServices = {
       analytics: {
-        ga: { onAccept },
-      },
+        ga: { onAccept }
+      }
     };
 
     const acceptedServices = { analytics: ["ga"] };
@@ -267,7 +268,7 @@ describe("runServiceCallbacks", () => {
       definedServices,
       acceptedServices,
       changedServices,
-      prevEnabledServices,
+      prevEnabledServices
     );
 
     expect(onAccept).toHaveBeenCalledTimes(1);

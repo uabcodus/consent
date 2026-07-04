@@ -41,8 +41,8 @@ import { createConsent } from "@uabcodus/consent/core";
 const consent = createConsent({
   categories: {
     analytics: {},
-    marketing: {},
-  } as const,
+    marketing: {}
+  } as const
 });
 
 // consent.accept() is typed: "analytics" | "marketing" | "all" | "necessary"

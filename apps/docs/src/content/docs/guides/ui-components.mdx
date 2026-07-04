@@ -57,7 +57,7 @@ function App() {
       options={{
         categories: {
           /* ... */
-        },
+        }
       }}
     >
       <ConsentBanner />
@@ -86,7 +86,7 @@ function App() {
       options={{
         categories: {
           /* ... */
-        },
+        }
       }}
     >
       <ConsentPanel />
@@ -111,8 +111,18 @@ the user clicks Save.
 import { ConsentTable } from "@/components/consent-table";
 
 const cookies = [
-  { name: "_ga", path: "/", domain: ".example.com", description: "Google Analytics" },
-  { name: "_gid", path: "/", domain: ".example.com", description: "GA session" },
+  {
+    name: "_ga",
+    path: "/",
+    domain: ".example.com",
+    description: "Google Analytics"
+  },
+  {
+    name: "_gid",
+    path: "/",
+    domain: ".example.com",
+    description: "GA session"
+  }
 ];
 
 <ConsentTable cookies={cookies} />;

@@ -1,15 +1,16 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import {
   createConsent,
   googleConsentMode,
   syncGtagConsent,
-  cookieStorage,
+  cookieStorage
 } from "../../src/core/index";
 
 beforeEach(() => {
   Object.defineProperty(document, "cookie", {
     writable: true,
-    value: "",
+    value: ""
   });
 });
 
@@ -43,8 +44,8 @@ describe("presets", () => {
           necessary: { readOnly: true },
           analytics: {},
           advertisement: {},
-          functionality: { readOnly: true },
-        },
+          functionality: { readOnly: true }
+        }
       });
 
       expect(consent.state.categories.necessary.accepted).toBe(true);
@@ -63,8 +64,8 @@ describe("presets", () => {
         categories: {
           necessary: { readOnly: true },
           analytics: {},
-          marketing: { enabled: false },
-        },
+          marketing: { enabled: false }
+        }
       });
 
       expect(consent.state.categories.marketing).toBeDefined();
@@ -80,13 +81,13 @@ describe("presets", () => {
           analytics: {
             readOnly: true,
             autoClear: {
-              cookies: [{ name: "_custom" }],
-            },
+              cookies: [{ name: "_custom" }]
+            }
           },
           advertisement: {} as const,
           necessary: { readOnly: true } as const,
-          functionality: { readOnly: true } as const,
-        },
+          functionality: { readOnly: true } as const
+        }
       });
 
       expect(consent.state.categories.analytics.readOnly).toBe(true);
@@ -101,12 +102,12 @@ describe("presets", () => {
           analytics: {
             services: {
               analytics_storage: {} as const,
-              custom_tracking: {} as const,
-            },
+              custom_tracking: {} as const
+            }
           },
           advertisement: {} as const,
-          functionality: { readOnly: true } as const,
-        },
+          functionality: { readOnly: true } as const
+        }
       });
 
       expect(consent.state.services.analytics.analytics_storage).toBeDefined();
@@ -123,14 +124,14 @@ describe("presets", () => {
           domain: "",
           path: "/",
           secure: true,
-          sameSite: "Lax",
+          sameSite: "Lax"
         }),
         categories: {
           necessary: { readOnly: true } as const,
           analytics: {} as const,
           advertisement: {} as const,
-          functionality: { readOnly: true } as const,
-        },
+          functionality: { readOnly: true } as const
+        }
       });
 
       consent.accept("all");
@@ -145,15 +146,15 @@ describe("presets", () => {
       const consent = createConsent({
         preset: {
           ...googleConsentMode,
-          callbacks: { onFirstConsent: presetCb },
+          callbacks: { onFirstConsent: presetCb }
         },
         callbacks: { onFirstConsent: userCb },
         categories: {
           necessary: { readOnly: true } as const,
           analytics: {} as const,
           advertisement: {} as const,
-          functionality: { readOnly: true } as const,
-        },
+          functionality: { readOnly: true } as const
+        }
       });
 
       consent.accept("all");
@@ -166,8 +167,8 @@ describe("presets", () => {
       const consent = createConsent({
         categories: {
           necessary: { readOnly: true } as const,
-          analytics: {} as const,
-        },
+          analytics: {} as const
+        }
       });
 
       expect(consent.state.categories.necessary).toBeDefined();
@@ -184,8 +185,8 @@ describe("syncGtagConsent", () => {
         necessary: { readOnly: true } as const,
         analytics: {} as const,
         advertisement: {} as const,
-        functionality: { readOnly: true } as const,
-      },
+        functionality: { readOnly: true } as const
+      }
     });
 
     const mockGtag = vi.fn();
@@ -206,8 +207,8 @@ describe("syncGtagConsent", () => {
       expect.objectContaining({
         analytics_storage: "granted",
         ad_storage: "granted",
-        security_storage: "granted",
-      }),
+        security_storage: "granted"
+      })
     );
   });
 
@@ -218,8 +219,8 @@ describe("syncGtagConsent", () => {
         necessary: { readOnly: true } as const,
         analytics: {} as const,
         advertisement: {} as const,
-        functionality: { readOnly: true } as const,
-      },
+        functionality: { readOnly: true } as const
+      }
     });
 
     const mockGtag = vi.fn();
@@ -234,8 +235,8 @@ describe("syncGtagConsent", () => {
     const lastCall = calls[calls.length - 1];
     expect(lastCall[2]).toEqual(
       expect.objectContaining({
-        analytics_storage: "denied",
-      }),
+        analytics_storage: "denied"
+      })
     );
   });
 
@@ -246,8 +247,8 @@ describe("syncGtagConsent", () => {
         necessary: { readOnly: true } as const,
         analytics: {} as const,
         advertisement: {} as const,
-        functionality: { readOnly: true } as const,
-      },
+        functionality: { readOnly: true } as const
+      }
     });
 
     const mockGtag = vi.fn();

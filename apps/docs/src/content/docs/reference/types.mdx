@@ -179,21 +179,21 @@ interface ConsentInstance<TCategories extends Record<string, CategoryConfig>> {
 
   acceptService: (
     service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
-    category: CategoryNames<TCategories>,
+    category: CategoryNames<TCategories>
   ) => void;
   rejectService: (
     service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
-    category: CategoryNames<TCategories>,
+    category: CategoryNames<TCategories>
   ) => void;
   acceptedService: (
     service: ServiceNames<TCategories, CategoryNames<TCategories>>,
-    category: CategoryNames<TCategories>,
+    category: CategoryNames<TCategories>
   ) => boolean;
 
   eraseCookies: (
     cookies: string | RegExp | Array<string | RegExp>,
     path?: string,
-    domain?: string,
+    domain?: string
   ) => void;
   getCookie: (field?: string) => unknown;
   setCookieData: (props: { value: unknown; mode: "set" | "update" }) => boolean;
@@ -239,11 +239,13 @@ The union of all valid arguments to `accept()` and `reject()`.
 ### `ServiceNames<TCategories, TCategory>`
 
 ```ts
-type ServiceNames<TCategories, TCategory> = TCategory extends keyof TCategories
-  ? TCategories[TCategory] extends { services: infer S }
-    ? keyof S & string
-    : never
-  : never;
+type ServiceNames<
+  TCategories extends Record<string, CategoryConfig>,
+  TCategory extends CategoryNames<TCategories>
+> =
+  NonNullable<TCategories[TCategory]["services"]> extends Record<infer K, ServiceConfig>
+    ? K & string
+    : never;
 ```
 
 Extracts service name strings from a category's `services` config.

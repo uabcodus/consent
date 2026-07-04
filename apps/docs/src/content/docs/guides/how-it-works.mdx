@@ -18,8 +18,8 @@ createConsent({
   categories: {
     analytics: { enabled: true }, // Pre-accepted in opt-out mode
     marketing: {}, // Also pre-accepted (anything not readOnly, enabled defaults to false)
-    necessary: { readOnly: true }, // Always accepted, cannot be toggled
-  } as const,
+    necessary: { readOnly: true } // Always accepted, cannot be toggled
+  } as const
 });
 ```
 
@@ -33,19 +33,19 @@ Categories group related tracking purposes. Each category can be independently a
 createConsent({
   categories: {
     necessary: {
-      readOnly: true, // Always accepted, user can never toggle this off
+      readOnly: true // Always accepted, user can never toggle this off
     },
     analytics: {
       autoClear: {
         // Automatically erase cookies when category is rejected
         cookies: [
           { name: "_ga", path: "/" },
-          { name: /^_ga_/ }, // Supports RegExp too
-        ],
-      },
+          { name: /^_ga_/ } // Supports RegExp too
+        ]
+      }
     },
-    marketing: {},
-  } as const,
+    marketing: {}
+  } as const
 });
 ```
 

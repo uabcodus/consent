@@ -1,17 +1,6 @@
 import type { CookieConfig, CookieValue } from "./types";
 
-const DEFAULT_COOKIE_NAME = "cc_cookie";
-
-const defaultCookieConfig: CookieConfig = {
-  name: DEFAULT_COOKIE_NAME,
-  expiresAfterDays: 182,
-  domain: "",
-  path: "/",
-  secure: true,
-  sameSite: "Lax",
-};
-
-function safeDecodeURI(value: string): string {
+export function safeDecodeURI(value: string): string {
   try {
     return decodeURIComponent(value);
   } catch {
@@ -29,14 +18,6 @@ function tryParseJson(value: string): unknown | null {
 
 function escapeRegex(name: string): string {
   return name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-export function resolveCookieConfig(userCookie?: Partial<CookieConfig>): CookieConfig {
-  const config = { ...defaultCookieConfig, ...userCookie };
-  if (typeof window !== "undefined") {
-    config.domain = config.domain || location.hostname;
-  }
-  return config;
 }
 
 export function getSingleCookie(name: string): string {
@@ -151,14 +132,22 @@ export function eraseCookiesHelper(cookieNames: Array<string>, domain: string, p
 export interface AutoClearCategoryConfig {
   autoClear?: {
     reloadPage?: boolean;
-    cookies?: Array<{ name: string | RegExp; path?: string; domain?: string }>;
+    cookies?: Array<{
+      name: string | RegExp;
+      path?: string;
+      domain?: string;
+    }>;
   };
   services?: Record<
     string,
     {
       onAccept?: () => void;
       onReject?: () => void;
-      cookies?: Array<{ name: string | RegExp; path?: string; domain?: string }>;
+      cookies?: Array<{
+        name: string | RegExp;
+        path?: string;
+        domain?: string;
+      }>;
     }
   >;
 }
@@ -167,9 +156,8 @@ export function autoclearRejectedCookies(
   categoryNames: Array<string>,
   categoryConfigs: Record<string, AutoClearCategoryConfig>,
   acceptedCategories: Array<string>,
-  acceptedServices: Record<string, Array<string>>,
   defaultDomain: string,
-  defaultPath: string,
+  defaultPath: string
 ): { reload: boolean } {
   const allCookies = getAllCookieNames();
   let reload = false;
@@ -209,7 +197,7 @@ function createEmptyCookieValue(): CookieValue {
     revision: 0,
     data: null,
     consentId: "",
-    consentTimestamp: "",
+    consentTimestamp: ""
   };
 }
 
@@ -217,7 +205,7 @@ export { createEmptyCookieValue };
 
 export function findMatchingCookies(
   allCookies: Array<string>,
-  name: string | RegExp,
+  name: string | RegExp
 ): Array<string> {
   if (name instanceof RegExp) {
     return allCookies.filter((c) => safeRegexTest(name, c));

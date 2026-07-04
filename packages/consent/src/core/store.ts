@@ -48,6 +48,6 @@ export function createStore<T extends object>(initial: T): Store<T> {
 
     destroy(): void {
       listeners.clear();
-    },
+    }
   };
 }

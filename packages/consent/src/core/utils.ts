@@ -37,7 +37,7 @@ export function unique<T>(arr: Array<T>): Array<T> {
 export function resolveAcceptType(
   acceptedCategories: Array<string>,
   allCategoryNames: Array<string>,
-  readOnlyCategories: Array<string>,
+  readOnlyCategories: Array<string>
 ): "all" | "custom" | "necessary" {
   const count = acceptedCategories.length;
   if (count === allCategoryNames.length) return "all";
@@ -46,7 +46,7 @@ export function resolveAcceptType(
 }
 
 export function mergeConfigs<TCategories extends Record<string, CategoryConfig>>(
-  userConfig: ConsentConfig<TCategories>,
+  userConfig: ConsentConfig<TCategories>
 ): ConsentConfig<TCategories> {
   const preset = userConfig.preset;
   if (!preset) return userConfig;
@@ -56,13 +56,13 @@ export function mergeConfigs<TCategories extends Record<string, CategoryConfig>>
     ...userConfig,
     categories: mergeCategories(preset.categories, userConfig.categories) as TCategories,
     callbacks: mergeCallbacks(preset.callbacks, userConfig.callbacks),
-    preset: undefined,
+    preset: undefined
   };
 }
 
 function mergeCategories(
   presetCategories: Record<string, CategoryConfig> | undefined,
-  userCategories: Record<string, CategoryConfig>,
+  userCategories: Record<string, CategoryConfig>
 ): Record<string, CategoryConfig> {
   if (!presetCategories) return { ...userCategories };
 
@@ -79,9 +79,9 @@ function mergeCategories(
         ...userCat,
         services: {
           ...presetCat.services,
-          ...userCat.services,
+          ...userCat.services
         },
-        autoClear: userCat.autoClear ?? presetCat.autoClear,
+        autoClear: userCat.autoClear ?? presetCat.autoClear
       };
     } else {
       merged[key] = userCat ?? presetCat!;
@@ -93,7 +93,7 @@ function mergeCategories(
 
 function mergeCallbacks(
   presetCallbacks: ConsentCallbacks | undefined,
-  userCallbacks: ConsentCallbacks | undefined,
+  userCallbacks: ConsentCallbacks | undefined
 ): ConsentCallbacks | undefined {
   if (!presetCallbacks) return userCallbacks;
   if (!userCallbacks) return presetCallbacks;

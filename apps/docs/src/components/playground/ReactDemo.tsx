@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { ConsentProvider, useConsent } from "@uabcodus/consent/react";
+import { useState } from "react";
 
 function Banner() {
   const consent = useConsent();
@@ -40,7 +40,7 @@ function Banner() {
 
 function Preferences({
   open,
-  onOpenChange,
+  onOpenChange
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -48,7 +48,7 @@ function Preferences({
   const consent = useConsent();
   const { categories } = consent.state;
   const [localCategories, setLocalCategories] = useState(() =>
-    Object.fromEntries(Object.entries(categories).map(([k, v]) => [k, v.accepted])),
+    Object.fromEntries(Object.entries(categories).map(([k, v]) => [k, v.accepted]))
   );
 
   if (!open) return null;
@@ -73,7 +73,7 @@ function Preferences({
                 {name}
               </span>
               <label
-                className={`relative inline-flex cursor-pointer items-center ${info.readOnly ? "opacity-50 cursor-default" : ""}`}
+                className={`relative inline-flex cursor-pointer items-center ${info.readOnly ? "cursor-default opacity-50" : ""}`}
               >
                 <input
                   type="checkbox"
@@ -83,7 +83,7 @@ function Preferences({
                   onChange={(e) =>
                     setLocalCategories((prev) => ({
                       ...prev,
-                      [name]: e.target.checked,
+                      [name]: e.target.checked
                     }))
                   }
                 />
@@ -122,7 +122,7 @@ function StateDebug() {
   return (
     <div className="mx-auto max-w-xl p-4">
       <h3 className="mb-2 text-sm font-medium">Consent State</h3>
-      <pre className="rounded-lg bg-gray-100 p-3 text-xs text-gray-700 overflow-x-auto">
+      <pre className="overflow-x-auto rounded-lg bg-gray-100 p-3 text-xs text-gray-700">
         {JSON.stringify(
           {
             valid,
@@ -130,13 +130,13 @@ function StateDebug() {
             categories: Object.fromEntries(
               Object.entries(categories).map(([k, v]) => [
                 k,
-                { accepted: v.accepted, readOnly: v.readOnly },
-              ]),
+                { accepted: v.accepted, readOnly: v.readOnly }
+              ])
             ),
-            services,
+            services
           },
           null,
-          2,
+          2
         )}
       </pre>
     </div>
@@ -169,16 +169,16 @@ export default function ReactDemo() {
           analytics: {
             services: {
               "Google Analytics": {
-                cookies: [{ name: /_ga/ }, { name: "_gid" }],
-              },
-            },
+                cookies: [{ name: /_ga/ }, { name: "_gid" }]
+              }
+            }
           },
           marketing: {
             services: {
-              "Facebook Pixel": { cookies: [{ name: "_fbp" }] },
-            },
-          },
-        },
+              "Facebook Pixel": { cookies: [{ name: "_fbp" }] }
+            }
+          }
+        }
       }}
     >
       <DemoInner />

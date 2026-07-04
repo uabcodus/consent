@@ -1,13 +1,14 @@
 "use client";
 
 import type { CookieItem } from "@uabcodus/consent/core";
+
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
 
 interface ConsentTableProps {
@@ -22,7 +23,7 @@ export function ConsentTable({ caption, headers, cookies }: ConsentTableProps) {
 
   return (
     <div className="mt-2">
-      {caption && <p className="mb-2 text-xs font-medium text-muted-foreground">{caption}</p>}
+      {caption && <p className="text-muted-foreground mb-2 text-xs font-medium">{caption}</p>}
       <Table>
         <TableHeader>
           <TableRow>
@@ -37,7 +38,7 @@ export function ConsentTable({ caption, headers, cookies }: ConsentTableProps) {
               {headerKeys.map((key) => (
                 <TableCell key={key}>
                   {String(
-                    cookie[key as keyof Pick<CookieItem, "name" | "path" | "domain">] ?? "\u2013",
+                    cookie[key as keyof Pick<CookieItem, "name" | "path" | "domain">] ?? "\u2013"
                   )}
                 </TableCell>
               ))}

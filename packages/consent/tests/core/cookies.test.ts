@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach } from "vitest";
+
 import {
   getSingleCookie,
   getAllCookieNames,
   parseCookie,
   parseConsentCookie,
-  resolveCookieConfig,
   getPluginCookie,
   setCookieValue,
   eraseCookiesHelper,
-  autoclearRejectedCookies,
+  autoclearRejectedCookies
 } from "../../src/core/cookies";
 import type { CookieConfig, CookieValue } from "../../src/core/types";
 
@@ -18,13 +18,13 @@ const EMPTY_COOKIE = {
   revision: 0,
   data: null,
   consentId: "",
-  consentTimestamp: "",
+  consentTimestamp: ""
 };
 
 beforeEach(() => {
   Object.defineProperty(document, "cookie", {
     writable: true,
-    value: "",
+    value: ""
   });
 });
 
@@ -32,7 +32,7 @@ describe("getSingleCookie", () => {
   it("returns cookie value by name", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "test=hello; other=world",
+      value: "test=hello; other=world"
     });
     expect(getSingleCookie("test")).toBe("hello");
     expect(getSingleCookie("other")).toBe("world");
@@ -41,7 +41,7 @@ describe("getSingleCookie", () => {
   it("returns empty string for missing cookie", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "test=hello",
+      value: "test=hello"
     });
     expect(getSingleCookie("missing")).toBe("");
   });
@@ -53,7 +53,7 @@ describe("getSingleCookie", () => {
   it("handles URL-encoded cookie values", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "data=%7B%22a%22%3A1%7D",
+      value: "data=%7B%22a%22%3A1%7D"
     });
     expect(getSingleCookie("data")).toBe("%7B%22a%22%3A1%7D");
   });
@@ -63,7 +63,7 @@ describe("getAllCookieNames", () => {
   it("returns all cookie names", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "a=1; b=2; c=3",
+      value: "a=1; b=2; c=3"
     });
     expect(getAllCookieNames()).toEqual(["a", "b", "c"]);
   });
@@ -71,7 +71,7 @@ describe("getAllCookieNames", () => {
   it("filters cookie names by regex", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "_ga=1; _gid=2; custom=3",
+      value: "_ga=1; _gid=2; custom=3"
     });
     expect(getAllCookieNames(/^_g/)).toEqual(["_ga", "_gid"]);
   });
@@ -84,7 +84,7 @@ describe("getAllCookieNames", () => {
   it("handles cookie values with equals signs", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "token=abc=def=ghi",
+      value: "token=abc=def=ghi"
     });
     expect(getAllCookieNames()).toEqual(["token"]);
   });
@@ -135,7 +135,7 @@ describe("parseConsentCookie", () => {
       revision: 0,
       data: null,
       consentId: "test-id",
-      consentTimestamp: new Date().toISOString(),
+      consentTimestamp: new Date().toISOString()
     };
     const encoded = encodeURIComponent(JSON.stringify(value));
     const result = parseConsentCookie(encoded);
@@ -149,7 +149,7 @@ describe("parseConsentCookie", () => {
       services: {},
       revision: 0,
       data: null,
-      consentTimestamp: new Date().toISOString(),
+      consentTimestamp: new Date().toISOString()
     };
     const encoded = encodeURIComponent(JSON.stringify(value));
     expect(parseConsentCookie(encoded)).toBeNull();
@@ -182,38 +182,11 @@ describe("parseConsentCookie", () => {
       revision: 0,
       data: null,
       consentId: "test-id",
-      consentTimestamp: new Date().toISOString(),
+      consentTimestamp: new Date().toISOString()
     };
     const result = parseConsentCookie(JSON.stringify(value));
     expect(result).not.toBeNull();
     expect(result!.consentId).toBe("test-id");
-  });
-});
-
-describe("resolveCookieConfig", () => {
-  it("returns default config when no input", () => {
-    const config = resolveCookieConfig();
-    expect(config.name).toBe("cc_cookie");
-    expect(config.path).toBe("/");
-    expect(config.sameSite).toBe("Lax");
-    expect(config.secure).toBe(true);
-  });
-
-  it("merges user overrides", () => {
-    const config = resolveCookieConfig({ name: "custom_cookie", path: "/app" });
-    expect(config.name).toBe("custom_cookie");
-    expect(config.path).toBe("/app");
-    expect(config.expiresAfterDays).toBe(182);
-  });
-
-  it("sets domain to hostname when domain is empty", () => {
-    const config = resolveCookieConfig({ domain: "" });
-    expect(config.domain).toBe("localhost");
-  });
-
-  it("preserves explicit domain", () => {
-    const config = resolveCookieConfig({ domain: "example.com" });
-    expect(config.domain).toBe("example.com");
   });
 });
 
@@ -225,12 +198,12 @@ describe("getPluginCookie", () => {
       revision: 1,
       data: null,
       consentId: "id",
-      consentTimestamp: new Date().toISOString(),
+      consentTimestamp: new Date().toISOString()
     };
     const encoded = encodeURIComponent(JSON.stringify(value));
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: `cc_cookie=${encoded}`,
+      value: `cc_cookie=${encoded}`
     });
 
     const config: CookieConfig = {
@@ -239,7 +212,7 @@ describe("getPluginCookie", () => {
       domain: "",
       path: "/",
       secure: true,
-      sameSite: "Lax",
+      sameSite: "Lax"
     };
     const result = getPluginCookie(config);
     expect(result.consentId).toBe("id");
@@ -253,7 +226,7 @@ describe("getPluginCookie", () => {
       domain: "",
       path: "/",
       secure: true,
-      sameSite: "Lax",
+      sameSite: "Lax"
     };
     const result = getPluginCookie(config);
     expect(result).toEqual(EMPTY_COOKIE);
@@ -268,7 +241,7 @@ describe("setCookieValue", () => {
       domain: "localhost",
       path: "/",
       secure: true,
-      sameSite: "Lax",
+      sameSite: "Lax"
     };
     const content: CookieValue = {
       categories: ["necessary"],
@@ -276,7 +249,7 @@ describe("setCookieValue", () => {
       revision: 0,
       data: null,
       consentId: "test-id",
-      consentTimestamp: new Date().toISOString(),
+      consentTimestamp: new Date().toISOString()
     };
 
     setCookieValue(content, config);
@@ -291,7 +264,7 @@ describe("setCookieValue", () => {
       domain: "localhost",
       path: "/",
       secure: false,
-      sameSite: "Lax",
+      sameSite: "Lax"
     };
     const content: CookieValue = {
       categories: ["necessary"],
@@ -299,7 +272,7 @@ describe("setCookieValue", () => {
       revision: 0,
       data: null,
       consentId: "test-id",
-      consentTimestamp: new Date().toISOString(),
+      consentTimestamp: new Date().toISOString()
     };
 
     setCookieValue(content, config);
@@ -313,7 +286,7 @@ describe("setCookieValue", () => {
       domain: "",
       path: "/",
       secure: false,
-      sameSite: "Strict",
+      sameSite: "Strict"
     };
     const content: CookieValue = {
       categories: [],
@@ -321,7 +294,7 @@ describe("setCookieValue", () => {
       revision: 0,
       data: null,
       consentId: "id",
-      consentTimestamp: new Date().toISOString(),
+      consentTimestamp: new Date().toISOString()
     };
 
     setCookieValue(content, config);
@@ -335,7 +308,7 @@ describe("setCookieValue", () => {
       domain: "example.com",
       path: "/",
       secure: false,
-      sameSite: "Lax",
+      sameSite: "Lax"
     };
     const content: CookieValue = {
       categories: [],
@@ -343,7 +316,7 @@ describe("setCookieValue", () => {
       revision: 0,
       data: null,
       consentId: "id",
-      consentTimestamp: new Date().toISOString(),
+      consentTimestamp: new Date().toISOString()
     };
 
     setCookieValue(content, config);
@@ -376,7 +349,7 @@ describe("autoclearRejectedCookies", () => {
   it("clears cookies for rejected categories", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "_ga=123; _gid=456; custom=789",
+      value: "_ga=123; _gid=456; custom=789"
     });
 
     const result = autoclearRejectedCookies(
@@ -384,19 +357,18 @@ describe("autoclearRejectedCookies", () => {
       {
         analytics: {
           autoClear: {
-            cookies: [{ name: /^_ga/ }, { name: "_gid" }],
-          },
+            cookies: [{ name: /^_ga/ }, { name: "_gid" }]
+          }
         },
         marketing: {
           autoClear: {
-            cookies: [{ name: "custom" }],
-          },
-        },
+            cookies: [{ name: "custom" }]
+          }
+        }
       },
       [], // acceptedCategories (none accepted)
-      {},
       "localhost",
-      "/",
+      "/"
     );
 
     expect(result.reload).toBe(false);
@@ -405,7 +377,7 @@ describe("autoclearRejectedCookies", () => {
   it("does not clear cookies for accepted categories", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "_ga=123",
+      value: "_ga=123"
     });
 
     const result = autoclearRejectedCookies(
@@ -413,14 +385,13 @@ describe("autoclearRejectedCookies", () => {
       {
         analytics: {
           autoClear: {
-            cookies: [{ name: "_ga" }],
-          },
-        },
+            cookies: [{ name: "_ga" }]
+          }
+        }
       },
       ["analytics"], // analytics is accepted
-      {},
       "localhost",
-      "/",
+      "/"
     );
 
     expect(result.reload).toBe(false);
@@ -429,7 +400,7 @@ describe("autoclearRejectedCookies", () => {
   it("returns reload true when autoClear.reloadPage is set", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "",
+      value: ""
     });
 
     const result = autoclearRejectedCookies(
@@ -438,14 +409,13 @@ describe("autoclearRejectedCookies", () => {
         analytics: {
           autoClear: {
             reloadPage: true,
-            cookies: [],
-          },
-        },
+            cookies: []
+          }
+        }
       },
       [], // rejected
-      {},
       "localhost",
-      "/",
+      "/"
     );
 
     expect(result.reload).toBe(true);
@@ -454,7 +424,7 @@ describe("autoclearRejectedCookies", () => {
   it("handles regex cookie name matching", () => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "ga_tracker=1; ga_session=2; fb_pixel=3",
+      value: "ga_tracker=1; ga_session=2; fb_pixel=3"
     });
 
     autoclearRejectedCookies(
@@ -462,14 +432,13 @@ describe("autoclearRejectedCookies", () => {
       {
         analytics: {
           autoClear: {
-            cookies: [{ name: /^ga_/ }],
-          },
-        },
+            cookies: [{ name: /^ga_/ }]
+          }
+        }
       },
       [], // rejected
-      {},
       "localhost",
-      "/",
+      "/"
     );
 
     expect(document.cookie).not.toContain("ga_tracker=1");

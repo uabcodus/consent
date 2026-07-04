@@ -2,8 +2,9 @@
 
 import { createContext, useContext, useEffect, useRef, createElement, useState } from "react";
 import type { ReactNode, ReactElement } from "react";
-import type { CategoryConfig, ConsentConfig, ConsentInstance } from "../core/types";
+
 import { createConsent } from "../core/consent";
+import type { CategoryConfig, ConsentConfig, ConsentInstance } from "../core/types";
 
 const ConsentContext = createContext<ConsentInstance<Record<string, CategoryConfig>> | null>(null);
 
@@ -14,7 +15,7 @@ export interface ConsentProviderProps<TCategories extends Record<string, Categor
 
 export function ConsentProvider<TCategories extends Record<string, CategoryConfig>>({
   options,
-  children,
+  children
 }: ConsentProviderProps<TCategories>): ReactElement {
   const consentRef = useRef<ConsentInstance<TCategories> | null>(null);
 
@@ -25,9 +26,9 @@ export function ConsentProvider<TCategories extends Record<string, CategoryConfi
   return createElement(
     ConsentContext.Provider,
     {
-      value: consentRef.current as ConsentInstance<Record<string, CategoryConfig>>,
+      value: consentRef.current as ConsentInstance<Record<string, CategoryConfig>>
     },
-    children,
+    children
   );
 }
 

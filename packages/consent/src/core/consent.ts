@@ -1,3 +1,20 @@
+import {
+  acceptCategories,
+  rejectCategories,
+  acceptServiceAction,
+  rejectServiceAction
+} from "./actions";
+import { resolveConfig } from "./config";
+import {
+  findMatchingCookies,
+  getAllCookieNames,
+  eraseCookiesHelper,
+  isCookiePresent
+} from "./cookies";
+import { persistAndSync, fireCallbacks } from "./lifecycle";
+import { retrieveScriptElements, manageExistingScripts } from "./scripts";
+import { createInitialInternalState, buildPublicState } from "./state";
+import { createStore } from "./store";
 import type {
   CategoryAcceptArg,
   CategoryConfig,
@@ -7,29 +24,12 @@ import type {
   ConsentState,
   CookieValue,
   ServiceAcceptArg,
-  ServiceNames,
+  ServiceNames
 } from "./types";
-import { createStore } from "./store";
-import { resolveConfig } from "./config";
-import {
-  findMatchingCookies,
-  getAllCookieNames,
-  eraseCookiesHelper,
-  isCookiePresent,
-} from "./cookies";
-import { retrieveScriptElements, manageExistingScripts } from "./scripts";
 import { deepCopy, mergeConfigs } from "./utils";
-import { createInitialInternalState, buildPublicState } from "./state";
-import {
-  acceptCategories,
-  rejectCategories,
-  acceptServiceAction,
-  rejectServiceAction,
-} from "./actions";
-import { persistAndSync, fireCallbacks } from "./lifecycle";
 
 export function createConsent<TCategories extends Record<string, CategoryConfig>>(
-  userConfig: ConsentConfig<TCategories>,
+  userConfig: ConsentConfig<TCategories>
 ): ConsentInstance<TCategories> {
   const merged = mergeConfigs(userConfig as ConsentConfig<Record<string, CategoryConfig>>);
   const config = resolveConfig(merged);
@@ -40,7 +40,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
     internal.allScriptTags = retrieveScriptElements(
       config.categoryNames,
       config.services,
-      config.scriptType,
+      config.scriptType
     );
   }
 
@@ -55,7 +55,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
       internal.acceptedServices,
       [],
       {},
-      config.scriptType,
+      config.scriptType
     );
   } else if (!internal.skipped && config.mode === "opt-out") {
     manageExistingScripts(
@@ -64,13 +64,13 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
       internal.acceptedServices,
       [],
       {},
-      config.scriptType,
+      config.scriptType
     );
   }
 
   if (internal.skipped || internal.valid) {
     const cb = callbacks.onConsent;
-    if (cb) cb({ cookie: internal.cookieContent! });
+    if (cb && internal.cookieContent) cb({ cookie: internal.cookieContent });
   }
 
   const doPersistAndSync = () => persistAndSync({ internal, store });
@@ -87,7 +87,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
       acceptCategories(acceptArg as string | Array<string>, excludedCategories, {
         internal,
         persistAndSync: doPersistAndSync,
-        fireCallbacks: doFireCallbacks,
+        fireCallbacks: doFireCallbacks
       });
     },
 
@@ -95,7 +95,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
       rejectCategories(rejectArg as string | Array<string>, {
         internal,
         persistAndSync: doPersistAndSync,
-        fireCallbacks: doFireCallbacks,
+        fireCallbacks: doFireCallbacks
       });
     },
 
@@ -105,29 +105,29 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
 
     acceptService(
       service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
-      category: CategoryNames<TCategories>,
+      category: CategoryNames<TCategories>
     ) {
       acceptServiceAction(service as string | Array<string>, category as string, {
         internal,
         persistAndSync: doPersistAndSync,
-        fireCallbacks: doFireCallbacks,
+        fireCallbacks: doFireCallbacks
       });
     },
 
     rejectService(
       service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
-      category: CategoryNames<TCategories>,
+      category: CategoryNames<TCategories>
     ) {
       rejectServiceAction(service as string | Array<string>, category as string, {
         internal,
         persistAndSync: doPersistAndSync,
-        fireCallbacks: doFireCallbacks,
+        fireCallbacks: doFireCallbacks
       });
     },
 
     acceptedService(
       service: ServiceNames<TCategories, CategoryNames<TCategories>>,
-      category: CategoryNames<TCategories>,
+      category: CategoryNames<TCategories>
     ): boolean {
       return (internal.acceptedServices[category as string] ?? []).includes(service as string);
     },
@@ -135,7 +135,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
     eraseCookies(
       cookies: string | RegExp | Array<string | RegExp>,
       path?: string,
-      domain?: string,
+      domain?: string
     ) {
       const allCookies = getAllCookieNames();
       const found: Array<string> = [];
@@ -217,7 +217,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
     },
 
     getConfig() {
-      return deepCopy({ ...config, categories: config.categories });
+      return deepCopy({ ...config });
     },
 
     validConsent() {
@@ -321,7 +321,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
       store.destroy();
       internal.events = {};
       internal.allScriptTags = [];
-    },
+    }
   };
 
   return instance;

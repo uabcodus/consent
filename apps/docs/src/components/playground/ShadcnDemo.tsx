@@ -1,5 +1,6 @@
-import { useState } from "react";
 import { ConsentProvider, useConsent } from "@uabcodus/consent/react";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -63,14 +64,14 @@ function ConsentBanner({ onOpenPreferences }: { onOpenPreferences: () => void })
 
 function ConsentPanel({
   open,
-  onOpenChange,
+  onOpenChange
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   const consent = useConsent();
   const [localCategories, setLocalCategories] = useState(() =>
-    Object.fromEntries(Object.entries(consent.state.categories).map(([k, v]) => [k, v.accepted])),
+    Object.fromEntries(Object.entries(consent.state.categories).map(([k, v]) => [k, v.accepted]))
   );
 
   const categories = consent.state.categories;
@@ -105,7 +106,7 @@ function ConsentPanel({
                     onCheckedChange={(checked) =>
                       setLocalCategories((prev) => ({
                         ...prev,
-                        [name]: checked,
+                        [name]: checked
                       }))
                     }
                   />
@@ -155,7 +156,7 @@ function StateDebug() {
   return (
     <div className="mx-auto max-w-xl p-4">
       <h3 className="mb-2 text-sm font-medium">Consent State</h3>
-      <pre className="rounded-lg bg-gray-100 p-3 text-xs text-gray-700 overflow-x-auto">
+      <pre className="overflow-x-auto rounded-lg bg-gray-100 p-3 text-xs text-gray-700">
         {JSON.stringify(
           {
             valid,
@@ -163,13 +164,13 @@ function StateDebug() {
             categories: Object.fromEntries(
               Object.entries(categories).map(([k, v]) => [
                 k,
-                { accepted: v.accepted, readOnly: v.readOnly },
-              ]),
+                { accepted: v.accepted, readOnly: v.readOnly }
+              ])
             ),
-            services,
+            services
           },
           null,
-          2,
+          2
         )}
       </pre>
     </div>
@@ -197,16 +198,16 @@ export default function ShadcnDemo() {
           analytics: {
             services: {
               "Google Analytics": {
-                cookies: [{ name: /_ga/ }, { name: "_gid" }],
-              },
-            },
+                cookies: [{ name: /_ga/ }, { name: "_gid" }]
+              }
+            }
           },
           marketing: {
             services: {
-              "Facebook Pixel": { cookies: [{ name: "_fbp" }] },
-            },
-          },
-        },
+              "Facebook Pixel": { cookies: [{ name: "_fbp" }] }
+            }
+          }
+        }
       }}
     >
       <DemoInner />

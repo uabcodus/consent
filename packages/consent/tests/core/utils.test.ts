@@ -1,13 +1,14 @@
 import { describe, it, expect } from "vitest";
+
+import type { CategoryConfig, ConsentConfig, ConsentCallbacks } from "../../src/core/types";
 import {
   deepCopy,
   uuidv4,
   arrayDiff,
   unique,
   resolveAcceptType,
-  mergeConfigs,
+  mergeConfigs
 } from "../../src/core/utils";
-import type { CategoryConfig, ConsentConfig, ConsentCallbacks } from "../../src/core/types";
 
 describe("deepCopy", () => {
   it("returns primitive values directly", () => {
@@ -55,7 +56,7 @@ describe("deepCopy", () => {
   it("handles deeply nested structures", () => {
     const nested = {
       a: [1, { b: new Date(1000), c: /test/ }],
-      d: { e: { f: "deep" } },
+      d: { e: { f: "deep" } }
     };
     const copy = deepCopy(nested);
     expect(copy).toEqual(nested);
@@ -136,13 +137,13 @@ describe("resolveAcceptType", () => {
 
   it('returns "necessary" when only readOnly categories are accepted', () => {
     expect(resolveAcceptType(["necessary"], ["necessary", "a", "b"], ["necessary"])).toBe(
-      "necessary",
+      "necessary"
     );
   });
 
   it('returns "custom" for partial acceptance', () => {
     expect(resolveAcceptType(["necessary", "a"], ["necessary", "a", "b"], ["necessary"])).toBe(
-      "custom",
+      "custom"
     );
   });
 
@@ -161,7 +162,7 @@ describe("resolveAcceptType", () => {
 describe("mergeConfigs", () => {
   it("returns userConfig unchanged when no preset", () => {
     const config: ConsentConfig<Record<string, CategoryConfig>> = {
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     };
     const result = mergeConfigs(config);
     expect(result).toEqual(config);
@@ -169,11 +170,11 @@ describe("mergeConfigs", () => {
 
   it("merges preset categories with user categories", () => {
     const preset: ConsentConfig<Record<string, CategoryConfig>> = {
-      categories: { analytics: { services: { ga: {} } } },
+      categories: { analytics: { services: { ga: {} } } }
     };
     const userConfig: ConsentConfig<Record<string, CategoryConfig>> = {
       preset,
-      categories: { analytics: {} as const, marketing: {} as const },
+      categories: { analytics: {} as const, marketing: {} as const }
     };
 
     const result = mergeConfigs(userConfig);
@@ -185,14 +186,14 @@ describe("mergeConfigs", () => {
   it("merges services from preset and user in same category", () => {
     const preset: ConsentConfig<Record<string, CategoryConfig>> = {
       categories: {
-        analytics: { services: { ga: {} as const, ga4: {} as const } },
-      },
+        analytics: { services: { ga: {} as const, ga4: {} as const } }
+      }
     };
     const userConfig: ConsentConfig<Record<string, CategoryConfig>> = {
       preset,
       categories: {
-        analytics: { services: { mixpanel: {} as const } },
-      },
+        analytics: { services: { mixpanel: {} as const } }
+      }
     };
 
     const result = mergeConfigs(userConfig);
@@ -210,10 +211,10 @@ describe("mergeConfigs", () => {
     const userConfig: ConsentConfig<Record<string, CategoryConfig>> = {
       preset: {
         categories: {},
-        callbacks: { onConsent: presetOnConsent },
+        callbacks: { onConsent: presetOnConsent }
       },
       callbacks: { onConsent: userOnConsent },
-      categories: {},
+      categories: {}
     };
 
     const result = mergeConfigs(userConfig);
@@ -226,9 +227,9 @@ describe("mergeConfigs", () => {
     const userConfig: ConsentConfig<Record<string, CategoryConfig>> = {
       preset: {
         categories: {},
-        callbacks: { onConsent: presetOnConsent },
+        callbacks: { onConsent: presetOnConsent }
       },
-      categories: {},
+      categories: {}
     };
 
     const result = mergeConfigs(userConfig);
@@ -239,12 +240,12 @@ describe("mergeConfigs", () => {
     const userConfig: ConsentConfig<Record<string, CategoryConfig>> = {
       preset: {
         categories: {
-          analytics: { autoClear: { cookies: [{ name: "_ga" }] } },
-        },
+          analytics: { autoClear: { cookies: [{ name: "_ga" }] } }
+        }
       },
       categories: {
-        analytics: { autoClear: { cookies: [{ name: "_custom" }] } },
-      },
+        analytics: { autoClear: { cookies: [{ name: "_custom" }] } }
+      }
     };
 
     const result = mergeConfigs(userConfig);
@@ -257,12 +258,12 @@ describe("mergeConfigs", () => {
       preset: {
         categories: {
           necessary: { readOnly: true },
-          analytics: {},
-        },
+          analytics: {}
+        }
       },
       categories: {
-        analytics: { enabled: true },
-      },
+        analytics: { enabled: true }
+      }
     };
 
     const result = mergeConfigs(userConfig);
@@ -273,7 +274,7 @@ describe("mergeConfigs", () => {
   it("handles empty preset categories", () => {
     const userConfig: ConsentConfig<Record<string, CategoryConfig>> = {
       preset: { categories: {} },
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     };
 
     const result = mergeConfigs(userConfig);
@@ -283,9 +284,9 @@ describe("mergeConfigs", () => {
   it("handles userConfig with no categories from preset only", () => {
     const userConfig: ConsentConfig<Record<string, CategoryConfig>> = {
       preset: {
-        categories: { analytics: {} },
+        categories: { analytics: {} }
       },
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     };
 
     const result = mergeConfigs(userConfig);

@@ -13,7 +13,7 @@ const SCRIPT_TAG_SELECTOR = "data-category";
 export function retrieveScriptElements(
   allCategoryNames: Array<string>,
   existingServices: Record<string, Record<string, ServiceConfig>>,
-  scriptType: string,
+  scriptType: string
 ): Array<ScriptInfo> {
   if (typeof document === "undefined") return [];
 
@@ -46,7 +46,7 @@ export function retrieveScriptElements(
       _executed: false,
       _runOnDisable: runOnDisable,
       _categoryName: categoryName,
-      _serviceName: serviceName,
+      _serviceName: serviceName
     });
 
     if (serviceName) {
@@ -66,7 +66,7 @@ export function manageExistingScripts(
   acceptedServices: Record<string, Array<string>>,
   lastChangedCategoryNames: Array<string>,
   lastChangedServices: Record<string, Array<string>>,
-  scriptType: string,
+  scriptType: string
 ): void {
   if (typeof document === "undefined") return;
 
@@ -145,7 +145,7 @@ export function runServiceCallbacks(
   definedServices: Record<string, Record<string, ServiceConfig>>,
   acceptedServices: Record<string, Array<string>>,
   lastChangedServices: Record<string, Array<string>>,
-  prevEnabledServices?: Record<string, Array<string>>,
+  prevEnabledServices?: Record<string, Array<string>>
 ): void {
   for (const cat of allCategoryNames) {
     const svcs = lastChangedServices[cat] ?? acceptedServices[cat] ?? [];

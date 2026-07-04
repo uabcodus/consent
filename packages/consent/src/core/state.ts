@@ -1,8 +1,8 @@
-import type { CategoryConfig, ConsentConfig, ConsentState, CookieValue } from "./types";
 import type { ConsentConfigResolved } from "./config";
-import type { ScriptInfo } from "./scripts";
 import { isBot } from "./config";
 import { parseConsentCookie } from "./cookies";
+import type { ScriptInfo } from "./scripts";
+import type { CategoryConfig, ConsentConfig, ConsentState, CookieValue } from "./types";
 import { unique, resolveAcceptType } from "./utils";
 
 export type Events = Record<string, Set<(...args: Array<unknown>) => void>>;
@@ -24,7 +24,11 @@ export interface InternalState {
       {
         onAccept?: () => void;
         onReject?: () => void;
-        cookies?: Array<{ name: string | RegExp; path?: string; domain?: string }>;
+        cookies?: Array<{
+          name: string | RegExp;
+          path?: string;
+          domain?: string;
+        }>;
       }
     >
   >;
@@ -48,7 +52,7 @@ export function buildPublicState(internal: InternalState): ConsentState {
   for (const name of internal.categoryNames) {
     categories[name] = {
       accepted: internal.acceptedCategories.includes(name),
-      readOnly: internal.readOnlyCategories.includes(name),
+      readOnly: internal.readOnlyCategories.includes(name)
     };
   }
 
@@ -69,7 +73,7 @@ export function buildPublicState(internal: InternalState): ConsentState {
     services,
     cookie: internal.cookieContent,
     mode: internal.mode,
-    acceptType: internal.acceptType,
+    acceptType: internal.acceptType
   };
 }
 
@@ -81,10 +85,10 @@ function parseInitialCookie(initial: CookieValue | string | null | undefined): C
 
 export function createInitialInternalState(
   merged: ConsentConfig<Record<string, CategoryConfig>>,
-  config: ConsentConfigResolved<Record<string, CategoryConfig>>,
+  config: ConsentConfigResolved<Record<string, CategoryConfig>>
 ): InternalState {
   const initialCookie = parseInitialCookie(
-    merged.initialCookie as CookieValue | string | null | undefined,
+    merged.initialCookie as CookieValue | string | null | undefined
   );
   const cookieValue = initialCookie ?? config.storage.get();
 
@@ -143,7 +147,10 @@ export function createInitialInternalState(
       : [...config.readOnlyCategories];
 
   const acceptedServices: Record<string, Array<string>> = valid
-    ? { ...initialServices, ...((savedServices ?? {}) as Record<string, Array<string>>) }
+    ? {
+        ...initialServices,
+        ...((savedServices ?? {}) as Record<string, Array<string>>)
+      }
     : { ...initialServices };
 
   return {
@@ -154,7 +161,7 @@ export function createInitialInternalState(
     acceptType: resolveAcceptType(
       acceptedCategories,
       config.categoryNames,
-      config.readOnlyCategories,
+      config.readOnlyCategories
     ),
     categoryNames: config.categoryNames,
     readOnlyCategories: config.readOnlyCategories,
@@ -167,7 +174,11 @@ export function createInitialInternalState(
         {
           onAccept?: () => void;
           onReject?: () => void;
-          cookies?: Array<{ name: string | RegExp; path?: string; domain?: string }>;
+          cookies?: Array<{
+            name: string | RegExp;
+            path?: string;
+            domain?: string;
+          }>;
         }
       >
     >,
@@ -183,6 +194,6 @@ export function createInitialInternalState(
     lastChangedServices: {},
     lastEnabledServices: {},
     revisionValid: true,
-    events: {},
+    events: {}
   };
 }

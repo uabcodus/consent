@@ -20,17 +20,17 @@ where consent is restored from a cookie.
 const consent = createConsent({
   categories: {
     necessary: { readOnly: true },
-    analytics: {},
+    analytics: {}
   } as const,
   callbacks: {
     onFirstConsent: ({ cookie }) => {
       // First time consent — great for logging to your backend
       fetch("/api/consent", {
         method: "POST",
-        body: JSON.stringify(cookie),
+        body: JSON.stringify(cookie)
       });
-    },
-  },
+    }
+  }
 });
 ```
 

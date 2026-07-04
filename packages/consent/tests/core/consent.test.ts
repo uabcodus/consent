@@ -1,18 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { createConsent } from "../../src/core/consent";
 import type { CookieValue } from "../../src/core/types";
 
 function setCookie(name: string, value: string) {
   Object.defineProperty(document, "cookie", {
     writable: true,
-    value: `${name}=${encodeURIComponent(value)}`,
+    value: `${name}=${encodeURIComponent(value)}`
   });
 }
 
 function clearCookies() {
   Object.defineProperty(document, "cookie", {
     writable: true,
-    value: "",
+    value: ""
   });
 }
 
@@ -25,8 +26,8 @@ const basicConfig = {
   categories: {
     necessary: { readOnly: true } as const,
     analytics: {} as const,
-    marketing: {} as const,
-  },
+    marketing: {} as const
+  }
 };
 
 describe("consent - advanced features", () => {
@@ -39,14 +40,14 @@ describe("consent - advanced features", () => {
         data: null,
         consentId: "test-id",
         consentTimestamp: new Date().toISOString(),
-        lastConsentTimestamp: new Date().toISOString(),
+        lastConsentTimestamp: new Date().toISOString()
       };
 
       setCookie("cc_cookie", JSON.stringify(oldCookie));
 
       const consent = createConsent({
         ...basicConfig,
-        revision: 2,
+        revision: 2
       });
 
       expect(consent.state.valid).toBe(false);
@@ -61,14 +62,14 @@ describe("consent - advanced features", () => {
         data: null,
         consentId: "test-id",
         consentTimestamp: new Date().toISOString(),
-        lastConsentTimestamp: new Date().toISOString(),
+        lastConsentTimestamp: new Date().toISOString()
       };
 
       setCookie("cc_cookie", JSON.stringify(oldCookie));
 
       const consent = createConsent({
         ...basicConfig,
-        revision: 2,
+        revision: 2
       });
 
       expect(consent.state.valid).toBe(true);
@@ -83,14 +84,14 @@ describe("consent - advanced features", () => {
         data: null,
         consentId: "test-id",
         consentTimestamp: new Date().toISOString(),
-        lastConsentTimestamp: new Date().toISOString(),
+        lastConsentTimestamp: new Date().toISOString()
       };
 
       setCookie("cc_cookie", JSON.stringify(oldCookie));
 
       const consent = createConsent({
         ...basicConfig,
-        revision: 0,
+        revision: 0
       });
 
       expect(consent.state.valid).toBe(true);
@@ -104,8 +105,8 @@ describe("consent - advanced features", () => {
         categories: {
           necessary: { readOnly: true } as const,
           analytics: { enabled: true } as const,
-          marketing: {} as const,
-        },
+          marketing: {} as const
+        }
       });
 
       expect(consent.state.categories.analytics.accepted).toBe(true);
@@ -121,9 +122,9 @@ describe("consent - advanced features", () => {
         mode: "opt-out",
         categories: {
           necessary: { readOnly: true } as const,
-          analytics: { enabled: true } as const,
+          analytics: { enabled: true } as const
         },
-        callbacks: { onFirstConsent, onConsent },
+        callbacks: { onFirstConsent, onConsent }
       });
 
       expect(onFirstConsent).not.toHaveBeenCalled();
@@ -140,7 +141,7 @@ describe("consent - advanced features", () => {
         consentId: "test-id",
         consentTimestamp: new Date(Date.now() - 86400000 * 200).toISOString(),
         lastConsentTimestamp: new Date(Date.now() - 86400000 * 200).toISOString(),
-        expirationTime: Date.now() - 1000, // Expired 1 second ago
+        expirationTime: Date.now() - 1000 // Expired 1 second ago
       };
 
       setCookie("cc_cookie", JSON.stringify(expiredCookie));
@@ -158,7 +159,7 @@ describe("consent - advanced features", () => {
         consentId: "test-id",
         consentTimestamp: new Date().toISOString(),
         lastConsentTimestamp: new Date().toISOString(),
-        expirationTime: Date.now() + 86400000 * 100, // Valid for 100 days
+        expirationTime: Date.now() + 86400000 * 100 // Valid for 100 days
       };
 
       setCookie("cc_cookie", JSON.stringify(validCookie));
@@ -178,14 +179,14 @@ describe("consent - advanced features", () => {
         data: null,
         consentId: "test-id",
         consentTimestamp: new Date().toISOString(),
-        lastConsentTimestamp: new Date().toISOString(),
+        lastConsentTimestamp: new Date().toISOString()
       };
 
       setCookie("cc_cookie", JSON.stringify(validCookie));
 
       createConsent({
         ...basicConfig,
-        callbacks: { onConsent },
+        callbacks: { onConsent }
       });
 
       expect(onConsent).toHaveBeenCalledTimes(1);
@@ -196,7 +197,7 @@ describe("consent - advanced features", () => {
 
       createConsent({
         ...basicConfig,
-        callbacks: { onConsent },
+        callbacks: { onConsent }
       });
 
       expect(onConsent).not.toHaveBeenCalled();
@@ -208,7 +209,7 @@ describe("consent - advanced features", () => {
 
       const consent = createConsent({
         ...basicConfig,
-        callbacks: { onFirstConsent, onConsent },
+        callbacks: { onFirstConsent, onConsent }
       });
 
       consent.accept("all");
@@ -393,8 +394,8 @@ describe("consent - advanced features", () => {
         categories: {
           necessary: { readOnly: true } as const,
           analytics: { enabled: true } as const,
-          marketing: {} as const,
-        },
+          marketing: {} as const
+        }
       });
 
       consent.reject("analytics");
@@ -409,7 +410,7 @@ describe("consent - advanced features", () => {
       const onChange = vi.fn();
       const consent = createConsent({
         ...basicConfig,
-        callbacks: { onChange },
+        callbacks: { onChange }
       });
 
       consent.accept("analytics");
@@ -425,7 +426,7 @@ describe("consent - advanced features", () => {
       const onChange = vi.fn();
       const consent = createConsent({
         ...basicConfig,
-        callbacks: { onChange },
+        callbacks: { onChange }
       });
 
       consent.accept("all");
@@ -443,7 +444,7 @@ describe("consent - advanced features", () => {
 
       const changed = consent.setCookieData({
         value: "simple-string",
-        mode: "update",
+        mode: "update"
       });
 
       expect(changed).toBe(true);
@@ -525,10 +526,10 @@ describe("consent - advanced features", () => {
           services: {
             ga: {} as const,
             mixpanel: {} as const,
-            amplitude: {} as const,
-          },
-        },
-      },
+            amplitude: {} as const
+          }
+        }
+      }
     };
 
     it("acceptService with unknown category is no-op", () => {
@@ -577,8 +578,8 @@ describe("consent - advanced features", () => {
     it("acceptService on empty category is no-op", () => {
       const consent = createConsent({
         categories: {
-          empty_cat: { services: {} },
-        },
+          empty_cat: { services: {} }
+        }
       });
 
       expect(() => {
@@ -591,7 +592,7 @@ describe("consent - advanced features", () => {
     it("adds string cookie name to found list (not value)", () => {
       Object.defineProperty(document, "cookie", {
         writable: true,
-        value: "_ga=GA1.2.test; _gid=GID.test",
+        value: "_ga=GA1.2.test; _gid=GID.test"
       });
 
       const consent = createConsent(basicConfig);
@@ -601,7 +602,7 @@ describe("consent - advanced features", () => {
     it("erases cookies matching regex", () => {
       Object.defineProperty(document, "cookie", {
         writable: true,
-        value: "_ga=value; _gid=value; other_cookie=value",
+        value: "_ga=value; _gid=value; other_cookie=value"
       });
 
       const consent = createConsent(basicConfig);
@@ -611,7 +612,7 @@ describe("consent - advanced features", () => {
     it("erases cookies from array input", () => {
       Object.defineProperty(document, "cookie", {
         writable: true,
-        value: "_ga=value; _gid=value; _gat=value",
+        value: "_ga=value; _gid=value; _gat=value"
       });
 
       const consent = createConsent(basicConfig);
@@ -659,11 +660,11 @@ describe("consent - advanced features", () => {
         categories: {
           analytics: {
             services: {
-              ga: {},
-            },
-          },
+              ga: {}
+            }
+          }
         },
-        callbacks: { onChange },
+        callbacks: { onChange }
       });
 
       consent.acceptService("ga", "analytics");
@@ -677,12 +678,12 @@ describe("consent - advanced features", () => {
           analytics: {
             enabled: true,
             services: {
-              ga: {},
-            },
-          },
+              ga: {}
+            }
+          }
         },
         mode: "opt-in",
-        callbacks: { onChange },
+        callbacks: { onChange }
       });
 
       consent.acceptService("ga", "analytics");
@@ -698,8 +699,8 @@ describe("consent - advanced features", () => {
         categories: {
           necessary: { readOnly: true },
           analytics: {},
-          marketing: {},
-        },
+          marketing: {}
+        }
       });
 
       consent.accept("all", ["marketing"]);

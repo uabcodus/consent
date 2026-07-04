@@ -1,7 +1,8 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
+
 import { isBot, resolveConfig } from "../../src/core/config";
-import type { CategoryConfig, ConsentConfig } from "../../src/core/types";
 import { localStorageStorage } from "../../src/core/storage";
+import type { CategoryConfig, ConsentConfig } from "../../src/core/types";
 
 describe("isBot", () => {
   afterEach(() => {
@@ -11,7 +12,7 @@ describe("isBot", () => {
   it("returns false for normal browsers", () => {
     vi.stubGlobal("navigator", {
       userAgent: "Mozilla/5.0 Chrome/120",
-      webdriver: false,
+      webdriver: false
     });
     expect(isBot()).toBe(false);
   });
@@ -19,7 +20,7 @@ describe("isBot", () => {
   it("returns true for common bot user agents", () => {
     vi.stubGlobal("navigator", {
       userAgent: "Googlebot/2.1",
-      webdriver: false,
+      webdriver: false
     });
     expect(isBot()).toBe(true);
   });
@@ -27,7 +28,7 @@ describe("isBot", () => {
   it("returns true for crawl-based user agents", () => {
     vi.stubGlobal("navigator", {
       userAgent: "AdsBot-Google (+http://www.google.com/adsbot.html)",
-      webdriver: false,
+      webdriver: false
     });
     expect(isBot()).toBe(true);
   });
@@ -35,7 +36,7 @@ describe("isBot", () => {
   it("returns true for spider user agents", () => {
     vi.stubGlobal("navigator", {
       userAgent: "DuckDuckBot/1.0",
-      webdriver: false,
+      webdriver: false
     });
     expect(isBot()).toBe(true);
   });
@@ -43,7 +44,7 @@ describe("isBot", () => {
   it("returns true when webdriver is true", () => {
     vi.stubGlobal("navigator", {
       userAgent: "Mozilla/5.0",
-      webdriver: true,
+      webdriver: true
     });
     expect(isBot()).toBe(true);
   });
@@ -56,7 +57,7 @@ describe("isBot", () => {
   it("handles empty user agent", () => {
     vi.stubGlobal("navigator", {
       userAgent: "",
-      webdriver: false,
+      webdriver: false
     });
     expect(isBot()).toBe(false);
   });
@@ -65,14 +66,14 @@ describe("isBot", () => {
 describe("resolveConfig", () => {
   it("returns default mode opt-in", () => {
     const config = resolveConfig({
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.mode).toBe("opt-in");
   });
 
   it("sets revision to 0 by default", () => {
     const config = resolveConfig({
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.revision).toBe(0);
     expect(config.revisionEnabled).toBe(false);
@@ -81,7 +82,7 @@ describe("resolveConfig", () => {
   it("enables revision when revision > 0", () => {
     const config = resolveConfig({
       revision: 3,
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.revision).toBe(3);
     expect(config.revisionEnabled).toBe(true);
@@ -89,7 +90,7 @@ describe("resolveConfig", () => {
 
   it("defaults hideFromBots to true", () => {
     const config = resolveConfig({
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.hideFromBots).toBe(true);
   });
@@ -97,28 +98,28 @@ describe("resolveConfig", () => {
   it("allows overriding hideFromBots", () => {
     const config = resolveConfig({
       hideFromBots: false,
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.hideFromBots).toBe(false);
   });
 
   it("defaults manageScripts to false", () => {
     const config = resolveConfig({
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.manageScripts).toBe(false);
   });
 
   it("defaults scriptType to text/consent", () => {
     const config = resolveConfig({
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.scriptType).toBe("text/consent");
   });
 
   it("defaults autoClearCookies to true", () => {
     const config = resolveConfig({
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.autoClearCookies).toBe(true);
   });
@@ -127,8 +128,8 @@ describe("resolveConfig", () => {
     const config = resolveConfig({
       categories: {
         necessary: { readOnly: true },
-        analytics: {},
-      },
+        analytics: {}
+      }
     });
     expect(config.categoryNames).toEqual(["necessary", "analytics"]);
   });
@@ -138,8 +139,8 @@ describe("resolveConfig", () => {
       categories: {
         necessary: { readOnly: true },
         analytics: {},
-        functionality: { readOnly: true },
-      },
+        functionality: { readOnly: true }
+      }
     });
     expect(config.readOnlyCategories).toEqual(["necessary", "functionality"]);
   });
@@ -149,10 +150,10 @@ describe("resolveConfig", () => {
       categories: {
         analytics: {
           services: {
-            ga: { onAccept: () => {} },
-          },
-        },
-      },
+            ga: { onAccept: () => {} }
+          }
+        }
+      }
     });
     expect(config.services.analytics).toBeDefined();
     expect(config.services.analytics!.ga).toBeDefined();
@@ -163,8 +164,8 @@ describe("resolveConfig", () => {
     const config = resolveConfig({
       categories: {
         analytics: {},
-        marketing: {},
-      },
+        marketing: {}
+      }
     });
     expect(config.services.analytics).toEqual({});
     expect(config.services.marketing).toEqual({});
@@ -174,14 +175,14 @@ describe("resolveConfig", () => {
     const storage = localStorageStorage("test_consent");
     const config = resolveConfig({
       categories: { analytics: {} },
-      storage,
+      storage
     });
     expect(config.storage).toBe(storage);
   });
 
   it("creates default cookie storage when none provided", () => {
     const config = resolveConfig({
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.storage).toBeDefined();
     expect(typeof config.storage.get).toBe("function");
@@ -192,7 +193,7 @@ describe("resolveConfig", () => {
   it("handles opt-out mode", () => {
     const config = resolveConfig({
       mode: "opt-out",
-      categories: { analytics: {} },
+      categories: { analytics: {} }
     });
     expect(config.mode).toBe("opt-out");
   });

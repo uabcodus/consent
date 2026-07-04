@@ -14,7 +14,7 @@ Presets use the `preset` option:
 import { createConsent, googleConsentMode } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  preset: googleConsentMode,
+  preset: googleConsentMode
   // Your config overrides and extends the preset
 });
 ```
@@ -56,7 +56,7 @@ Use it with `syncGtagConsent` for a complete setup:
 import { createConsent, googleConsentMode, syncGtagConsent } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  preset: googleConsentMode,
+  preset: googleConsentMode
 });
 
 syncGtagConsent(consent); // Keeps gtag in sync automatically
@@ -87,23 +87,26 @@ const consent = createConsent({
     marketing: {
       services: {
         facebookPixel: {
-          onAccept: () => fbq?.("consent", "grant"),
-        },
-      },
+          onAccept: () => fbq?.("consent", "grant")
+        }
+      }
     },
     // Override a preset category
     analytics: {
       autoClear: {
-        cookies: [{ name: "_ga" }, { name: "_gid" }, { name: "my_tracker" }],
-      },
-    },
+        cookies: [{ name: "_ga" }, { name: "_gid" }, { name: "my_tracker" }]
+      }
+    }
   } as const,
   // Add callbacks
   callbacks: {
     onFirstConsent: ({ cookie }) => {
-      fetch("/api/consent", { method: "POST", body: JSON.stringify(cookie) });
-    },
-  },
+      fetch("/api/consent", {
+        method: "POST",
+        body: JSON.stringify(cookie)
+      });
+    }
+  }
 });
 ```
 
@@ -128,10 +131,10 @@ export const companyPreset: ConsentConfig<
     analytics: {
       services: {
         googleAnalytics: {},
-        plausible: {},
-      },
-    },
-  },
+        plausible: {}
+      }
+    }
+  }
 };
 ```
 
@@ -145,8 +148,8 @@ const consent = createConsent({
   preset: companyPreset,
   // Per-project overrides
   categories: {
-    marketing: {},
-  } as const,
+    marketing: {}
+  } as const
 });
 ```
 

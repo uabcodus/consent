@@ -1,11 +1,11 @@
-import type { InternalState, Events } from "./state";
 import type { AutoClearCategoryConfig } from "./cookies";
-import type { ConsentCallbacks } from "./types";
-import type { Store } from "./store";
-import { uuidv4, deepCopy, unique } from "./utils";
 import { autoclearRejectedCookies } from "./cookies";
 import { runServiceCallbacks, manageExistingScripts } from "./scripts";
+import type { InternalState, Events } from "./state";
 import { buildPublicState } from "./state";
+import type { Store } from "./store";
+import type { ConsentCallbacks } from "./types";
+import { uuidv4, deepCopy, unique } from "./utils";
 
 export interface PersistAndSyncParams {
   internal: InternalState;
@@ -26,7 +26,7 @@ export function persistAndSync({ internal, store }: PersistAndSyncParams): void 
     data: internal.cookieData,
     consentTimestamp: internal.consentTimestamp!.toISOString(),
     consentId: internal.consentId,
-    services: { ...internal.acceptedServices },
+    services: { ...internal.acceptedServices }
   };
 
   if (internal.lastConsentTimestamp) {
@@ -41,9 +41,8 @@ export function persistAndSync({ internal, store }: PersistAndSyncParams): void 
       internal.categoryNames,
       internal.config.categories as Record<string, AutoClearCategoryConfig>,
       internal.acceptedCategories,
-      internal.acceptedServices,
       defaultDomain,
-      "/",
+      "/"
     );
     if (result.reload) {
       if (typeof location !== "undefined") {
@@ -60,7 +59,7 @@ export function persistAndSync({ internal, store }: PersistAndSyncParams): void 
     >,
     internal.acceptedServices,
     internal.lastChangedServices,
-    internal.lastEnabledServices,
+    internal.lastEnabledServices
   );
 
   if (internal.config.manageScripts) {
@@ -70,7 +69,7 @@ export function persistAndSync({ internal, store }: PersistAndSyncParams): void 
       internal.acceptedServices,
       internal.lastChangedCategoryNames,
       internal.lastChangedServices,
-      internal.config.scriptType,
+      internal.config.scriptType
     );
   }
 
@@ -81,7 +80,7 @@ export function fireCallbacks(
   event: "firstConsent" | "consent" | "change",
   internal: InternalState,
   callbacks: ConsentCallbacks,
-  events: Events,
+  events: Events
 ): void {
   const cookie = internal.cookieContent!;
   const payload = deepCopy({ cookie });
@@ -96,8 +95,8 @@ export function fireCallbacks(
       deepCopy({
         cookie,
         changedCategories: internal.lastChangedCategoryNames,
-        changedServices: internal.lastChangedServices,
-      }),
+        changedServices: internal.lastChangedServices
+      })
     );
   }
 

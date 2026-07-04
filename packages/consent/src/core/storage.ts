@@ -1,19 +1,12 @@
-import type { CookieConfig, CookieValue, StorageAdapter } from "./types";
 import {
   getSingleCookie,
   parseCookie,
   setCookieValue,
   eraseCookiesHelper,
   createEmptyCookieValue,
+  safeDecodeURI
 } from "./cookies";
-
-function safeDecodeForStorage(value: string): string {
-  try {
-    return decodeURIComponent(value);
-  } catch {
-    return value;
-  }
-}
+import type { CookieConfig, CookieValue, StorageAdapter } from "./types";
 
 export function cookieStorage(config: CookieConfig): StorageAdapter {
   const { name, domain } = config;
@@ -25,7 +18,7 @@ export function cookieStorage(config: CookieConfig): StorageAdapter {
       if (typeof document === "undefined") return createEmptyCookieValue();
       const value = getSingleCookie(name);
       if (!value) return createEmptyCookieValue();
-      return parseCookie(safeDecodeForStorage(value));
+      return parseCookie(safeDecodeURI(value));
     },
 
     set(value: CookieValue): void {
@@ -34,7 +27,7 @@ export function cookieStorage(config: CookieConfig): StorageAdapter {
 
     remove(): void {
       eraseCookiesHelper([name], resolvedDomain, config.path);
-    },
+    }
   };
 }
 
@@ -69,6 +62,6 @@ export function localStorageStorage(name: string, expiresAfterMs?: number): Stor
       } catch {
         /* noop */
       }
-    },
+    }
   };
 }

@@ -17,8 +17,8 @@ function App() {
         categories: {
           necessary: { readOnly: true },
           analytics: {},
-          marketing: {},
-        },
+          marketing: {}
+        }
       }}
     >
       <YourApp />
@@ -77,8 +77,8 @@ const config = {
   categories: {
     necessary: { readOnly: true },
     analytics: {},
-    marketing: {},
-  } as const,
+    marketing: {}
+  } as const
 };
 
 function App() {
@@ -136,7 +136,7 @@ function PreferencesPanel() {
               />
               {name}
             </label>
-          ),
+          )
         )}
         <button
           onClick={() => {
@@ -164,7 +164,7 @@ function GtagSyncer() {
   useEffect(() => {
     const unsub = consent.on("change", ({ cookie }) => {
       window.gtag?.("consent", "update", {
-        analytics_storage: cookie.categories.includes("analytics") ? "granted" : "denied",
+        analytics_storage: cookie.categories.includes("analytics") ? "granted" : "denied"
       });
     });
     return unsub;
@@ -192,7 +192,7 @@ const cookieValue = parseConsentCookie(cookies().get("cc_cookie"));
     initialCookie: cookieValue,
     categories: {
       /* ... */
-    },
+    }
   }}
 >
   <App />

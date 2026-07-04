@@ -11,7 +11,7 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 ```ts
 function createConsent<TCategories extends Record<string, CategoryConfig>>(
-  userConfig: ConsentConfig<TCategories>,
+  userConfig: ConsentConfig<TCategories>
 ): ConsentInstance<TCategories>;
 ```
 
@@ -23,8 +23,8 @@ import { createConsent } from "@uabcodus/consent/core";
 const consent = createConsent({
   categories: {
     necessary: { readOnly: true },
-    analytics: {},
-  } as const,
+    analytics: {}
+  } as const
 });
 ```
 
@@ -299,7 +299,10 @@ Dynamically load an external script. Returns a promise that resolves to `true` o
 
 ```ts
 await consent.loadScript("https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX");
-await consent.loadScript("https://example.com/script.js", { async: "", id: "my-script" });
+await consent.loadScript("https://example.com/script.js", {
+  async: "",
+  id: "my-script"
+});
 ```
 
 ### `.reset()`

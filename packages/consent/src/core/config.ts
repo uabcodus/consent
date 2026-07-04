@@ -1,6 +1,5 @@
-import type { CategoryConfig, ConsentConfig, ServiceConfig } from "./types";
-import type { StorageAdapter } from "./storage";
 import { cookieStorage } from "./storage";
+import type { CategoryConfig, ConsentConfig, ServiceConfig, StorageAdapter } from "./types";
 
 export interface ConsentConfigResolved<TCategories extends Record<string, CategoryConfig>> {
   mode: "opt-in" | "opt-out";
@@ -24,7 +23,7 @@ export function isBot(): boolean {
 }
 
 export function resolveConfig<TCategories extends Record<string, CategoryConfig>>(
-  userConfig: ConsentConfig<TCategories>,
+  userConfig: ConsentConfig<TCategories>
 ): ConsentConfigResolved<TCategories> {
   const categories = userConfig.categories;
   const categoryNames = Object.keys(categories);
@@ -59,7 +58,7 @@ export function resolveConfig<TCategories extends Record<string, CategoryConfig>
       domain: "",
       path: "/",
       secure: true,
-      sameSite: "Lax",
+      sameSite: "Lax"
     });
 
   return {
@@ -74,6 +73,6 @@ export function resolveConfig<TCategories extends Record<string, CategoryConfig>
     categoryNames,
     readOnlyCategories,
     services: allServices,
-    storage,
+    storage
   };
 }

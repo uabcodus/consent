@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { useConsent } from "@uabcodus/consent/react";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 

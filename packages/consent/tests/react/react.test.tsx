@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { ConsentProvider, useConsent } from "../../src/react/index";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import type { CategoryConfig, ConsentConfig } from "../../src/core/types";
+import { ConsentProvider, useConsent } from "../../src/react/index";
 
 function makeWrapper(config: ConsentConfig<Record<string, CategoryConfig>>) {
   return function Wrapper({ children }: { children: ReactNode }) {
@@ -14,8 +15,8 @@ const basicConfig: ConsentConfig<Record<string, CategoryConfig>> = {
   categories: {
     necessary: { readOnly: true },
     analytics: {},
-    marketing: {},
-  },
+    marketing: {}
+  }
 };
 
 const basicWrapper = makeWrapper(basicConfig);
@@ -24,14 +25,14 @@ describe("React adapter", () => {
   beforeEach(() => {
     Object.defineProperty(document, "cookie", {
       writable: true,
-      value: "",
+      value: ""
     });
   });
 
   describe("useConsent", () => {
     it("returns consent instance when used inside ConsentProvider", () => {
       const { result } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       expect(result.current).toBeDefined();
@@ -41,13 +42,13 @@ describe("React adapter", () => {
 
     it("throws when used outside ConsentProvider", () => {
       expect(() => renderHook(() => useConsent())).toThrow(
-        "useConsent must be used within a ConsentProvider",
+        "useConsent must be used within a ConsentProvider"
       );
     });
 
     it("accesses state reactively", () => {
       const { result } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       expect(result.current.state.categories.analytics.accepted).toBe(false);
@@ -62,7 +63,7 @@ describe("React adapter", () => {
 
     it("accepts all categories", () => {
       const { result } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       act(() => {
@@ -76,7 +77,7 @@ describe("React adapter", () => {
 
     it("accepts necessary only", () => {
       const { result } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       act(() => {
@@ -89,7 +90,7 @@ describe("React adapter", () => {
 
     it("rejects categories", () => {
       const { result } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       act(() => {
@@ -111,9 +112,9 @@ describe("React adapter", () => {
       const wrapper = makeWrapper({
         categories: {
           necessary: { readOnly: true } as const,
-          analytics: {} as const,
+          analytics: {} as const
         },
-        callbacks: { onFirstConsent },
+        callbacks: { onFirstConsent }
       });
 
       const { result } = renderHook(() => useConsent(), { wrapper });
@@ -127,7 +128,7 @@ describe("React adapter", () => {
 
     it("subscribes to state changes for React re-renders", () => {
       const { result, rerender } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       const stateBefore = result.current.state;
@@ -146,7 +147,7 @@ describe("React adapter", () => {
 
     it("reset works", () => {
       const { result } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       act(() => {
@@ -164,7 +165,7 @@ describe("React adapter", () => {
 
     it("validConsent returns correct value", () => {
       const { result } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       expect(result.current.validConsent()).toBe(false);
@@ -182,10 +183,10 @@ describe("React adapter", () => {
           analytics: {
             services: {
               ga: {} as const,
-              mixpanel: {} as const,
-            },
-          },
-        },
+              mixpanel: {} as const
+            }
+          }
+        }
       });
 
       const { result } = renderHook(() => useConsent(), { wrapper });
@@ -203,7 +204,7 @@ describe("React adapter", () => {
   describe("ConsentProvider", () => {
     it("provides consent instance through context", () => {
       const { result } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       expect(result.current.state.mode).toBe("opt-in");
@@ -212,7 +213,7 @@ describe("React adapter", () => {
 
     it("preserves instance across renders", () => {
       const { result, rerender } = renderHook(() => useConsent(), {
-        wrapper: basicWrapper,
+        wrapper: basicWrapper
       });
 
       const instance1 = result.current;
@@ -232,15 +233,15 @@ describe("React adapter", () => {
         data: null,
         consentId: "test-id",
         consentTimestamp: new Date().toISOString(),
-        lastConsentTimestamp: new Date().toISOString(),
+        lastConsentTimestamp: new Date().toISOString()
       };
 
       const wrapper = makeWrapper({
         categories: {
           necessary: { readOnly: true } as const,
-          analytics: {} as const,
+          analytics: {} as const
         },
-        initialCookie: cookieValue,
+        initialCookie: cookieValue
       });
 
       const { result } = renderHook(() => useConsent(), { wrapper });

@@ -17,7 +17,7 @@ export function ConsentToggle({
   label,
   checked,
   readOnly,
-  onCheckedChange,
+  onCheckedChange
 }: ConsentToggleProps) {
   return (
     <div className={cn("flex items-center gap-2", readOnly && "opacity-50")}>

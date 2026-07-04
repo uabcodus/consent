@@ -19,5 +19,5 @@ export type {
   CategoryNames,
   CategoryAcceptArg,
   ServiceNames,
-  ServiceAcceptArg,
+  ServiceAcceptArg
 } from "./types";

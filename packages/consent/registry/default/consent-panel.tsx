@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useConsent } from "@uabcodus/consent/react";
 import type { CookieItem } from "@uabcodus/consent/core";
+import { useConsent } from "@uabcodus/consent/react";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +24,7 @@ function ConsentToggle({
   label,
   checked,
   readOnly,
-  onCheckedChange,
+  onCheckedChange
 }: {
   id: string;
   label: string;
@@ -46,7 +47,7 @@ function ConsentToggle({
 function CookieTable({
   caption,
   headers,
-  cookies,
+  cookies
 }: {
   caption?: string;
   headers: Record<string, string>;
@@ -57,7 +58,7 @@ function CookieTable({
 
   return (
     <div className="mt-2">
-      {caption && <p className="mb-2 text-xs font-medium text-muted-foreground">{caption}</p>}
+      {caption && <p className="text-muted-foreground mb-2 text-xs font-medium">{caption}</p>}
       <Table>
         <TableHeader>
           <TableRow>
@@ -72,7 +73,7 @@ function CookieTable({
               {headerKeys.map((key) => (
                 <TableCell key={key}>
                   {String(
-                    cookie[key as keyof Pick<CookieItem, "name" | "path" | "domain">] ?? "\u2013",
+                    cookie[key as keyof Pick<CookieItem, "name" | "path" | "domain">] ?? "\u2013"
                   )}
                 </TableCell>
               ))}
@@ -92,7 +93,7 @@ interface ConsentPanelProps {
 export function ConsentPanel({ open, onOpenChange }: ConsentPanelProps) {
   const consent = useConsent();
   const [localCategories, setLocalCategories] = useState(() =>
-    Object.fromEntries(Object.entries(consent.state.categories).map(([k, v]) => [k, v.accepted])),
+    Object.fromEntries(Object.entries(consent.state.categories).map(([k, v]) => [k, v.accepted]))
   );
 
   const categories = consent.state.categories;
@@ -141,14 +142,14 @@ export function ConsentPanel({ open, onOpenChange }: ConsentPanelProps) {
                   onCheckedChange={(checked) =>
                     setLocalCategories((prev) => ({
                       ...prev,
-                      [name]: checked,
+                      [name]: checked
                     }))
                   }
                 />
               </div>
 
               {services[name] && Object.keys(services[name]!).length > 0 && (
-                <div className="ml-4 mt-2 flex flex-col gap-1">
+                <div className="mt-2 ml-4 flex flex-col gap-1">
                   {Object.entries(services[name]!).map(([svc, svcAccepted]) => (
                     <ConsentToggle
                       key={svc}

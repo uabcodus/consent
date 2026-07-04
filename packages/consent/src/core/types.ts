@@ -84,7 +84,7 @@ export type CategoryAcceptArg<TCategories extends Record<string, CategoryConfig>
 
 export type ServiceNames<
   TCategories extends Record<string, CategoryConfig>,
-  TCategory extends CategoryNames<TCategories>,
+  TCategory extends CategoryNames<TCategories>
 > =
   NonNullable<TCategories[TCategory]["services"]> extends Record<infer K, ServiceConfig>
     ? K & string
@@ -92,7 +92,7 @@ export type ServiceNames<
 
 export type ServiceAcceptArg<
   TCategories extends Record<string, CategoryConfig>,
-  TCategory extends CategoryNames<TCategories>,
+  TCategory extends CategoryNames<TCategories>
 > = "all" | ServiceNames<TCategories, TCategory> | Array<ServiceNames<TCategories, TCategory>>;
 
 export interface ConsentInstance<TCategories extends Record<string, CategoryConfig>> {
@@ -102,20 +102,20 @@ export interface ConsentInstance<TCategories extends Record<string, CategoryConf
   acceptedCategory: (category: CategoryNames<TCategories>) => boolean;
   acceptService: (
     service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
-    category: CategoryNames<TCategories>,
+    category: CategoryNames<TCategories>
   ) => void;
   rejectService: (
     service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
-    category: CategoryNames<TCategories>,
+    category: CategoryNames<TCategories>
   ) => void;
   acceptedService: (
     service: ServiceNames<TCategories, CategoryNames<TCategories>>,
-    category: CategoryNames<TCategories>,
+    category: CategoryNames<TCategories>
   ) => boolean;
   eraseCookies: (
     cookies: string | RegExp | Array<string | RegExp>,
     path?: string,
-    domain?: string,
+    domain?: string
   ) => void;
   getCookie: (field?: string) => unknown;
   setCookieData: (props: { value: unknown; mode: "set" | "update" }) => boolean;

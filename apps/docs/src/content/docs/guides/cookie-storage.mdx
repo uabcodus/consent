@@ -32,12 +32,12 @@ const consent = createConsent({
     domain: ".example.com", // Share across subdomains
     path: "/",
     secure: true,
-    sameSite: "Strict",
+    sameSite: "Strict"
   }),
   categories: {
     necessary: { readOnly: true },
-    analytics: {},
-  } as const,
+    analytics: {}
+  } as const
 });
 ```
 
@@ -67,8 +67,8 @@ const consent = createConsent({
   storage: localStorageStorage("cc_cookie"),
   categories: {
     necessary: { readOnly: true },
-    analytics: {},
-  } as const,
+    analytics: {}
+  } as const
 });
 ```
 
@@ -155,7 +155,7 @@ To share consent across subdomains, set the `domain` to the root domain with a l
 
 ```ts
 storage: cookieStorage({
-  domain: ".example.com",
+  domain: ".example.com"
 });
 ```
 

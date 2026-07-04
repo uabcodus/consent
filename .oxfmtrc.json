@@ -1,12 +1,17 @@
 {
-  "indentWidth": 2,
-  "indentStyle": "tab",
-  "lineWidth": 80,
-  "semicolons": "always",
+  "tabWidth": 2,
+  "useTabs": false,
+  "printWidth": 100,
+  "semi": true,
   "quotes": "double",
+  "singleQuote": false,
   "quoteProps": "as-needed",
-  "trailingCommas": "none",
+  "trailingComma": "none",
   "bracketSpacing": true,
   "arrowParens": "always",
-  "jsxQuoteStyle": "double"
+  "jsxSingleQuote": false,
+  "sortImports": true,
+  "sortPackageJson": true,
+  "sortTailwindcss": true,
+  "jsdoc": true
 }

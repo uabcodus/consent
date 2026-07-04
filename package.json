@@ -15,9 +15,11 @@
 		"format": "oxfmt --no-error-on-unmatched-pattern",
 		"format:check": "oxfmt --check",
 		"typecheck": "bun run --filter '*' typecheck",
+		"release": "bun run build && bun run test && changeset publish",
 		"prepare": "husky"
 	},
 	"devDependencies": {
+		"@changesets/cli": "^2.31.0",
 		"husky": "^9.1.7",
 		"nano-staged": "^1.0.2",
 		"oxfmt": "^0.57.0",

@@ -4,8 +4,13 @@ import tailwindcss from "@tailwindcss/vite";
 // @ts-check
 import { defineConfig } from "astro/config";
 
+const SITE = process.env.ASTRO_SITE || "https://consent.codus.lt";
+const BASE = process.env.ASTRO_BASE || "/";
+
 // https://astro.build/config
 export default defineConfig({
+	site: SITE,
+	base: BASE,
 	integrations: [
 		starlight({
 			title: "codus/consent",

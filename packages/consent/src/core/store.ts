@@ -1,6 +1,13 @@
 export type Listener<T> = (state: Readonly<T>) => void;
 
-export function createStore<T extends object>(initial: T) {
+export interface Store<T extends object> {
+  get: () => Readonly<T>;
+  set: (updater: Partial<T> | ((current: T) => T)) => void;
+  subscribe: (listener: Listener<T>) => () => void;
+  destroy: () => void;
+}
+
+export function createStore<T extends object>(initial: T): Store<T> {
   let state = { ...initial } as T;
   const listeners = new Set<Listener<T>>();
 

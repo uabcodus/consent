@@ -1,5 +1,4 @@
 import type { CookieConfig, CookieValue } from "./types";
-import { safeRun } from "./utils";
 
 const DEFAULT_COOKIE_NAME = "cc_cookie";
 
@@ -11,6 +10,14 @@ const defaultCookieConfig: CookieConfig = {
   secure: true,
   sameSite: "Lax",
 };
+
+function tryParseJson(value: string): unknown | null {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
 
 export function resolveCookieConfig(userCookie?: Partial<CookieConfig>): CookieConfig {
   const config = { ...defaultCookieConfig, ...userCookie };
@@ -33,7 +40,11 @@ export function getAllCookieNames(regex?: RegExp): Array<string> {
   for (const cookie of allCookies) {
     const name = cookie.split("=")[0];
     if (regex) {
-      if (safeRun(() => regex.test(name))) names.push(name);
+      try {
+        if (regex.test(name)) names.push(name);
+      } catch {
+        /* noop */
+      }
     } else {
       names.push(name);
     }
@@ -43,7 +54,7 @@ export function getAllCookieNames(regex?: RegExp): Array<string> {
 
 export function parseCookie(value: string | null | undefined): CookieValue {
   if (!value) return {} as CookieValue;
-  const parsed = safeRun(() => JSON.parse(value), null);
+  const parsed = tryParseJson(value);
   return (parsed && typeof parsed === "object" ? parsed : {}) as CookieValue;
 }
 
@@ -65,11 +76,7 @@ export function getPluginCookie(config: CookieConfig): CookieValue {
   return parseCookie(decodeURIComponent(value));
 }
 
-export function setCookieValue(
-  cookieContent: CookieValue,
-  config: CookieConfig,
-  _useRemainingExpirationTime?: boolean,
-): void {
+export function setCookieValue(cookieContent: CookieValue, config: CookieConfig): void {
   if (typeof document === "undefined") return;
 
   const { name, path, domain, sameSite, secure } = config;
@@ -84,8 +91,7 @@ export function setCookieValue(
   const date = new Date();
   date.setTime(date.getTime() + expiresAfterMs);
 
-  const value = JSON.stringify(cookieContent);
-  const encodedValue = encodeURIComponent(value);
+  const encodedValue = encodeURIComponent(JSON.stringify(cookieContent));
 
   let cookieStr =
     name +

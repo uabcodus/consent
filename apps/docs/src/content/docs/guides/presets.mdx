@@ -14,8 +14,8 @@ Presets use the `preset` option:
 import { createConsent, googleConsentMode } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  preset: googleConsentMode
-  // Your config overrides and extends the preset
+	preset: googleConsentMode
+	// Your config overrides and extends the preset
 });
 ```
 
@@ -56,7 +56,7 @@ Use it with `syncGtagConsent` for a complete setup:
 import { createConsent, googleConsentMode, syncGtagConsent } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  preset: googleConsentMode
+	preset: googleConsentMode
 });
 
 syncGtagConsent(consent); // Keeps gtag in sync automatically
@@ -81,32 +81,32 @@ This means you can override just what you need:
 
 ```ts
 const consent = createConsent({
-  preset: googleConsentMode,
-  // Add your own categories alongside the preset's
-  categories: {
-    marketing: {
-      services: {
-        facebookPixel: {
-          onAccept: () => fbq?.("consent", "grant")
-        }
-      }
-    },
-    // Override a preset category
-    analytics: {
-      autoClear: {
-        cookies: [{ name: "_ga" }, { name: "_gid" }, { name: "my_tracker" }]
-      }
-    }
-  } as const,
-  // Add callbacks
-  callbacks: {
-    onFirstConsent: ({ cookie }) => {
-      fetch("/api/consent", {
-        method: "POST",
-        body: JSON.stringify(cookie)
-      });
-    }
-  }
+	preset: googleConsentMode,
+	// Add your own categories alongside the preset's
+	categories: {
+		marketing: {
+			services: {
+				facebookPixel: {
+					onAccept: () => fbq?.("consent", "grant")
+				}
+			}
+		},
+		// Override a preset category
+		analytics: {
+			autoClear: {
+				cookies: [{ name: "_ga" }, { name: "_gid" }, { name: "my_tracker" }]
+			}
+		}
+	} as const,
+	// Add callbacks
+	callbacks: {
+		onFirstConsent: ({ cookie }) => {
+			fetch("/api/consent", {
+				method: "POST",
+				body: JSON.stringify(cookie)
+			});
+		}
+	}
 });
 ```
 
@@ -122,19 +122,19 @@ A preset is just a `ConsentConfig` object. Create one and share it across projec
 import type { ConsentConfig } from "@uabcodus/consent/core";
 
 export const companyPreset: ConsentConfig<
-  Record<string, import("@uabcodus/consent/core").CategoryConfig>
+	Record<string, import("@uabcodus/consent/core").CategoryConfig>
 > = {
-  revision: 1,
-  mode: "opt-in",
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {
-      services: {
-        googleAnalytics: {},
-        plausible: {}
-      }
-    }
-  }
+	revision: 1,
+	mode: "opt-in",
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {
+			services: {
+				googleAnalytics: {},
+				plausible: {}
+			}
+		}
+	}
 };
 ```
 
@@ -145,11 +145,11 @@ import { createConsent } from "@uabcodus/consent/core";
 import { companyPreset } from "./presets/company-preset";
 
 const consent = createConsent({
-  preset: companyPreset,
-  // Per-project overrides
-  categories: {
-    marketing: {}
-  } as const
+	preset: companyPreset,
+	// Per-project overrides
+	categories: {
+		marketing: {}
+	} as const
 });
 ```
 

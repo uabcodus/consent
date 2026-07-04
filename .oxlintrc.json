@@ -1,41 +1,41 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "ignorePatterns": [
-    "dist/**",
-    "old/**",
-    "packages/consent/registry/**",
-    "packages/consent/tests/**",
-    "node_modules/**"
-  ],
-  "plugins": ["typescript", "react", "unicorn", "import", "oxc"],
-  "categories": {
-    "correctness": "error",
-    "suspicious": "error",
-    "perf": "warn"
-  },
-  "rules": {
-    "typescript/no-namespace": "error",
-    "typescript/consistent-type-imports": "error",
-    "typescript/array-type": ["error", { "default": "generic" }],
-    "typescript/consistent-generic-constructors": "error",
-    "import/no-default-export": "off",
-    "unicorn/filename-case": "off",
-    "react/react-in-jsx-scope": "off",
-    "eslint/no-underscore-dangle": "off"
-  },
-  "env": {
-    "browser": true,
-    "es2022": true
-  },
-  "settings": {
-    "react": {
-      "jsxRuntime": "automatic"
-    }
-  },
-  "overrides": [
-    {
-      "files": ["packages/consent/tests/**/*.ts", "packages/consent/tests/**/*.tsx"],
-      "plugins": ["vitest"]
-    }
-  ]
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"ignorePatterns": [
+		"dist/**",
+		"old/**",
+		"packages/consent/registry/**",
+		"packages/consent/tests/**",
+		"node_modules/**"
+	],
+	"plugins": ["typescript", "react", "unicorn", "import", "oxc"],
+	"categories": {
+		"correctness": "error",
+		"suspicious": "error",
+		"perf": "warn"
+	},
+	"rules": {
+		"typescript/no-namespace": "error",
+		"typescript/consistent-type-imports": "error",
+		"typescript/array-type": ["error", { "default": "generic" }],
+		"typescript/consistent-generic-constructors": "error",
+		"import/no-default-export": "off",
+		"unicorn/filename-case": "off",
+		"react/react-in-jsx-scope": "off",
+		"eslint/no-underscore-dangle": "off"
+	},
+	"env": {
+		"browser": true,
+		"es2022": true
+	},
+	"settings": {
+		"react": {
+			"jsxRuntime": "automatic"
+		}
+	},
+	"overrides": [
+		{
+			"files": ["packages/consent/tests/**/*.ts", "packages/consent/tests/**/*.tsx"],
+			"plugins": ["vitest"]
+		}
+	]
 }

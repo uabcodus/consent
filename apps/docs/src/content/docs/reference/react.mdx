@@ -7,8 +7,8 @@ description: Reference for ConsentProvider and useConsent.
 
 ```ts
 function ConsentProvider<TCategories>(props: {
-  options: ConsentConfig<TCategories>;
-  children: React.ReactNode;
+	options: ConsentConfig<TCategories>;
+	children: React.ReactNode;
 }): React.ReactElement;
 ```
 
@@ -19,19 +19,19 @@ via `useRef` — it's stable across re-renders.
 import { ConsentProvider } from "@uabcodus/consent/react";
 
 function App() {
-  return (
-    <ConsentProvider
-      options={{
-        categories: {
-          necessary: { readOnly: true },
-          analytics: {},
-          marketing: {}
-        }
-      }}
-    >
-      <YourApp />
-    </ConsentProvider>
-  );
+	return (
+		<ConsentProvider
+			options={{
+				categories: {
+					necessary: { readOnly: true },
+					analytics: {},
+					marketing: {}
+				}
+			}}
+		>
+			<YourApp />
+		</ConsentProvider>
+	);
 }
 ```
 
@@ -64,11 +64,11 @@ state changes — your component re-renders whenever consent state updates.
 import { useConsent } from "@uabcodus/consent/react";
 
 function ConsentBanner() {
-  const consent = useConsent();
+	const consent = useConsent();
 
-  if (consent.state.valid) return null;
+	if (consent.state.valid) return null;
 
-  return <button onClick={() => consent.accept("all")}>Accept All</button>;
+	return <button onClick={() => consent.accept("all")}>Accept All</button>;
 }
 ```
 
@@ -85,23 +85,23 @@ Pass your config's type to `ConsentProvider` for inferred types in `useConsent`:
 
 ```tsx
 const config = {
-  categories: {
-    analytics: {},
-    marketing: {}
-  } as const
+	categories: {
+		analytics: {},
+		marketing: {}
+	} as const
 };
 
 function App() {
-  return (
-    <ConsentProvider options={config}>
-      <ConsentBanner />
-    </ConsentProvider>
-  );
+	return (
+		<ConsentProvider options={config}>
+			<ConsentBanner />
+		</ConsentProvider>
+	);
 }
 
 function ConsentBanner() {
-  const consent = useConsent();
-  consent.accept("analytics"); // Fully typed
+	const consent = useConsent();
+	consent.accept("analytics"); // Fully typed
 }
 ```
 
@@ -111,8 +111,8 @@ function ConsentBanner() {
 
 ```ts
 interface ConsentProviderProps<TCategories> {
-  options: ConsentConfig<TCategories>;
-  children: React.ReactNode;
+	options: ConsentConfig<TCategories>;
+	children: React.ReactNode;
 }
 ```
 

@@ -52,17 +52,17 @@ The components depend on these shadcn/ui primitives (make sure they're installed
 import { ConsentBanner } from "@/components/consent-banner";
 
 function App() {
-  return (
-    <ConsentProvider
-      options={{
-        categories: {
-          /* ... */
-        }
-      }}
-    >
-      <ConsentBanner />
-    </ConsentProvider>
-  );
+	return (
+		<ConsentProvider
+			options={{
+				categories: {
+					/* ... */
+				}
+			}}
+		>
+			<ConsentBanner />
+		</ConsentProvider>
+	);
 }
 ```
 
@@ -81,17 +81,17 @@ It has three actions: **Accept All**, **Necessary Only**, and a preferences butt
 import { ConsentPanel } from "@/components/consent-panel";
 
 function App() {
-  return (
-    <ConsentProvider
-      options={{
-        categories: {
-          /* ... */
-        }
-      }}
-    >
-      <ConsentPanel />
-    </ConsentProvider>
-  );
+	return (
+		<ConsentProvider
+			options={{
+				categories: {
+					/* ... */
+				}
+			}}
+		>
+			<ConsentPanel />
+		</ConsentProvider>
+	);
 }
 ```
 
@@ -111,18 +111,18 @@ the user clicks Save.
 import { ConsentTable } from "@/components/consent-table";
 
 const cookies = [
-  {
-    name: "_ga",
-    path: "/",
-    domain: ".example.com",
-    description: "Google Analytics"
-  },
-  {
-    name: "_gid",
-    path: "/",
-    domain: ".example.com",
-    description: "GA session"
-  }
+	{
+		name: "_ga",
+		path: "/",
+		domain: ".example.com",
+		description: "Google Analytics"
+	},
+	{
+		name: "_gid",
+		path: "/",
+		domain: ".example.com",
+		description: "GA session"
+	}
 ];
 
 <ConsentTable cookies={cookies} />;
@@ -137,14 +137,14 @@ preferences panel.
 import { ConsentToggle } from "@/components/consent-toggle";
 
 <ConsentToggle
-  id="analytics-toggle"
-  label="Analytics"
-  description="Help us understand how you use the site."
-  checked={isAccepted}
-  disabled={isReadOnly}
-  onCheckedChange={(checked) => {
-    checked ? consent.accept("analytics") : consent.reject("analytics");
-  }}
+	id="analytics-toggle"
+	label="Analytics"
+	description="Help us understand how you use the site."
+	checked={isAccepted}
+	disabled={isReadOnly}
+	onCheckedChange={(checked) => {
+		checked ? consent.accept("analytics") : consent.reject("analytics");
+	}}
 />;
 ```
 
@@ -158,8 +158,8 @@ your `global.css` theme:
 
 ```css
 :root {
-  --primary: 220 80% 50%;
-  /* etc. */
+	--primary: 220 80% 50%;
+	/* etc. */
 }
 ```
 

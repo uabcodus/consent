@@ -13,17 +13,17 @@ The main configuration object passed to `createConsent()`.
 
 ```ts
 interface ConsentConfig<TCategories extends Record<string, CategoryConfig>> {
-  preset?: Partial<ConsentConfig<Record<string, CategoryConfig>>>;
-  mode?: ConsentMode;
-  revision?: number;
-  hideFromBots?: boolean;
-  manageScripts?: boolean;
-  scriptType?: string;
-  autoClearCookies?: boolean;
-  categories: TCategories;
-  storage?: StorageAdapter;
-  initialCookie?: CookieValue | string | null;
-  callbacks?: ConsentCallbacks;
+	preset?: Partial<ConsentConfig<Record<string, CategoryConfig>>>;
+	mode?: ConsentMode;
+	revision?: number;
+	hideFromBots?: boolean;
+	manageScripts?: boolean;
+	scriptType?: string;
+	autoClearCookies?: boolean;
+	categories: TCategories;
+	storage?: StorageAdapter;
+	initialCookie?: CookieValue | string | null;
+	callbacks?: ConsentCallbacks;
 }
 ```
 
@@ -37,13 +37,13 @@ type ConsentMode = "opt-in" | "opt-out";
 
 ```ts
 interface CategoryConfig {
-  enabled?: boolean;
-  readOnly?: boolean;
-  autoClear?: {
-    reloadPage?: boolean;
-    cookies?: CookieItem[];
-  };
-  services?: Record<string, ServiceConfig>;
+	enabled?: boolean;
+	readOnly?: boolean;
+	autoClear?: {
+		reloadPage?: boolean;
+		cookies?: CookieItem[];
+	};
+	services?: Record<string, ServiceConfig>;
 }
 ```
 
@@ -51,9 +51,9 @@ interface CategoryConfig {
 
 ```ts
 interface ServiceConfig {
-  onAccept?: () => void;
-  onReject?: () => void;
-  cookies?: CookieItem[];
+	onAccept?: () => void;
+	onReject?: () => void;
+	cookies?: CookieItem[];
 }
 ```
 
@@ -61,12 +61,12 @@ interface ServiceConfig {
 
 ```ts
 interface CookieConfig {
-  name: string;
-  expiresAfterDays: number | ((acceptType: AcceptType) => number);
-  domain: string;
-  path: string;
-  secure: boolean;
-  sameSite: "Lax" | "Strict" | "None";
+	name: string;
+	expiresAfterDays: number | ((acceptType: AcceptType) => number);
+	domain: string;
+	path: string;
+	secure: boolean;
+	sameSite: "Lax" | "Strict" | "None";
 }
 ```
 
@@ -74,9 +74,9 @@ interface CookieConfig {
 
 ```ts
 interface StorageAdapter {
-  get(): CookieValue;
-  set(value: CookieValue): void;
-  remove(): void;
+	get(): CookieValue;
+	set(value: CookieValue): void;
+	remove(): void;
 }
 ```
 
@@ -91,9 +91,9 @@ function localStorageStorage(name: string, expiresAfterMs?: number): StorageAdap
 
 ```ts
 interface CookieItem {
-  name: string | RegExp;
-  path?: string;
-  domain?: string;
+	name: string | RegExp;
+	path?: string;
+	domain?: string;
 }
 ```
 
@@ -105,13 +105,13 @@ interface CookieItem {
 
 ```ts
 interface ConsentState {
-  valid: boolean;
-  skipped: boolean;
-  categories: Record<string, { accepted: boolean; readOnly: boolean }>;
-  services: Record<string, Record<string, boolean>>;
-  cookie: CookieValue | null;
-  mode: ConsentMode;
-  acceptType: AcceptType;
+	valid: boolean;
+	skipped: boolean;
+	categories: Record<string, { accepted: boolean; readOnly: boolean }>;
+	services: Record<string, Record<string, boolean>>;
+	cookie: CookieValue | null;
+	mode: ConsentMode;
+	acceptType: AcceptType;
 }
 ```
 
@@ -125,15 +125,15 @@ type AcceptType = "all" | "custom" | "necessary";
 
 ```ts
 interface CookieValue {
-  categories: string[];
-  services: Record<string, string[]>;
-  revision: number;
-  data: unknown;
-  consentId: string;
-  consentTimestamp: string;
-  lastConsentTimestamp?: string;
-  expirationTime?: number;
-  languageCode?: string;
+	categories: string[];
+	services: Record<string, string[]>;
+	revision: number;
+	data: unknown;
+	consentId: string;
+	consentTimestamp: string;
+	lastConsentTimestamp?: string;
+	expirationTime?: number;
+	languageCode?: string;
 }
 ```
 
@@ -145,9 +145,9 @@ interface CookieValue {
 
 ```ts
 interface ConsentCallbacks {
-  onFirstConsent?: (payload: { cookie: CookieValue }) => void;
-  onConsent?: (payload: { cookie: CookieValue }) => void;
-  onChange?: (payload: CookieChange) => void;
+	onFirstConsent?: (payload: { cookie: CookieValue }) => void;
+	onConsent?: (payload: { cookie: CookieValue }) => void;
+	onChange?: (payload: CookieChange) => void;
 }
 ```
 
@@ -155,9 +155,9 @@ interface ConsentCallbacks {
 
 ```ts
 interface CookieChange {
-  cookie: CookieValue;
-  changedCategories: string[];
-  changedServices: Record<string, string[]>;
+	cookie: CookieValue;
+	changedCategories: string[];
+	changedServices: Record<string, string[]>;
 }
 ```
 
@@ -171,41 +171,41 @@ The main API object returned by `createConsent()`.
 
 ```ts
 interface ConsentInstance<TCategories extends Record<string, CategoryConfig>> {
-  readonly state: Readonly<ConsentState>;
+	readonly state: Readonly<ConsentState>;
 
-  accept: (categories: CategoryAcceptArg<TCategories>, excludedCategories?: string[]) => void;
-  reject: (categories: CategoryAcceptArg<TCategories>) => void;
-  acceptedCategory: (category: CategoryNames<TCategories>) => boolean;
+	accept: (categories: CategoryAcceptArg<TCategories>, excludedCategories?: string[]) => void;
+	reject: (categories: CategoryAcceptArg<TCategories>) => void;
+	acceptedCategory: (category: CategoryNames<TCategories>) => boolean;
 
-  acceptService: (
-    service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
-    category: CategoryNames<TCategories>
-  ) => void;
-  rejectService: (
-    service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
-    category: CategoryNames<TCategories>
-  ) => void;
-  acceptedService: (
-    service: ServiceNames<TCategories, CategoryNames<TCategories>>,
-    category: CategoryNames<TCategories>
-  ) => boolean;
+	acceptService: (
+		service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
+		category: CategoryNames<TCategories>
+	) => void;
+	rejectService: (
+		service: ServiceAcceptArg<TCategories, CategoryNames<TCategories>>,
+		category: CategoryNames<TCategories>
+	) => void;
+	acceptedService: (
+		service: ServiceNames<TCategories, CategoryNames<TCategories>>,
+		category: CategoryNames<TCategories>
+	) => boolean;
 
-  eraseCookies: (
-    cookies: string | RegExp | Array<string | RegExp>,
-    path?: string,
-    domain?: string
-  ) => void;
-  getCookie: (field?: string) => unknown;
-  setCookieData: (props: { value: unknown; mode: "set" | "update" }) => boolean;
-  getConfig: <K extends string>(field?: K) => unknown;
-  validConsent: () => boolean;
-  loadScript: (src: string, attrs?: Record<string, string>) => Promise<boolean>;
-  reset: (deleteCookie?: boolean) => void;
+	eraseCookies: (
+		cookies: string | RegExp | Array<string | RegExp>,
+		path?: string,
+		domain?: string
+	) => void;
+	getCookie: (field?: string) => unknown;
+	setCookieData: (props: { value: unknown; mode: "set" | "update" }) => boolean;
+	getConfig: <K extends string>(field?: K) => unknown;
+	validConsent: () => boolean;
+	loadScript: (src: string, attrs?: Record<string, string>) => Promise<boolean>;
+	reset: (deleteCookie?: boolean) => void;
 
-  subscribe: (listener: (state: Readonly<ConsentState>) => void) => () => void;
-  on: (event: string, listener: (...args: unknown[]) => void) => () => void;
-  off: (event: string, listener: (...args: unknown[]) => void) => void;
-  destroy: () => void;
+	subscribe: (listener: (state: Readonly<ConsentState>) => void) => () => void;
+	on: (event: string, listener: (...args: unknown[]) => void) => () => void;
+	off: (event: string, listener: (...args: unknown[]) => void) => void;
+	destroy: () => void;
 }
 ```
 
@@ -228,10 +228,10 @@ Extracts category name strings from your config.
 
 ```ts
 type CategoryAcceptArg<TCategories> =
-  | "all"
-  | "necessary"
-  | CategoryNames<TCategories>
-  | Array<CategoryNames<TCategories>>;
+	| "all"
+	| "necessary"
+	| CategoryNames<TCategories>
+	| Array<CategoryNames<TCategories>>;
 ```
 
 The union of all valid arguments to `accept()` and `reject()`.
@@ -240,12 +240,12 @@ The union of all valid arguments to `accept()` and `reject()`.
 
 ```ts
 type ServiceNames<
-  TCategories extends Record<string, CategoryConfig>,
-  TCategory extends CategoryNames<TCategories>
+	TCategories extends Record<string, CategoryConfig>,
+	TCategory extends CategoryNames<TCategories>
 > =
-  NonNullable<TCategories[TCategory]["services"]> extends Record<infer K, ServiceConfig>
-    ? K & string
-    : never;
+	NonNullable<TCategories[TCategory]["services"]> extends Record<infer K, ServiceConfig>
+		? K & string
+		: never;
 ```
 
 Extracts service name strings from a category's `services` config.
@@ -254,9 +254,9 @@ Extracts service name strings from a category's `services` config.
 
 ```ts
 type ServiceAcceptArg<TCategories, TCategory> =
-  | "all"
-  | ServiceNames<TCategories, TCategory>
-  | Array<ServiceNames<TCategories, TCategory>>;
+	| "all"
+	| ServiceNames<TCategories, TCategory>
+	| Array<ServiceNames<TCategories, TCategory>>;
 ```
 
 The union of all valid arguments to `acceptService()` and `rejectService()`.

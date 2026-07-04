@@ -8,10 +8,10 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 ## Package manager
 
 <Tabs>
-  <TabItem label="npm">```sh npm install @uabcodus/consent ```</TabItem>
-  <TabItem label="pnpm">```sh pnpm add @uabcodus/consent ```</TabItem>
-  <TabItem label="yarn">```sh yarn add @uabcodus/consent ```</TabItem>
-  <TabItem label="bun">```sh bun install @uabcodus/consent ```</TabItem>
+	<TabItem label="npm">```sh npm install @uabcodus/consent ```</TabItem>
+	<TabItem label="pnpm">```sh pnpm add @uabcodus/consent ```</TabItem>
+	<TabItem label="yarn">```sh yarn add @uabcodus/consent ```</TabItem>
+	<TabItem label="bun">```sh bun install @uabcodus/consent ```</TabItem>
 </Tabs>
 
 ## Package exports
@@ -39,10 +39,10 @@ Types are included and everything is inferred from your config — no extra type
 import { createConsent } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  categories: {
-    analytics: {},
-    marketing: {}
-  } as const
+	categories: {
+		analytics: {},
+		marketing: {}
+	} as const
 });
 
 // consent.accept() is typed: "analytics" | "marketing" | "all" | "necessary"

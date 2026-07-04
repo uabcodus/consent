@@ -11,7 +11,7 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 ```ts
 function createConsent<TCategories extends Record<string, CategoryConfig>>(
-  userConfig: ConsentConfig<TCategories>
+	userConfig: ConsentConfig<TCategories>
 ): ConsentInstance<TCategories>;
 ```
 
@@ -21,10 +21,10 @@ Creates a new consent instance. This is the main entry point — everything star
 import { createConsent } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {}
-  } as const
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {}
+	} as const
 });
 ```
 
@@ -300,8 +300,8 @@ Dynamically load an external script. Returns a promise that resolves to `true` o
 ```ts
 await consent.loadScript("https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX");
 await consent.loadScript("https://example.com/script.js", {
-  async: "",
-  id: "my-script"
+	async: "",
+	id: "my-script"
 });
 ```
 
@@ -331,7 +331,7 @@ Subscribe to state changes. Returns an unsubscribe function.
 
 ```ts
 const unsub = consent.subscribe((state) => {
-  console.log("Consent state changed:", state);
+	console.log("Consent state changed:", state);
 });
 
 // Later
@@ -351,7 +351,7 @@ Listen for events. Returns an unsubscribe function.
 
 ```ts
 const unsub = consent.on("change", ({ cookie }) => {
-  console.log("Changed:", cookie);
+	console.log("Changed:", cookie);
 });
 ```
 
@@ -368,7 +368,7 @@ Remove an event listener.
 
 ```ts
 const listener = (data) => {
-  /* ... */
+	/* ... */
 };
 consent.on("change", listener);
 consent.off("change", listener);

@@ -18,19 +18,19 @@ where consent is restored from a cookie.
 
 ```ts
 const consent = createConsent({
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {}
-  } as const,
-  callbacks: {
-    onFirstConsent: ({ cookie }) => {
-      // First time consent — great for logging to your backend
-      fetch("/api/consent", {
-        method: "POST",
-        body: JSON.stringify(cookie)
-      });
-    }
-  }
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {}
+	} as const,
+	callbacks: {
+		onFirstConsent: ({ cookie }) => {
+			// First time consent — great for logging to your backend
+			fetch("/api/consent", {
+				method: "POST",
+				body: JSON.stringify(cookie)
+			});
+		}
+	}
 });
 ```
 
@@ -76,7 +76,7 @@ for syncing UI state or logging.
 
 ```ts
 const unsubscribe = consent.subscribe((state) => {
-  console.log("New state:", state);
+	console.log("New state:", state);
 });
 
 // Later, when you're done:
@@ -101,7 +101,7 @@ the config callbacks:
 
 ```ts
 consent.on("change", ({ cookie }) => {
-  document.documentElement.setAttribute("data-consent", cookie.categories.join(","));
+	document.documentElement.setAttribute("data-consent", cookie.categories.join(","));
 });
 ```
 
@@ -109,7 +109,7 @@ consent.on("change", ({ cookie }) => {
 
 ```ts
 consent.on("change", ({ cookie }) => {
-  document.documentElement.setAttribute("data-consent", cookie.categories.join(","));
+	document.documentElement.setAttribute("data-consent", cookie.categories.join(","));
 });
 ```
 
@@ -117,7 +117,7 @@ consent.on("change", ({ cookie }) => {
 
 ```ts
 const listener = ({ cookie }) => {
-  /* ... */
+	/* ... */
 };
 
 consent.on("change", listener);

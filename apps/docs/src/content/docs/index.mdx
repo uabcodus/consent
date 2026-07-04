@@ -24,12 +24,12 @@ and stays out of your way when it comes to UI.
 import { createConsent } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  // configure what you need!
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {},
-    marketing: {}
-  } as const
+	// configure what you need!
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {},
+		marketing: {}
+	} as const
 });
 
 consent.accept("all"); // fully type-safe
@@ -39,22 +39,22 @@ consent.acceptedCategory("analytics"); // true
 ## Why headless?
 
 <CardGrid stagger>
-  <Card title="Framework agnostic" icon="code">
-    A tiny vanilla JS core that works everywhere. React bindings included — bring your own
-    components, or use ours.
-  </Card>
-  <Card title="Type-safe" icon="seti">
-    Full TypeScript support with generics that infer your category and service names. Autocomplete
-    all the way.
-  </Card>
-  <Card title="Composable" icon="add-document">
-    Every piece is optional. Use presets, mix in your own config, subscribe to state changes, hook
-    into events.
-  </Card>
-  <Card title="Production ready" icon="star">
-    Handles bots, SSR hydration, script blocking, auto-clear, revision re-consent, localStorage
-    fallback, and Google Consent Mode v2.
-  </Card>
+	<Card title="Framework agnostic" icon="code">
+		A tiny vanilla JS core that works everywhere. React bindings included — bring your own
+		components, or use ours.
+	</Card>
+	<Card title="Type-safe" icon="seti">
+		Full TypeScript support with generics that infer your category and service names. Autocomplete
+		all the way.
+	</Card>
+	<Card title="Composable" icon="add-document">
+		Every piece is optional. Use presets, mix in your own config, subscribe to state changes, hook
+		into events.
+	</Card>
+	<Card title="Production ready" icon="star">
+		Handles bots, SSR hydration, script blocking, auto-clear, revision re-consent, localStorage
+		fallback, and Google Consent Mode v2.
+	</Card>
 </CardGrid>
 
 ## What you get

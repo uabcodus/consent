@@ -16,11 +16,11 @@ ships with a preset and sync helper that do the heavy lifting.
 import { createConsent, googleConsentMode, syncGtagConsent } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  preset: googleConsentMode,
-  // Optionally add your own categories on top
-  categories: {
-    marketing: {}
-  } as const
+	preset: googleConsentMode,
+	// Optionally add your own categories on top
+	categories: {
+		marketing: {}
+	} as const
 });
 
 // Sync consent state to gtag automatically
@@ -33,20 +33,20 @@ In your HTML, load GTM with default denied consent:
 
 ```html
 <script>
-  // Default deny all
-  window.dataLayer = window.dataLayer || [];
-  function gtag() {
-    dataLayer.push(arguments);
-  }
-  gtag("consent", "default", {
-    ad_storage: "denied",
-    ad_user_data: "denied",
-    ad_personalization: "denied",
-    analytics_storage: "denied",
-    functionality_storage: "denied",
-    personalization_storage: "denied",
-    security_storage: "granted" // Necessary — always granted
-  });
+	// Default deny all
+	window.dataLayer = window.dataLayer || [];
+	function gtag() {
+		dataLayer.push(arguments);
+	}
+	gtag("consent", "default", {
+		ad_storage: "denied",
+		ad_user_data: "denied",
+		ad_personalization: "denied",
+		analytics_storage: "denied",
+		functionality_storage: "denied",
+		personalization_storage: "denied",
+		security_storage: "granted" // Necessary — always granted
+	});
 </script>
 
 <script src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXXXXXXX" async></script>
@@ -78,7 +78,7 @@ When `analytics` is accepted, `syncGtagConsent` calls:
 
 ```ts
 gtag("consent", "update", {
-  analytics_storage: "granted"
+	analytics_storage: "granted"
 });
 ```
 
@@ -86,9 +86,9 @@ When `advertisement` is rejected:
 
 ```ts
 gtag("consent", "update", {
-  ad_storage: "denied",
-  ad_user_data: "denied",
-  ad_personalization: "denied"
+	ad_storage: "denied",
+	ad_user_data: "denied",
+	ad_personalization: "denied"
 });
 ```
 
@@ -99,25 +99,25 @@ callbacks:
 
 ```ts
 const consent = createConsent({
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {},
-    ads: {}
-  } as const,
-  callbacks: {
-    onConsent: ({ cookie }) => {
-      const granted = (cat: string) => (cookie.categories.includes(cat) ? "granted" : "denied");
-      gtag("consent", "update", {
-        analytics_storage: granted("analytics"),
-        ad_storage: granted("ads"),
-        ad_user_data: granted("ads"),
-        ad_personalization: granted("ads")
-      });
-    },
-    onChange: ({ cookie }) => {
-      // Same logic — keep gtag in sync on every change
-    }
-  }
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {},
+		ads: {}
+	} as const,
+	callbacks: {
+		onConsent: ({ cookie }) => {
+			const granted = (cat: string) => (cookie.categories.includes(cat) ? "granted" : "denied");
+			gtag("consent", "update", {
+				analytics_storage: granted("analytics"),
+				ad_storage: granted("ads"),
+				ad_user_data: granted("ads"),
+				ad_personalization: granted("ads")
+			});
+		},
+		onChange: ({ cookie }) => {
+			// Same logic — keep gtag in sync on every change
+		}
+	}
 });
 ```
 

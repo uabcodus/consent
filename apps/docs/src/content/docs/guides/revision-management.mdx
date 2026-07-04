@@ -17,11 +17,11 @@ consent is treated as invalid and users are re-prompted.
 
 ```ts
 const consent = createConsent({
-  revision: 1, // Bump this when your policy changes
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {}
-  } as const
+	revision: 1, // Bump this when your policy changes
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {}
+	} as const
 });
 ```
 
@@ -45,21 +45,21 @@ When `revision` is greater than `0`:
 ```ts
 // v1 — initial launch
 createConsent({
-  revision: 1,
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {}
-  } as const
+	revision: 1,
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {}
+	} as const
 });
 
 // v2 — added marketing category, bumped revision
 createConsent({
-  revision: 2,
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {},
-    marketing: {} // New category
-  } as const
+	revision: 2,
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {},
+		marketing: {} // New category
+	} as const
 });
 ```
 

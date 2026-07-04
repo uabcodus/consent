@@ -11,25 +11,25 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 import { createConsent } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  categories: {
-    necessary: {
-      readOnly: true // Always accepted — user can't toggle it off
-    },
-    analytics: {
-      services: {
-        googleAnalytics: {
-          onAccept: () => console.log("GA enabled"),
-          onReject: () => console.log("GA disabled")
-        }
-      }
-    },
-    marketing: {}
-  } as const
+	categories: {
+		necessary: {
+			readOnly: true // Always accepted — user can't toggle it off
+		},
+		analytics: {
+			services: {
+				googleAnalytics: {
+					onAccept: () => console.log("GA enabled"),
+					onReject: () => console.log("GA disabled")
+				}
+			}
+		},
+		marketing: {}
+	} as const
 });
 
 // Check if consent was already given on a previous visit
 if (consent.state.valid) {
-  console.log("Consent already given");
+	console.log("Consent already given");
 }
 
 // Accept everything
@@ -54,34 +54,34 @@ Wrap your app with `ConsentProvider` and use the `useConsent` hook wherever you 
 import { ConsentProvider, useConsent } from "@uabcodus/consent/react";
 
 function App() {
-  return (
-    <ConsentProvider
-      options={{
-        categories: {
-          necessary: { readOnly: true },
-          analytics: {},
-          marketing: {}
-        }
-      }}
-    >
-      <ConsentBanner />
-    </ConsentProvider>
-  );
+	return (
+		<ConsentProvider
+			options={{
+				categories: {
+					necessary: { readOnly: true },
+					analytics: {},
+					marketing: {}
+				}
+			}}
+		>
+			<ConsentBanner />
+		</ConsentProvider>
+	);
 }
 
 function ConsentBanner() {
-  const consent = useConsent();
+	const consent = useConsent();
 
-  // Your component re-renders automatically when consent state changes
-  if (consent.state.valid) return null;
+	// Your component re-renders automatically when consent state changes
+	if (consent.state.valid) return null;
 
-  return (
-    <div>
-      <p>We use cookies for analytics and marketing.</p>
-      <button onClick={() => consent.accept("all")}>Accept All</button>
-      <button onClick={() => consent.accept("necessary")}>Necessary Only</button>
-    </div>
-  );
+	return (
+		<div>
+			<p>We use cookies for analytics and marketing.</p>
+			<button onClick={() => consent.accept("all")}>Accept All</button>
+			<button onClick={() => consent.accept("necessary")}>Necessary Only</button>
+		</div>
+	);
 }
 ```
 

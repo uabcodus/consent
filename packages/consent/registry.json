@@ -1,59 +1,59 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "@uabcodus/consent",
-  "homepage": "https://github.com/uabcodus/consent",
-  "items": [
-    {
-      "name": "consent-banner",
-      "type": "registry:block",
-      "description": "A cookie consent banner card with Accept All, Necessary Only and Preferences buttons.",
-      "dependencies": ["@uabcodus/consent"],
-      "registryDependencies": ["button", "card"],
-      "files": [
-        {
-          "path": "default/consent-banner.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "consent-panel",
-      "type": "registry:block",
-      "description": "A preferences modal panel with per-category toggles, service sub-toggles and a cookie details table.",
-      "dependencies": ["@uabcodus/consent"],
-      "registryDependencies": ["button", "dialog", "switch", "label", "separator", "table"],
-      "files": [
-        {
-          "path": "default/consent-panel.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "consent-table",
-      "type": "registry:block",
-      "description": "A read-only cookie details table for displaying cookie definitions.",
-      "dependencies": ["@uabcodus/consent"],
-      "registryDependencies": ["table"],
-      "files": [
-        {
-          "path": "default/consent-table.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "consent-toggle",
-      "type": "registry:block",
-      "description": "A labelled toggle switch for consent categories and services.",
-      "dependencies": ["@uabcodus/consent"],
-      "registryDependencies": ["switch", "label"],
-      "files": [
-        {
-          "path": "default/consent-toggle.tsx",
-          "type": "registry:component"
-        }
-      ]
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry.json",
+	"name": "@uabcodus/consent",
+	"homepage": "https://github.com/uabcodus/consent",
+	"items": [
+		{
+			"name": "consent-banner",
+			"type": "registry:block",
+			"description": "A cookie consent banner card with Accept All, Necessary Only and Preferences buttons.",
+			"dependencies": ["@uabcodus/consent"],
+			"registryDependencies": ["button", "card"],
+			"files": [
+				{
+					"path": "default/consent-banner.tsx",
+					"type": "registry:component"
+				}
+			]
+		},
+		{
+			"name": "consent-panel",
+			"type": "registry:block",
+			"description": "A preferences modal panel with per-category toggles, service sub-toggles and a cookie details table.",
+			"dependencies": ["@uabcodus/consent"],
+			"registryDependencies": ["button", "dialog", "switch", "label", "separator", "table"],
+			"files": [
+				{
+					"path": "default/consent-panel.tsx",
+					"type": "registry:component"
+				}
+			]
+		},
+		{
+			"name": "consent-table",
+			"type": "registry:block",
+			"description": "A read-only cookie details table for displaying cookie definitions.",
+			"dependencies": ["@uabcodus/consent"],
+			"registryDependencies": ["table"],
+			"files": [
+				{
+					"path": "default/consent-table.tsx",
+					"type": "registry:component"
+				}
+			]
+		},
+		{
+			"name": "consent-toggle",
+			"type": "registry:block",
+			"description": "A labelled toggle switch for consent categories and services.",
+			"dependencies": ["@uabcodus/consent"],
+			"registryDependencies": ["switch", "label"],
+			"files": [
+				{
+					"path": "default/consent-toggle.tsx",
+					"type": "registry:component"
+				}
+			]
+		}
+	]
 }

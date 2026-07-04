@@ -14,12 +14,12 @@ Scripts are blocked by default and executed only when the corresponding category
 
 ```ts
 const consent = createConsent({
-  manageScripts: true, // Opt-in — defaults to false
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {},
-    marketing: {}
-  } as const
+	manageScripts: true, // Opt-in — defaults to false
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {},
+		marketing: {}
+	} as const
 });
 ```
 
@@ -33,8 +33,8 @@ doesn't execute it automatically:
 ```html
 <!-- This script won't run until "analytics" is accepted -->
 <script type="text/consent" data-category="analytics">
-  gtag("js", new Date());
-  gtag("config", "G-XXXXXXXXXX");
+	gtag("js", new Date());
+	gtag("config", "G-XXXXXXXXXX");
 </script>
 ```
 
@@ -45,11 +45,11 @@ If a script has `data-category` but no `type` attribute, the library automatical
 
 ```ts
 const consent = createConsent({
-  manageScripts: true,
-  scriptType: "text/plain", // Use a different blocking type
-  categories: {
-    /* ... */
-  }
+	manageScripts: true,
+	scriptType: "text/plain", // Use a different blocking type
+	categories: {
+		/* ... */
+	}
 });
 ```
 
@@ -59,7 +59,7 @@ Add `data-service` for finer-grained control within a category:
 
 ```html
 <script type="text/consent" data-category="marketing" data-service="facebookPixel">
-  !function(f,b,e,v,n,t,s){ /* ... */ }
+	!function(f,b,e,v,n,t,s){ /* ... */ }
 </script>
 ```
 
@@ -71,10 +71,10 @@ Works the same way with `src` attributes:
 
 ```html
 <script
-  type="text/consent"
-  data-category="analytics"
-  data-service="googleAnalytics"
-  src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+	type="text/consent"
+	data-category="analytics"
+	data-service="googleAnalytics"
+	src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
 ></script>
 ```
 
@@ -88,9 +88,9 @@ Prefix the category name with `!` to execute a script when a category is **rejec
 ```html
 <!-- This script runs when "marketing" is rejected — useful for cleanup -->
 <script type="text/consent" data-category="!marketing">
-  document.cookie.split(";").forEach((c) => {
-    document.cookie = c.trim() + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
-  });
+	document.cookie.split(";").forEach((c) => {
+	  document.cookie = c.trim() + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+	});
 </script>
 ```
 
@@ -124,8 +124,8 @@ If you prefer to load scripts programmatically outside of the `data-category` sy
 
 ```ts
 const success = await consent.loadScript(
-  "https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX",
-  { async: "", id: "ga-script" }
+	"https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX",
+	{ async: "", id: "ga-script" }
 );
 ```
 
@@ -138,46 +138,46 @@ Here's a typical setup combining `data-category` scripts with service callbacks:
 
 ```html
 <script
-  type="text/consent"
-  data-category="analytics"
-  data-service="ga4"
-  src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+	type="text/consent"
+	data-category="analytics"
+	data-service="ga4"
+	src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
 ></script>
 <script
-  type="text/consent"
-  data-category="marketing"
-  data-service="fbPixel"
-  src="https://connect.facebook.net/en_US/fbevents.js"
+	type="text/consent"
+	data-category="marketing"
+	data-service="fbPixel"
+	src="https://connect.facebook.net/en_US/fbevents.js"
 ></script>
 ```
 
 ```ts
 const consent = createConsent({
-  manageScripts: true,
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {
-      services: {
-        ga4: {
-          onAccept: () =>
-            gtag("consent", "update", {
-              analytics_storage: "granted"
-            }),
-          onReject: () =>
-            gtag("consent", "update", {
-              analytics_storage: "denied"
-            })
-        }
-      }
-    },
-    marketing: {
-      services: {
-        fbPixel: {
-          onAccept: () => fbq?.("consent", "grant")
-        }
-      }
-    }
-  } as const
+	manageScripts: true,
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {
+			services: {
+				ga4: {
+					onAccept: () =>
+						gtag("consent", "update", {
+							analytics_storage: "granted"
+						}),
+					onReject: () =>
+						gtag("consent", "update", {
+							analytics_storage: "denied"
+						})
+				}
+			}
+		},
+		marketing: {
+			services: {
+				fbPixel: {
+					onAccept: () => fbq?.("consent", "grant")
+				}
+			}
+		}
+	} as const
 });
 ```
 

@@ -11,19 +11,19 @@ Wrap your app (or the portion that needs consent) with `ConsentProvider`:
 import { ConsentProvider } from "@uabcodus/consent/react";
 
 function App() {
-  return (
-    <ConsentProvider
-      options={{
-        categories: {
-          necessary: { readOnly: true },
-          analytics: {},
-          marketing: {}
-        }
-      }}
-    >
-      <YourApp />
-    </ConsentProvider>
-  );
+	return (
+		<ConsentProvider
+			options={{
+				categories: {
+					necessary: { readOnly: true },
+					analytics: {},
+					marketing: {}
+				}
+			}}
+		>
+			<YourApp />
+		</ConsentProvider>
+	);
 }
 ```
 
@@ -43,26 +43,26 @@ Returns the `ConsentInstance`. It also **auto-subscribes** to state changes — 
 import { useConsent } from "@uabcodus/consent/react";
 
 function ConsentBanner() {
-  const consent = useConsent();
+	const consent = useConsent();
 
-  if (consent.state.valid) return null;
+	if (consent.state.valid) return null;
 
-  return (
-    <div>
-      <button onClick={() => consent.accept("all")}>Accept All</button>
-      <button onClick={() => consent.accept("necessary")}>Necessary Only</button>
-    </div>
-  );
+	return (
+		<div>
+			<button onClick={() => consent.accept("all")}>Accept All</button>
+			<button onClick={() => consent.accept("necessary")}>Necessary Only</button>
+		</div>
+	);
 }
 
 function AnalyticsTracker() {
-  const consent = useConsent();
+	const consent = useConsent();
 
-  if (consent.acceptedCategory("analytics")) {
-    return <Script src="https://www.googletagmanager.com/gtag/js" />;
-  }
+	if (consent.acceptedCategory("analytics")) {
+		return <Script src="https://www.googletagmanager.com/gtag/js" />;
+	}
 
-  return null;
+	return null;
 }
 ```
 
@@ -74,28 +74,28 @@ Pass your category config type to `ConsentProvider` for full type inference:
 
 ```tsx
 const config = {
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {},
-    marketing: {}
-  } as const
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {},
+		marketing: {}
+	} as const
 };
 
 function App() {
-  return (
-    <ConsentProvider options={config}>
-      <ConsentBanner />
-    </ConsentProvider>
-  );
+	return (
+		<ConsentProvider options={config}>
+			<ConsentBanner />
+		</ConsentProvider>
+	);
 }
 
 function ConsentBanner() {
-  const consent = useConsent();
+	const consent = useConsent();
 
-  // Fully typed: "necessary" | "analytics" | "marketing" | "all"
-  consent.accept("analytics");
+	// Fully typed: "necessary" | "analytics" | "marketing" | "all"
+	consent.accept("analytics");
 
-  return null;
+	return null;
 }
 ```
 
@@ -105,13 +105,13 @@ function ConsentBanner() {
 
 ```tsx
 function BannerOrTracker() {
-  const consent = useConsent();
+	const consent = useConsent();
 
-  if (!consent.state.valid) {
-    return <ConsentBanner />;
-  }
+	if (!consent.state.valid) {
+		return <ConsentBanner />;
+	}
 
-  return <ConsentStatus />;
+	return <ConsentStatus />;
 }
 ```
 
@@ -119,36 +119,36 @@ function BannerOrTracker() {
 
 ```tsx
 function PreferencesPanel() {
-  const consent = useConsent();
-  const [open, setOpen] = useState(false);
+	const consent = useConsent();
+	const [open, setOpen] = useState(false);
 
-  return (
-    <>
-      <button onClick={() => setOpen(true)}>Preferences</button>
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        {Object.entries(consent.state.categories).map(([name, cat]) =>
-          cat.readOnly ? null : (
-            <label key={name}>
-              <input
-                type="checkbox"
-                checked={cat.accepted}
-                onChange={(e) => (e.target.checked ? consent.accept(name) : consent.reject(name))}
-              />
-              {name}
-            </label>
-          )
-        )}
-        <button
-          onClick={() => {
-            consent.accept("all");
-            setOpen(false);
-          }}
-        >
-          Accept All
-        </button>
-      </Dialog>
-    </>
-  );
+	return (
+		<>
+			<button onClick={() => setOpen(true)}>Preferences</button>
+			<Dialog open={open} onClose={() => setOpen(false)}>
+				{Object.entries(consent.state.categories).map(([name, cat]) =>
+					cat.readOnly ? null : (
+						<label key={name}>
+							<input
+								type="checkbox"
+								checked={cat.accepted}
+								onChange={(e) => (e.target.checked ? consent.accept(name) : consent.reject(name))}
+							/>
+							{name}
+						</label>
+					)
+				)}
+				<button
+					onClick={() => {
+						consent.accept("all");
+						setOpen(false);
+					}}
+				>
+					Accept All
+				</button>
+			</Dialog>
+		</>
+	);
 }
 ```
 
@@ -159,18 +159,18 @@ re-rendering, use the event system instead:
 
 ```tsx
 function GtagSyncer() {
-  const consent = useConsent();
+	const consent = useConsent();
 
-  useEffect(() => {
-    const unsub = consent.on("change", ({ cookie }) => {
-      window.gtag?.("consent", "update", {
-        analytics_storage: cookie.categories.includes("analytics") ? "granted" : "denied"
-      });
-    });
-    return unsub;
-  }, [consent]);
+	useEffect(() => {
+		const unsub = consent.on("change", ({ cookie }) => {
+			window.gtag?.("consent", "update", {
+				analytics_storage: cookie.categories.includes("analytics") ? "granted" : "denied"
+			});
+		});
+		return unsub;
+	}, [consent]);
 
-  return null;
+	return null;
 }
 ```
 
@@ -188,14 +188,14 @@ server-side and pass it as `initialCookie`:
 const cookieValue = parseConsentCookie(cookies().get("cc_cookie"));
 
 <ConsentProvider
-  options={{
-    initialCookie: cookieValue,
-    categories: {
-      /* ... */
-    }
-  }}
+	options={{
+		initialCookie: cookieValue,
+		categories: {
+			/* ... */
+		}
+	}}
 >
-  <App />
+	<App />
 </ConsentProvider>;
 ```
 

@@ -26,18 +26,18 @@ All cookie settings are configured through the `cookieStorage()` factory:
 import { createConsent, cookieStorage } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  storage: cookieStorage({
-    name: "my-consent-cookie",
-    expiresAfterDays: 365,
-    domain: ".example.com", // Share across subdomains
-    path: "/",
-    secure: true,
-    sameSite: "Strict"
-  }),
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {}
-  } as const
+	storage: cookieStorage({
+		name: "my-consent-cookie",
+		expiresAfterDays: 365,
+		domain: ".example.com", // Share across subdomains
+		path: "/",
+		secure: true,
+		sameSite: "Strict"
+	}),
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {}
+	} as const
 });
 ```
 
@@ -64,11 +64,11 @@ Switch from cookies to `localStorage` by providing the `localStorageStorage()` a
 import { createConsent, localStorageStorage } from "@uabcodus/consent/core";
 
 const consent = createConsent({
-  storage: localStorageStorage("cc_cookie"),
-  categories: {
-    necessary: { readOnly: true },
-    analytics: {}
-  } as const
+	storage: localStorageStorage("cc_cookie"),
+	categories: {
+		necessary: { readOnly: true },
+		analytics: {}
+	} as const
 });
 ```
 
@@ -80,9 +80,9 @@ The `StorageAdapter` interface lets you plug in any persistence mechanism:
 
 ```ts
 interface StorageAdapter {
-  get(): CookieValue;
-  set(value: CookieValue): void;
-  remove(): void;
+	get(): CookieValue;
+	set(value: CookieValue): void;
+	remove(): void;
 }
 ```
 
@@ -155,7 +155,7 @@ To share consent across subdomains, set the `domain` to the root domain with a l
 
 ```ts
 storage: cookieStorage({
-  domain: ".example.com"
+	domain: ".example.com"
 });
 ```
 

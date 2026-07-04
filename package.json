@@ -1,32 +1,32 @@
 {
-  "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
-  "type": "module",
-  "scripts": {
-    "dev": "bun run --filter @uabcodus/consent dev",
-    "build": "bun run --filter '*' build",
-    "test": "bun run --filter @uabcodus/consent test",
-    "test:watch": "bun run --filter @uabcodus/consent test:watch",
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
-    "format": "oxfmt --no-error-on-unmatched-pattern",
-    "format:check": "oxfmt --check",
-    "typecheck": "bun run --filter '*' typecheck",
-    "prepare": "husky"
-  },
-  "devDependencies": {
-    "husky": "^9.1.7",
-    "nano-staged": "^1.0.2",
-    "oxfmt": "^0.57.0",
-    "oxlint": "^1.72.0",
-    "typescript": "^5.8.0"
-  },
-  "nano-staged": {
-    "**/*.{ts,tsx}": "bun run lint",
-    "**/tsdown.config.ts": "bun run lint",
-    "*": "bun run format"
-  }
+	"private": true,
+	"workspaces": [
+		"packages/*",
+		"apps/*"
+	],
+	"type": "module",
+	"scripts": {
+		"dev": "bun run --filter @uabcodus/consent dev",
+		"build": "bun run --filter '*' build",
+		"test": "bun run --filter @uabcodus/consent test",
+		"test:watch": "bun run --filter @uabcodus/consent test:watch",
+		"lint": "oxlint",
+		"lint:fix": "oxlint --fix",
+		"format": "oxfmt --no-error-on-unmatched-pattern",
+		"format:check": "oxfmt --check",
+		"typecheck": "bun run --filter '*' typecheck",
+		"prepare": "husky"
+	},
+	"devDependencies": {
+		"husky": "^9.1.7",
+		"nano-staged": "^1.0.2",
+		"oxfmt": "^0.57.0",
+		"oxlint": "^1.72.0",
+		"typescript": "^5.8.0"
+	},
+	"nano-staged": {
+		"**/*.{ts,tsx}": "bun run lint",
+		"**/tsdown.config.ts": "bun run lint",
+		"*": "bun run format"
+	}
 }

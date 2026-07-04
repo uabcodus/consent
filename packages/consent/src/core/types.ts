@@ -1,3 +1,5 @@
+import type { StorageAdapter } from "./storage";
+
 export type ConsentMode = "opt-in" | "opt-out";
 
 export interface CookieItem {
@@ -30,7 +32,6 @@ export interface CookieConfig {
   path: string;
   secure: boolean;
   sameSite: "Lax" | "Strict" | "None";
-  useLocalStorage?: boolean;
 }
 
 export type AcceptType = "all" | "custom" | "necessary";
@@ -131,9 +132,11 @@ export interface ConsentConfig<TCategories extends Record<string, CategoryConfig
   revision?: number;
   hideFromBots?: boolean;
   manageScripts?: boolean;
+  scriptType?: string;
   autoClearCookies?: boolean;
   categories: TCategories;
   cookie?: Partial<CookieConfig>;
+  storage?: StorageAdapter;
   initialCookie?: CookieValue | string | null;
   callbacks?: ConsentCallbacks;
 }

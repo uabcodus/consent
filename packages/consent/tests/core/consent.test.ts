@@ -420,8 +420,8 @@ describe("createConsent", () => {
 
       consent.reset(true);
 
-      const cookieAfter = document.cookie;
-      expect(cookieAfter).not.toContain("cc_cookie=");
+      const cookie = consent.getCookie() as { consentId?: string };
+      expect(cookie.consentId).toBeUndefined();
     });
   });
 

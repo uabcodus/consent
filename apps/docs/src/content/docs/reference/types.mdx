@@ -18,9 +18,11 @@ interface ConsentConfig<TCategories extends Record<string, CategoryConfig>> {
   revision?: number;
   hideFromBots?: boolean;
   manageScripts?: boolean;
+  scriptType?: string;
   autoClearCookies?: boolean;
   categories: TCategories;
   cookie?: Partial<CookieConfig>;
+  storage?: StorageAdapter;
   initialCookie?: CookieValue | string | null;
   callbacks?: ConsentCallbacks;
 }
@@ -66,8 +68,24 @@ interface CookieConfig {
   path: string;
   secure: boolean;
   sameSite: "Lax" | "Strict" | "None";
-  useLocalStorage?: boolean;
 }
+```
+
+### `StorageAdapter`
+
+```ts
+interface StorageAdapter {
+  get(): CookieValue;
+  set(value: CookieValue): void;
+  remove(): void;
+}
+```
+
+Factory functions:
+
+```ts
+function cookieStorage(config: CookieConfig): StorageAdapter;
+function localStorageStorage(name: string, expiresAfterMs?: number): StorageAdapter;
 ```
 
 ### `CookieItem`

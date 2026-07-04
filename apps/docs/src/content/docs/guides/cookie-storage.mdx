@@ -56,20 +56,71 @@ cookie: {
 
 ## Using localStorage
 
-Switch from cookies to `localStorage` by setting `useLocalStorage: true`:
+Switch from cookies to `localStorage` by providing the `localStorageStorage()` adapter:
 
 ```ts
+import { createConsent, localStorageStorage } from "@uabcodus/consent";
+
 const consent = createConsent({
-  cookie: {
-    useLocalStorage: true,
-    name: "cc_cookie", // Used as the localStorage key
-  },
+  storage: localStorageStorage("cc_cookie"),
   categories: {
     necessary: { readOnly: true },
     analytics: {},
   } as const,
 });
 ```
+
+The first argument is the localStorage key name. Optionally pass an expiry in milliseconds as the second argument (defaults to 182 days).
+
+### Using cookie storage explicitly
+
+The default storage is cookie-based, but you can also configure it explicitly:
+
+```ts
+import { createConsent, cookieStorage } from "@uabcodus/consent";
+
+const consent = createConsent({
+  storage: cookieStorage({
+    name: "my-consent-cookie",
+    expiresAfterDays: 365,
+    domain: ".example.com",
+    path: "/",
+    secure: true,
+    sameSite: "Strict",
+  }),
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+  } as const,
+});
+```
+
+When no `storage` is specified, `cookieStorage()` is used with the options from the `cookie` config field.
+This means you can still use the shorthand `cookie` key for cookie-specific settings:
+
+```ts
+const consent = createConsent({
+  cookie: { name: "my-cookie", expiresAfterDays: 90 },
+  categories: {
+    necessary: { readOnly: true },
+    analytics: {},
+  } as const,
+});
+```
+
+### Custom storage adapters
+
+The `StorageAdapter` interface lets you plug in any persistence mechanism:
+
+```ts
+interface StorageAdapter {
+  get(): CookieValue;
+  set(value: CookieValue): void;
+  remove(): void;
+}
+```
+
+For example, you could implement sessionStorage, IndexedDB, or a server-side backend.
 
 When using localStorage, the library also stores an `expirationTime` and checks it on page load.
 Expired consent is treated as invalid, same as with cookies.

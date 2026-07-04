@@ -13,6 +13,7 @@ const SCRIPT_TAG_SELECTOR = "data-category";
 export function retrieveScriptElements(
   allCategoryNames: Array<string>,
   existingServices: Record<string, Record<string, ServiceConfig>>,
+  scriptType: string,
 ): Array<ScriptInfo> {
   if (typeof document === "undefined") return [];
 
@@ -35,6 +36,10 @@ export function retrieveScriptElements(
     }
 
     if (!allCategoryNames.includes(categoryName)) continue;
+
+    if (!scriptTag.getAttribute("type")) {
+      scriptTag.setAttribute("type", scriptType);
+    }
 
     scriptInfos.push({
       _script: scriptTag,
@@ -61,6 +66,7 @@ export function manageExistingScripts(
   acceptedServices: Record<string, Array<string>>,
   lastChangedCategoryNames: Array<string>,
   lastChangedServices: Record<string, Array<string>>,
+  scriptType: string,
 ): void {
   if (typeof document === "undefined") return;
 
@@ -96,36 +102,36 @@ export function manageExistingScripts(
     info._executed = true;
 
     const dataType = currScript.getAttribute("type");
-    if (dataType) currScript.removeAttribute("type");
+    const freshest = currScript.cloneNode(true) as HTMLScriptElement;
 
-    currScript.removeAttribute(SCRIPT_TAG_SELECTOR);
-
-    let src = currScript.getAttribute("src");
-    if (src) currScript.removeAttribute("src");
-
-    const freshScript = document.createElement("script");
-    freshScript.textContent = currScript.innerHTML;
-
-    for (const { name, value } of currScript.attributes) {
-      freshScript.setAttribute(name, value);
+    if (freshest.getAttribute("type") === scriptType) {
+      freshest.removeAttribute("type");
+      if (dataType && dataType !== scriptType) {
+        freshest.setAttribute("type", dataType);
+      }
     }
 
-    if (dataType) freshScript.type = dataType;
-    if (src) freshScript.src = src;
+    freshest.removeAttribute(SCRIPT_TAG_SELECTOR);
+    freshest.removeAttribute("data-service");
 
+    const src = freshest.getAttribute("src");
     const externalScript =
-      !!src && (!dataType || dataType === "text/javascript" || dataType === "module");
+      !!src &&
+      (!dataType ||
+        dataType === "text/javascript" ||
+        dataType === "module" ||
+        dataType === scriptType);
 
     if (externalScript) {
-      freshScript.addEventListener("load", () => {
+      freshest.addEventListener("load", () => {
         loadScriptsRecursive(allScriptTags, index + 1);
       });
-      freshScript.addEventListener("error", () => {
+      freshest.addEventListener("error", () => {
         loadScriptsRecursive(allScriptTags, index + 1);
       });
     }
 
-    currScript.replaceWith(freshScript);
+    currScript.replaceWith(freshest);
 
     if (externalScript) return;
     loadScriptsRecursive(allScriptTags, index + 1);

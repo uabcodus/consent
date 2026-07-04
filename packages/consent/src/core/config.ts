@@ -1,11 +1,14 @@
 import type { CategoryConfig, ConsentConfig, ServiceConfig } from "./types";
+import type { StorageAdapter } from "./storage";
 import { resolveCookieConfig } from "./cookies";
+import { cookieStorage } from "./storage";
 
 export interface ConsentConfigResolved<TCategories extends Record<string, CategoryConfig>> {
   mode: "opt-in" | "opt-out";
   revision: number;
   hideFromBots: boolean;
   manageScripts: boolean;
+  scriptType: string;
   autoClearCookies: boolean;
   revisionEnabled: boolean;
   categories: TCategories;
@@ -13,6 +16,7 @@ export interface ConsentConfigResolved<TCategories extends Record<string, Catego
   readOnlyCategories: Array<string>;
   services: Record<string, Record<string, ServiceConfig>>;
   cookie: ReturnType<typeof resolveCookieConfig>;
+  storage: StorageAdapter;
 }
 
 export function isBot(): boolean {
@@ -49,6 +53,8 @@ export function resolveConfig<TCategories extends Record<string, CategoryConfig>
   const userMode = userConfig.mode;
   const hideFromBots = userConfig.hideFromBots ?? true;
   const revision = userConfig.revision ?? 0;
+  const resolvedCookie = resolveCookieConfig(userConfig.cookie);
+  const storage = userConfig.storage ?? cookieStorage(resolvedCookie);
 
   return {
     mode: userMode === "opt-out" ? "opt-out" : "opt-in",
@@ -56,11 +62,13 @@ export function resolveConfig<TCategories extends Record<string, CategoryConfig>
     revisionEnabled: revision > 0,
     hideFromBots,
     manageScripts: userConfig.manageScripts ?? false,
+    scriptType: userConfig.scriptType ?? "text/consent",
     autoClearCookies: userConfig.autoClearCookies ?? true,
     categories,
     categoryNames,
     readOnlyCategories,
     services: allServices,
-    cookie: resolveCookieConfig(userConfig.cookie),
+    cookie: resolvedCookie,
+    storage,
   };
 }

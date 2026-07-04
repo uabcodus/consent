@@ -27,26 +27,38 @@ const consent = createConsent({
 
 ### Category-level
 
-Add `data-category` to any `<script>` tag. Change the `type` to `"text/plain"` so the browser
+Add `data-category` to any `<script>` tag. Change the `type` to `"text/consent"` so the browser
 doesn't execute it automatically:
 
 ```html
 <!-- This script won't run until "analytics" is accepted -->
-<script type="text/plain" data-category="analytics">
+<script type="text/consent" data-category="analytics">
   gtag("js", new Date());
   gtag("config", "G-XXXXXXXXXX");
 </script>
 ```
 
 When `analytics` is accepted, the library clones the script into a new element (without the
-`type="text/plain"` and `data-category` attributes) so the browser executes it.
+`type="text/consent"` and `data-category` attributes) so the browser executes it.
+
+If a script has `data-category` but no `type` attribute, the library automatically sets `type="text/consent"` to block it. You can customize the blocking type via the `scriptType` config option:
+
+```ts
+const consent = createConsent({
+  manageScripts: true,
+  scriptType: "text/plain", // Use a different blocking type
+  categories: {
+    /* ... */
+  },
+});
+```
 
 ### Service-level
 
 Add `data-service` for finer-grained control within a category:
 
 ```html
-<script type="text/plain" data-category="marketing" data-service="facebookPixel">
+<script type="text/consent" data-category="marketing" data-service="facebookPixel">
   !function(f,b,e,v,n,t,s){ /* ... */ }
 </script>
 ```
@@ -59,7 +71,7 @@ Works the same way with `src` attributes:
 
 ```html
 <script
-  type="text/plain"
+  type="text/consent"
   data-category="analytics"
   data-service="googleAnalytics"
   src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
@@ -75,7 +87,7 @@ Prefix the category name with `!` to execute a script when a category is **rejec
 
 ```html
 <!-- This script runs when "marketing" is rejected — useful for cleanup -->
-<script type="text/plain" data-category="!marketing">
+<script type="text/consent" data-category="!marketing">
   document.cookie.split(";").forEach((c) => {
     document.cookie = c.trim() + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
   });
@@ -126,13 +138,13 @@ Here's a typical setup combining `data-category` scripts with service callbacks:
 
 ```html
 <script
-  type="text/plain"
+  type="text/consent"
   data-category="analytics"
   data-service="ga4"
   src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
 ></script>
 <script
-  type="text/plain"
+  type="text/consent"
   data-category="marketing"
   data-service="fbPixel"
   src="https://connect.facebook.net/en_US/fbevents.js"

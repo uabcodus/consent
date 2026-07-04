@@ -13,8 +13,6 @@ import type {
 import { createStore } from "./store";
 import { resolveConfig, isBot } from "./config";
 import {
-  getPluginCookie,
-  setCookieValue,
   getSingleCookie,
   getAllCookieNames,
   parseConsentCookie,
@@ -106,7 +104,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
   const config = resolveConfig(merged);
 
   const initialCookie = parseInitialCookie(merged.initialCookie);
-  const cookieValue = initialCookie ?? getPluginCookie(config.cookie);
+  const cookieValue = initialCookie ?? config.storage.get();
 
   const categories = cookieValue?.categories;
   const savedServices = cookieValue?.services;
@@ -130,14 +128,10 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
     !!lastConsentTimestamp &&
     validCategories;
 
-  if (config.cookie.useLocalStorage && valid) {
+  if (valid && (cookieValue as CookieValue).expirationTime) {
     valid = new Date().getTime() <= ((cookieValue as CookieValue).expirationTime ?? 0);
     if (!valid) {
-      try {
-        localStorage.removeItem(config.cookie.name);
-      } catch {
-        /* noop */
-      }
+      config.storage.remove();
     }
   }
 
@@ -212,7 +206,11 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
   };
 
   if (!isBotDetected && config.manageScripts) {
-    internal.allScriptTags = retrieveScriptElements(config.categoryNames, config.services);
+    internal.allScriptTags = retrieveScriptElements(
+      config.categoryNames,
+      config.services,
+      config.scriptType,
+    );
   }
 
   if (valid && !isBotDetected) {
@@ -222,6 +220,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
       internal.acceptedServices,
       [],
       {},
+      config.scriptType,
     );
   } else if (!isBotDetected && config.mode === "opt-out") {
     manageExistingScripts(
@@ -230,6 +229,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
       internal.acceptedServices,
       [],
       {},
+      config.scriptType,
     );
   }
 
@@ -292,7 +292,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
       internal.cookieContent.lastConsentTimestamp = internal.lastConsentTimestamp.toISOString();
     }
 
-    setCookieValue(internal.cookieContent, config.cookie);
+    config.storage.set(internal.cookieContent);
 
     if (config.autoClearCookies) {
       autoclearRejectedCookies(
@@ -321,6 +321,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
         internal.acceptedServices,
         internal.lastChangedCategoryNames,
         internal.lastChangedServices,
+        config.scriptType,
       );
     }
 
@@ -576,7 +577,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
     },
 
     getCookie(field?: string) {
-      const cookie = getPluginCookie(config.cookie);
+      const cookie = config.storage.get();
       return field ? cookie[field as keyof CookieValue] : cookie;
     },
 
@@ -621,7 +622,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
         internal.cookieData = newData;
         if (internal.cookieContent) {
           internal.cookieContent.data = newData;
-          setCookieValue(internal.cookieContent, config.cookie, true);
+          config.storage.set(internal.cookieContent);
         }
       }
 
@@ -662,16 +663,7 @@ export function createConsent<TCategories extends Record<string, CategoryConfig>
 
     reset(deleteCookie?: boolean) {
       if (deleteCookie) {
-        const { name, path, domain, useLocalStorage } = config.cookie;
-        if (useLocalStorage) {
-          try {
-            localStorage.removeItem(name);
-          } catch {
-            /* noop */
-          }
-        } else {
-          eraseCookiesHelper([getSingleCookie(name)], domain, path);
-        }
+        config.storage.remove();
       }
 
       internal.valid = false;

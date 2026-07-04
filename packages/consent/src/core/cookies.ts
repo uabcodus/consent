@@ -61,16 +61,7 @@ export function parseConsentCookie(cookieString: string | undefined | null): Coo
 }
 
 export function getPluginCookie(config: CookieConfig): CookieValue {
-  const name = config.name;
-  if (config.useLocalStorage) {
-    try {
-      const stored = localStorage.getItem(name);
-      return stored ? parseCookie(stored) : ({} as CookieValue);
-    } catch {
-      return {} as CookieValue;
-    }
-  }
-  const value = getSingleCookie(name);
+  const value = getSingleCookie(config.name);
   return parseCookie(decodeURIComponent(value));
 }
 
@@ -81,7 +72,7 @@ export function setCookieValue(
 ): void {
   if (typeof document === "undefined") return;
 
-  const { name, path, domain, sameSite, secure, useLocalStorage } = config;
+  const { name, path, domain, sameSite, secure } = config;
   const protocol = typeof location !== "undefined" ? location.protocol : "https:";
   const hostname = typeof location !== "undefined" ? location.hostname : "";
 
@@ -95,15 +86,6 @@ export function setCookieValue(
 
   const value = JSON.stringify(cookieContent);
   const encodedValue = encodeURIComponent(value);
-
-  if (useLocalStorage) {
-    try {
-      localStorage.setItem(name, encodedValue);
-    } catch {
-      /* noop */
-    }
-    return;
-  }
 
   let cookieStr =
     name +

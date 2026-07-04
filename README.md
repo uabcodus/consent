@@ -4,19 +4,17 @@
 
 A **lightweight**, **headless** & **GDPR compliant** cookie consent plugin written in Typescript.
 
-## Credits
+## Documentation
 
-This project is originally a fork of [cookieconsent](https://github.com/orestbida/cookieconsent) by [Orest Bida](https://github.com/orestbida). All credit for the original work goes to him.
+Documentation available at [consent.codus.lt](https://consent.codus.lt).
 
 ## Demo
 
-Check out the [playground](https://playground.cookieconsent.orestbida.com).
+Check out the [playground](https://consent.codus.lt/playground).
 
-There are also a few examples available on [Stackblitz](https://stackblitz.com/@orestbida/collections/cookieconsent-v3).
+## Credits
 
-## Documentation
-
-Docs. available at [cookieconsent.orestbida.com](https://cookieconsent.orestbida.com).
+This project is originally a fork of [cookieconsent](https://github.com/orestbida/cookieconsent) by [Orest Bida](https://github.com/orestbida). All credit for the original work goes to him.
 
 ## License
 

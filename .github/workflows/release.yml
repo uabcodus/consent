@@ -3,6 +3,9 @@ name: Release
 on:
   push:
     branches: [main]
+    paths:
+      - .changeset/**
+      - packages/consent/package.json
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 

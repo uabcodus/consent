@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function ConsentBanner() {
+export function ConsentBanner({ onOpenPreferences }: { onOpenPreferences?: () => void }) {
 	const consent = useConsent();
 	const [open, setOpen] = useState(true);
 
@@ -41,6 +41,17 @@ export function ConsentBanner() {
 					>
 						Necessary Only
 					</Button>
+					{onOpenPreferences && (
+						<Button
+							variant="outline"
+							onClick={() => {
+								onOpenPreferences();
+								setOpen(false);
+							}}
+						>
+							Preferences
+						</Button>
+					)}
 					<Button variant="ghost" onClick={() => setOpen(false)}>
 						Close
 					</Button>

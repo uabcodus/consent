@@ -11,7 +11,7 @@
 			"registryDependencies": ["button", "card"],
 			"files": [
 				{
-					"path": "default/consent-banner.tsx",
+					"path": "src/registry/default/consent-banner.tsx",
 					"type": "registry:component"
 				}
 			]
@@ -24,7 +24,7 @@
 			"registryDependencies": ["button", "dialog", "switch", "label", "separator", "table"],
 			"files": [
 				{
-					"path": "default/consent-panel.tsx",
+					"path": "src/registry/default/consent-panel.tsx",
 					"type": "registry:component"
 				}
 			]
@@ -37,7 +37,7 @@
 			"registryDependencies": ["table"],
 			"files": [
 				{
-					"path": "default/consent-table.tsx",
+					"path": "src/registry/default/consent-table.tsx",
 					"type": "registry:component"
 				}
 			]
@@ -50,7 +50,7 @@
 			"registryDependencies": ["switch", "label"],
 			"files": [
 				{
-					"path": "default/consent-toggle.tsx",
+					"path": "src/registry/default/consent-toggle.tsx",
 					"type": "registry:component"
 				}
 			]

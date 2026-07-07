@@ -3,7 +3,7 @@
 	"ignorePatterns": [
 		"dist/**",
 		"old/**",
-		"packages/consent/registry/**",
+		"apps/docs/src/registry/**",
 		"packages/consent/tests/**",
 		"node_modules/**"
 	],

@@ -1,6 +1,6 @@
 "use client";
 
-import type { CookieItem } from "@uabcodus/consent/core";
+import type { CookieItem, ServiceConfig } from "@uabcodus/consent/core";
 import { useConsent } from "@uabcodus/consent/react";
 import { useState } from "react";
 
@@ -22,24 +22,33 @@ import { cn } from "@/lib/utils";
 function ConsentToggle({
 	id,
 	label,
+	description,
 	checked,
 	readOnly,
 	onCheckedChange
 }: {
 	id: string;
 	label: string;
+	description?: string;
 	checked: boolean;
 	readOnly: boolean;
 	onCheckedChange: (checked: boolean) => void;
 }) {
 	return (
-		<div className={cn("flex items-center gap-2", readOnly && "opacity-50")}>
-			<Switch id={id} checked={checked} disabled={readOnly} onCheckedChange={onCheckedChange} />
-			{label && (
+		<div className={cn("flex items-start gap-2", readOnly && "opacity-50")}>
+			<Switch
+				id={id}
+				checked={checked}
+				disabled={readOnly}
+				onCheckedChange={onCheckedChange}
+				className="mt-0.5"
+			/>
+			<div className="flex flex-col gap-0.5">
 				<Label htmlFor={id} className={cn(readOnly && "cursor-default")}>
 					{label}
 				</Label>
-			)}
+				{description && <p className="text-muted-foreground text-xs">{description}</p>}
+			</div>
 		</div>
 	);
 }
@@ -98,6 +107,8 @@ export function ConsentPanel({ open, onOpenChange }: ConsentPanelProps) {
 
 	const categories = consent.state.categories;
 	const services = consent.state.services;
+	const config = consent.getConfig() as { services: Record<string, Record<string, ServiceConfig>> };
+	const servicesConfig = config.services ?? {};
 
 	function handleSave() {
 		for (const [cat, checked] of Object.entries(localCategories)) {
@@ -115,7 +126,7 @@ export function ConsentPanel({ open, onOpenChange }: ConsentPanelProps) {
 		onOpenChange(false);
 	}
 
-	function handleAcceptNecessary() {
+	function handleRejectAll() {
 		consent.accept("necessary");
 		onOpenChange(false);
 	}
@@ -150,22 +161,35 @@ export function ConsentPanel({ open, onOpenChange }: ConsentPanelProps) {
 
 							{services[name] && Object.keys(services[name]!).length > 0 && (
 								<div className="mt-2 ml-4 flex flex-col gap-1">
-									{Object.entries(services[name]!).map(([svc, svcAccepted]) => (
-										<ConsentToggle
-											key={svc}
-											id={`svc-${name}-${svc}`}
-											label={svc}
-											checked={svcAccepted}
-											readOnly={info.readOnly}
-											onCheckedChange={(checked) => {
-												if (checked) {
-													consent.acceptService(svc as never, name as never);
-												} else {
-													consent.rejectService(svc as never, name as never);
-												}
-											}}
-										/>
-									))}
+									{Object.entries(services[name]!).map(([svc]) => {
+										const svcConfig = servicesConfig[name]?.[svc];
+										const svcCookies = svcConfig?.cookies ?? [];
+
+										return (
+											<div key={svc}>
+												<ConsentToggle
+													id={`svc-${name}-${svc}`}
+													label={svc}
+													checked={services[name]![svc] ?? false}
+													readOnly={info.readOnly}
+													onCheckedChange={(checked) => {
+														if (checked) {
+															consent.acceptService(svc as never, name as never);
+														} else {
+															consent.rejectService(svc as never, name as never);
+														}
+													}}
+												/>
+												{svcCookies.length > 0 && (
+													<CookieTable
+														caption="Cookies"
+														headers={{ name: "Name", description: "Description", domain: "Domain" }}
+														cookies={svcCookies}
+													/>
+												)}
+											</div>
+										);
+									})}
 								</div>
 							)}
 
@@ -175,8 +199,8 @@ export function ConsentPanel({ open, onOpenChange }: ConsentPanelProps) {
 				</div>
 
 				<div className="flex flex-wrap justify-end gap-2">
-					<Button variant="outline" onClick={handleAcceptNecessary}>
-						Necessary Only
+					<Button variant="outline" onClick={handleRejectAll}>
+						Reject All
 					</Button>
 					<Button variant="outline" onClick={handleSave}>
 						Save Preferences

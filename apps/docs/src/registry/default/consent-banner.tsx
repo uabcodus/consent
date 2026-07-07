@@ -1,17 +1,31 @@
 "use client";
 
 import { useConsent } from "@uabcodus/consent/react";
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function ConsentBanner({ onOpenPreferences }: { onOpenPreferences?: () => void }) {
 	const consent = useConsent();
-	const [open, setOpen] = useState(true);
 
-	if (consent.state.skipped || consent.state.valid) return null;
-	if (!open) return null;
+	if (consent.state.skipped) return null;
+
+	if (consent.state.valid && onOpenPreferences) {
+		return (
+			<div className="fixed bottom-4 left-4 z-50">
+				<Button
+					variant="outline"
+					size="sm"
+					className="rounded-full shadow-lg"
+					onClick={onOpenPreferences}
+				>
+					Cookie Settings
+				</Button>
+			</div>
+		);
+	}
+
+	if (consent.state.valid) return null;
 
 	return (
 		<div className="fixed bottom-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-[420px] -translate-x-1/2">
@@ -24,37 +38,13 @@ export function ConsentBanner({ onOpenPreferences }: { onOpenPreferences?: () =>
 					</CardDescription>
 				</CardHeader>
 				<CardFooter className="flex flex-wrap gap-2">
-					<Button
-						onClick={() => {
-							consent.accept("all");
-							setOpen(false);
-						}}
-					>
-						Accept All
-					</Button>
-					<Button
-						variant="outline"
-						onClick={() => {
-							consent.accept("necessary");
-							setOpen(false);
-						}}
-					>
-						Necessary Only
-					</Button>
+					<Button onClick={() => consent.accept("all")}>Accept All</Button>
+					<Button onClick={() => consent.accept("necessary")}>Reject All</Button>
 					{onOpenPreferences && (
-						<Button
-							variant="outline"
-							onClick={() => {
-								onOpenPreferences();
-								setOpen(false);
-							}}
-						>
+						<Button variant="outline" onClick={onOpenPreferences}>
 							Preferences
 						</Button>
 					)}
-					<Button variant="ghost" onClick={() => setOpen(false)}>
-						Close
-					</Button>
 				</CardFooter>
 			</Card>
 		</div>

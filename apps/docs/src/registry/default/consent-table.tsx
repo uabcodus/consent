@@ -38,7 +38,9 @@ export function ConsentTable({ caption, headers, cookies }: ConsentTableProps) {
 							{headerKeys.map((key) => (
 								<TableCell key={key}>
 									{String(
-										cookie[key as keyof Pick<CookieItem, "name" | "path" | "domain">] ?? "\u2013"
+										cookie[
+											key as keyof Pick<CookieItem, "name" | "path" | "domain" | "description">
+										] ?? "\u2013"
 									)}
 								</TableCell>
 							))}

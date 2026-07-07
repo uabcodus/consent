@@ -6,7 +6,7 @@
 		{
 			"name": "consent-banner",
 			"type": "registry:block",
-			"description": "A cookie consent banner card with Accept All, Necessary Only and Preferences buttons.",
+			"description": "A GDPR-compliant cookie consent banner with equally prominent Accept All and Reject All buttons, plus an optional Preferences button. Shows a floating Cookie Settings button after consent for withdrawing or changing preferences.",
 			"dependencies": ["@uabcodus/consent"],
 			"registryDependencies": ["button", "card"],
 			"files": [
@@ -45,7 +45,7 @@
 		{
 			"name": "consent-toggle",
 			"type": "registry:block",
-			"description": "A labelled toggle switch for consent categories and services.",
+			"description": "An accessible labelled toggle switch for consent categories and services, with optional description text.",
 			"dependencies": ["@uabcodus/consent"],
 			"registryDependencies": ["switch", "label"],
 			"files": [

@@ -50,8 +50,11 @@ The components depend on these shadcn/ui primitives (make sure they're installed
 
 ```tsx
 import { ConsentBanner } from "@/components/consent-banner";
+import { ConsentPanel } from "@/components/consent-panel";
 
 function App() {
+	const [preferencesOpen, setPreferencesOpen] = useState(false);
+
 	return (
 		<ConsentProvider
 			options={{
@@ -60,20 +63,20 @@ function App() {
 				}
 			}}
 		>
-			<ConsentBanner />
+			<ConsentBanner onOpenPreferences={() => setPreferencesOpen(true)} />
+			<ConsentPanel open={preferencesOpen} onOpenChange={setPreferencesOpen} />
 		</ConsentProvider>
 	);
 }
 ```
 
 The banner appears as a fixed-position card at the bottom of the screen. It's automatically hidden
-when:
+when consent is already valid or skipped (bot detected).
 
-- Consent is already valid
-- Consent was skipped (bot detected)
-- The user closes it
+It has **Accept All** and **Reject All** buttons of equal prominence for GDPR compliance, plus an optional **Preferences** button that opens the panel.
 
-It has three actions: **Accept All**, **Necessary Only**, and a preferences button that opens the panel.
+After consent is given, a floating **Cookie Settings** button appears at the bottom-left corner so
+users can re-open the panel and withdraw or change their consent at any time.
 
 ### Panel
 
@@ -99,11 +102,10 @@ The panel is a dialog modal with:
 
 - Per-category toggle switches (readOnly categories show as disabled)
 - Per-service sub-toggles within each category (if services are defined)
-- Cookie detail tables (if `cookies` are defined on services)
-- Save Preferences button that batch-applies changes
-
-Service toggles apply immediately. Category toggles are batched — they're only committed when
-the user clicks Save.
+- Cookie detail tables rendered automatically for services that define `cookies`
+- **Reject All**, **Save Preferences**, and **Accept All** footer buttons
+- Service toggles apply immediately. Category toggles are batched — they're only committed when
+  the user clicks Save.
 
 ### Table
 
@@ -141,7 +143,7 @@ import { ConsentToggle } from "@/components/consent-toggle";
 	label="Analytics"
 	description="Help us understand how you use the site."
 	checked={isAccepted}
-	disabled={isReadOnly}
+	readOnly={isReadOnly}
 	onCheckedChange={(checked) => {
 		checked ? consent.accept("analytics") : consent.reject("analytics");
 	}}

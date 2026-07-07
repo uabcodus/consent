@@ -10,6 +10,7 @@ export interface CookieItem {
 	name: string | RegExp;
 	path?: string;
 	domain?: string;
+	description?: string;
 }
 
 export interface ServiceConfig {

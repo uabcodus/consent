@@ -20,13 +20,11 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: "1.x"
 
       - run: bun install --frozen-lockfile
 
       - run: bun run --filter '*' build
-
-      - run: bun run --filter docs build
 
       - uses: actions/configure-pages@v4
 

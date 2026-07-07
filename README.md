@@ -4,6 +4,8 @@
 
 A **lightweight**, **headless** & **GDPR compliant** cookie consent plugin written in Typescript.
 
+It has **zero dependencies** and is **fully tree-shakeable**. It bundles at around **5kb** gzipped when using all features from core. Framework adapters are _thin wrappers_ around the core.
+
 ## Documentation
 
 Documentation available at [consent.codus.lt](https://consent.codus.lt).
@@ -18,4 +20,4 @@ This project is originally a fork of [cookieconsent](https://github.com/orestbid
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/orestbida/cookieconsent/blob/master/LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/uabcodus/consent/blob/master/LICENSE) for more information.

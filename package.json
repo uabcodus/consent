@@ -6,7 +6,8 @@
 	],
 	"type": "module",
 	"scripts": {
-		"dev": "bun run --filter @uabcodus/consent dev",
+		"dev": "bun run --filter docs dev",
+		"dev:lib": "bun run --filter @uabcodus/consent dev",
 		"build": "bun run --filter '*' build",
 		"test": "bun run --filter @uabcodus/consent test",
 		"test:watch": "bun run --filter @uabcodus/consent test:watch",

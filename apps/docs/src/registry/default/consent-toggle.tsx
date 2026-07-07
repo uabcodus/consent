@@ -10,6 +10,7 @@ interface ConsentToggleProps {
 	description?: string;
 	checked: boolean;
 	readOnly: boolean;
+	size?: "sm" | "default";
 	onCheckedChange: (checked: boolean) => void;
 }
 
@@ -19,12 +20,14 @@ export function ConsentToggle({
 	description,
 	checked,
 	readOnly,
+	size = "default",
 	onCheckedChange
 }: ConsentToggleProps) {
 	return (
 		<div className={cn("flex items-start gap-2", readOnly && "opacity-50")}>
 			<Switch
 				id={id}
+				size={size}
 				checked={checked}
 				disabled={readOnly}
 				onCheckedChange={onCheckedChange}

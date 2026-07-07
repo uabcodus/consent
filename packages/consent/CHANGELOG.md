@@ -1,5 +1,11 @@
 # @uabcodus/consent
 
+## 0.2.0
+
+### Minor Changes
+
+- bf18507: Move ShadCN registry components to docs
+
 ## 0.1.1
 
 ### Patch Changes

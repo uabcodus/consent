@@ -27,6 +27,11 @@
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
+		".": {
+			"types": "./dist/core/index.d.ts",
+			"import": "./dist/core/index.js",
+			"default": "./dist/core/index.js"
+		},
 		"./core": {
 			"types": "./dist/core/index.d.ts",
 			"import": "./dist/core/index.js",

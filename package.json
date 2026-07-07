@@ -16,7 +16,8 @@
 		"format:check": "oxfmt --check",
 		"typecheck": "bun run --filter '*' typecheck",
 		"release": "bun run build && bun run test && changeset publish",
-		"prepare": "husky"
+		"prepare": "husky",
+		"changeset": "bunx changeset"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.31.0",

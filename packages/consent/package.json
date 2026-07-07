@@ -1,6 +1,6 @@
 {
 	"name": "@uabcodus/consent",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "Headless, highly composable, client-side consent management library.",
 	"keywords": [
 		"composable",

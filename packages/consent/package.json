@@ -22,7 +22,8 @@
 		"url": "https://github.com/uabcodus/consent"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"README.md"
 	],
 	"type": "module",
 	"sideEffects": false,

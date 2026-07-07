@@ -15,7 +15,7 @@
 		"format": "oxfmt --no-error-on-unmatched-pattern",
 		"format:check": "oxfmt --check",
 		"typecheck": "bun run --filter '*' typecheck",
-		"release": "bun run build && bun run test && changeset publish",
+		"release": "bun run test && bun run build && changeset publish",
 		"prepare": "husky",
 		"changeset": "bunx changeset"
 	},

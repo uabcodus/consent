@@ -28,10 +28,6 @@ jobs:
           node-version: 24
           registry-url: "https://registry.npmjs.org"
 
-      - run: bun run build
-
-      - run: bun run test
-
       - name: Create Release Pull Request or publish to npm
         uses: changesets/action@v1
         with:

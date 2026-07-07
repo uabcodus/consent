@@ -1,14 +1,14 @@
 name: Release
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release:
@@ -26,11 +26,6 @@ jobs:
 
       - run: bun run test
 
-      - name: Setup npm auth
-        run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Create Release Pull Request or publish to npm
         uses: changesets/action@v1
         with:
@@ -39,4 +34,3 @@ jobs:
           title: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

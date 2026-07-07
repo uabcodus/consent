@@ -38,6 +38,10 @@
 			"default": "./dist/react/index.js"
 		}
 	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
 	"scripts": {
 		"dev": "tsdown --watch",
 		"build": "tsdown",
